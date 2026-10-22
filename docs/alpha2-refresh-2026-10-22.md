@@ -225,6 +225,48 @@ errors and no recorded test failures. The full eight-hour result is pending.
 The follow-up can use the controller API when desktop SSH signing fails;
 credentials are obtained at execution time rather than saved in its prompt.
 
+### Startup isolation and build provenance
+
+CircuitPython commit `5afc122780` fixes stale incremental-build version
+headers. Version generation now runs for each build and retains unchanged
+output timestamps; Git commits, tags and dirty state are no longer hidden
+by the command cache. All 85 cptools tests pass, including cache-bypass and
+unchanged-output tests. A real incremental build reports the current
+`11.0.0-alpha.2-19-g5afc122780-dirty` diagnostic source state.
+
+Autonomous C diagnostics over SWD/RTT reproduce the Wi-Fi failure without
+Python or USB: the scan command's `event_msgs` IOVAR times out after five
+seconds (`0x060e0000`, then `-EAGAIN`). The WHD packet pool has zero buffers
+in flight at failure, and the diagnostic thread remains alive. A full-chip
+watchdog reset also reproduces it.
+
+The same image accepts a scan before CircuitPython startup. With automatic
+BLE workflow startup suppressed only for diagnosis, it accepts the later
+scan too. With BLE startup restored, the later scan fails again. Request
+acceptance is not a completed scan, association, TLS or soak pass. Disabling
+BLE is not proposed as a compatibility fix. USB enumeration remains an
+independent unresolved problem, including in the no-BLE-startup control.
+
+Two controlled candidates did not fix the failure: notifying WHD whenever
+the shared IRQ pin is asserted on re-enable, and locking complete backplane
+read/write transactions. Both experiments were reverted from source. Their
+negative results are retained locally alongside exact firmware and ELF
+hashes; neither is included in the published branches.
+
+A further startup probe successfully read the Wi-Fi MAC immediately after
+Bluetooth firmware loading. Subsequent HCI initialization in that
+instrumented run produced repeated hardware errors and an opcode `0x0c03`
+command timeout, halting before the later scan. In a separate control with
+normal startup, suspending only the Bluetooth poll thread at 25 seconds
+did not restore Wi-Fi: the scan at 33 seconds still timed out. These results
+narrow the investigation but do not identify a validated repair. All
+temporary driver and startup instrumentation was removed after testing.
+
+At 03:52 UTC, the ESP observer process was verified active after 134 minutes:
+66 confirmed deliveries and true deep-sleep wakes, 268 HTTP successes
+(one startup error), 63 BLE successes, one collector start, zero serial
+errors and no recorded failures. The eight-hour result remains pending.
+
 ## Portal browser validation
 
 WebMCP uses the current `document.modelContext.registerTool` API with
