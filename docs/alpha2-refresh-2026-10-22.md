@@ -145,3 +145,39 @@ Use a private JSON configuration with `boards` (name, role, by-id `port`,
 The output directory must not already exist, so a new run cannot overwrite
 an earlier failed run. The Pi's test Wi-Fi profile never supplies the
 default route; SSH remains on Ethernet.
+
+## Portal browser validation
+
+WebMCP uses the current `document.modelContext.registerTool` API with
+page-lifetime cancellation. Actual Chrome 155 with WebMCP enabled listed
+both tools. On the 2,377-row demo dataset, `envhub_query` returned bedroom
+2,261 ppm and local 2,573 ppm for `MAX(co2)` grouped by zone. A DELETE
+request was refused with `SELECT only`. Concurrent SQL requests share a
+queue around Pyodide's globals. No device-write tool is exposed.
+
+The separate opt-in Prompt API polyfill is pinned to 1.22.2 with
+Transformers.js 4.3.0 and Qwen2.5-0.5B-Instruct q4. Native Prompt API remains
+preferred. Both fresh WASM-worker and WebGPU sessions correctly answered
+an arithmetic smoke check. q4f16 produced incorrect inference on this AMD
+GPU despite advertised shader-f16 support, so the integration uses q4
+weights with full-precision arithmetic (about 786 MB to download).
+
+The final saved query/summary code was loaded into the warmed Chrome page
+to avoid another model download, then exercised through the actual Ask
+controls. It generated a grouped MAX(co2) SELECT, executed it against
+SQLite, and correctly answered bedroom 2,261 ppm and local 2,573 ppm in
+4.2 seconds. Earlier attempts with the longer schema and a shared summary
+brief generated wrong queries or extra examples; those failures informed
+the shorter SQL brief, two examples, first-fence extraction and separate
+summary session. Read-only validation is enforced regardless of model output.
+
+Ten browser integration unit tests, 13 SQL test groups, 20 certificate
+test groups and inline/helper syntax checks pass. The controls fit a
+390-pixel viewport. This is desktop browser validation, not a physical
+phone performance claim. Browser cache writes were sometimes refused;
+offline model availability is not guaranteed. Small-model answers can
+still be wrong, and executed SQL/results remain visible for inspection.
+
+The C5 copy was deployed before these final browser fixes. Update only its
+`/www` assets after the eight-hour observer finishes, then verify the
+served files. Do not interrupt the soak to update the portal.

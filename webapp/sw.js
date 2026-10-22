@@ -9,11 +9,13 @@
  * Only active on secure origins (the GitHub Pages copy); the device-hosted
  * plain-http copy never registers it.
  */
-const CACHE = "envhub-v16";
+const CACHE = "envhub-v17";
 const SHELL = [
   "./",
   "./index.html",
   "./ai_tools.js",
+  "./prompt_backend.js",
+  "./webmcp.js",
   "./manifest.json",
   "./icon.svg",
   "./sample/days.json",
