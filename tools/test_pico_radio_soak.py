@@ -1,8 +1,21 @@
 import unittest
-from pico_radio_soak import record_from_output, validate_cycle
+from types import SimpleNamespace
+from pico_radio_soak import record_from_output, validate_cycle, select_console
 
 
 class EvidenceTests(unittest.TestCase):
+    def test_select_exact_serial_and_vendor(self):
+        selected = SimpleNamespace(serial_number="feather", vid=0x1a86)
+        other = SimpleNamespace(serial_number="bridge", vid=0x1a86)
+        wrong_vendor = SimpleNamespace(serial_number="feather", vid=0x1209)
+        self.assertIs(select_console([other, wrong_vendor, selected], "feather", 0x1a86), selected)
+
+    def test_missing_or_ambiguous_console_is_refused(self):
+        selected = SimpleNamespace(serial_number="feather", vid=0x1a86)
+        for ports in ([], [selected, selected]):
+            with self.assertRaises(RuntimeError):
+                select_console(ports, "feather", 0x1a86)
+
     def test_raw_console_crlf(self):
         self.assertEqual(record_from_output('noise\r\nENVHUB_CYCLE {"wifi":2}\r\n', 'ENVHUB_CYCLE'), {'wifi': 2})
 

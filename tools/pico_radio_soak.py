@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: MIT
-"""Observe an uninterrupted CircuitPython Wi-Fi/BLE scan soak over USB raw REPL.
+"""Observe an uninterrupted CircuitPython Wi-Fi/BLE scan soak over a USB or UART raw REPL.
 
 No firmware or filesystem writes and no automatic reset/reconnect. A failure
 ends the run as failed; only the full requested duration can produce a pass.
@@ -71,10 +71,22 @@ def save_status(directory, status):
     temporary.replace(directory / "status.json")
 
 
+def select_console(ports, serial_number, vid):
+    matches = [port for port in ports
+               if port.serial_number == serial_number and port.vid == vid]
+    if len(matches) != 1:
+        raise RuntimeError(f"Expected one selected CircuitPython console, found {len(matches)}")
+    return matches[0]
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--serial-number", required=True)
     parser.add_argument("--revision", required=True)
+    parser.add_argument("--usb-vid", type=lambda value: int(value, 0), default=0x1209,
+                        help="USB vendor ID of the selected console (default: 0x1209)")
+    parser.add_argument("--uart", action="store_true",
+                        help="Keep UART bridge DTR/RTS deasserted to avoid a reset")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--hours", type=float, default=8)
     parser.add_argument("--interval", type=float, default=30)
@@ -83,20 +95,17 @@ def main():
         parser.error("hours must be positive and interval must be 10..60 seconds")
     from serial.tools import list_ports
     from serial_deploy import Repl
-    ports = [port for port in list_ports.comports()
-             if port.serial_number == args.serial_number and port.vid == 0x1209]
-    if len(ports) != 1:
-        raise RuntimeError(f"Expected one selected CircuitPython console, found {len(ports)}")
+    port = select_console(list_ports.comports(), args.serial_number, args.usb_vid)
     args.output.mkdir(parents=True, exist_ok=False)
     status = dict(status="starting", created_utc=utc_now(), duration_s=args.hours * 3600,
-                  serial_number=args.serial_number, port=ports[0].device,
+                  serial_number=args.serial_number, port=port.device, usb_vid=args.usb_vid, uart=args.uart,
                   revision=args.revision, cycles=0, failures=[],
                   note="GC free includes a port estimate; it is not measured physical free RAM.")
     save_status(args.output, status)
     repl = None
     started = None
     try:
-        repl = Repl(ports[0].device)
+        repl = Repl(port.device, uart_bridge=args.uart)
         repl.enter_raw()
         identity = record_from_output(repl.exec(SETUP, timeout=30), "ENVHUB_IDENTITY")
         if args.revision not in identity.get("version", ""):
