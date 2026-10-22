@@ -1,6 +1,6 @@
 # C5 full-chain firmware and portal rollout
 
-Updated 22 October 2026, 11:20 UTC. The original C5/C61 application soak
+Updated 22 October 2026, 11:50 UTC. The original C5/C61 application soak
 passed its full eight hours. The protected firmware upgrade, portal and
 certificate deployment, and trusted HTTPS verification have completed.
 
@@ -15,9 +15,48 @@ historical pre-validation state; it is not a reason to rerun installation.
 
 Native WebMCP tools passed actual-origin data-query validation at 10:55 UTC: 333 device rows, correct grouped counts, DELETE rejection and unchanged row count. Earlier intermittent history empty responses remain unexplained; subsequent controlled TLS and clock-sync sequences passed.
 Model initialization on the controller triggered an OOM kill; do not count
-that as a successful fallback-model test. A new full-duration application soak started at 10:52:13 UTC and is due 18:52:13 UTC. A separate trusted-HTTPS soak started at 11:13:32 UTC and is due 19:13:32 UTC (20:13 BST). Neither has passed yet. Leave C5 untouched until both finish; newer CPU-fallback portal assets remain undeployed during these runs. The sections below retain the original guarded
-rollout procedure and preparation evidence; they are not instructions to
-repeat completed transactions.
+that as a successful fallback-model test.
+
+An externally reported S31 reset around 11:28 UTC coincided with loss of
+C5 HTTP/node-delivery evidence and a Feather REPL restart. This timing does
+not establish the exact cause. Application run 01 was interrupted after
+2,927.2 seconds; HTTPS run 01 retained six network failures across 14 cycles;
+Feather run 02 failed after 63 cycles. All original evidence is preserved
+with an external-interruption note. None is a clean eight-hour pass.
+
+Pi Wi-Fi reconnection restored C5 HTTP. Closing the old recorder exposed
+stale USB/IP attachments; only the two identity-verified C5/C61 UARTs were
+reattached. No hub power cycle was used. Fresh runs use separate evidence
+directories and clocks. The original Pico run remained untouched.
+
+| Current run | Start UTC | Earliest eight-hour finish UTC | State at 11:46 UTC |
+|---|---|---|---|
+| C5/C61 application 02 | 11:43:26 | 19:43:26 | Running, confirmed delivery and true wake, no failures |
+| Pico W radio 03 | 10:55:55 | 18:55:55 | Running, 101 cycles, no failures |
+| Feather V2 radio 03 | 11:45:09 | 19:45:09 | Running, three cycles, no failures |
+| Trusted HTTPS 02 | 11:45:03 | 19:45:03 | Running, first reused TLS session passed |
+
+Keep devices, consoles and shared hubs undisturbed until all four runs have
+actually stopped; the latest expected finish is **20:45 BST**. Then inspect
+full independent evidence. A deadline or running service is not a pass.
+
+The two CPU-fallback assets from `eff562bd0d46a0491156c26e064c7058a2083b98`
+remain undeployed. The staged `update_c5_cpu_portal.py` checks all four exact
+current runs with the HTTPS-capable evidence reporter, rejects any active
+Env Hub service, and checks installed asset hashes before replacing only
+`prompt_backend.js` and `sw.js`. It keeps private recovery copies and restores
+both files on failure; failed recovery prevents resume. Eight offline tests
+pass, including lost rename acknowledgement, preservation, changed-file
+refusal, short/failed evidence and a service starting during verification.
+Live staging job `a679f29b-1fc7-43d1-8009-8e412bd8af07` validated both bundled
+files and refused console access because all four services were active.
+Updater SHA-256: `c14e7780e18abd2f627c9070f252c264f302b0ed7a760e4933c72987be9ac387`.
+Bundle SHA-256: `4514cbe7c4f49fab94bdbcc0b5e256dca06394771dec4f027c53d50de42afc26`.
+
+The historical helpers below gate the original completed run only. They
+must not authorize a new deployment during these newer soaks. The sections
+retain the original rollout procedure and preparation evidence; they are
+not instructions to repeat completed transactions.
 
 The first backup attempt failed before reading flash because separate
 esptool CLI processes tried to synchronize with the prior high-baud stub.
