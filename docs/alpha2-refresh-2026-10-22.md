@@ -447,21 +447,31 @@ partition layouts described above.
 ### Post-soak portal release staging
 
 The exact tested portal commit
-`1b79d14d94e506d92e6ac4786763f2f537450f55` is now staged on Pi 6 at
-`/home/pi/envhub-bench-20261022/portal-release-1b79d14`. Its
+`30e57d225c32e65ea212bba12a5acc24804748e9` is now staged on Pi 6 at
+`/home/pi/envhub-bench-20261022/portal-release-30e57d2`. Its
 `release.json` identifies only `index.html`, `sw.js`, `manifest.json`,
 `icon.svg`, `ai_tools.js`, `webmcp.js` and `prompt_backend.js`, with byte
 counts and SHA-256 hashes. The archive SHA-256 is
-`3a5755bd1714f1a26bc3b52a69f49c32b57fda8dc22067d1c6bcd19823c795df`.
+`3ddfdfdd67228ce7e5d0a303c30d9439fc220735f25ca177c0788cf215f1b8f5`.
 
-Staging job `604372aa-fcf5-48c7-80b3-7175c3786089` verified all assets.
-The read-only gate `/home/pi/envhub-bench-20261022/check_portal_release_ready.py`
+Staging job `66619060-dc3a-496b-88fc-e079f377e924` verified all assets.
+The read-only gate `/home/pi/envhub-bench-20261022/check_portal_release_ready_30e57d2.py`
 also requires a terminal ESP observer with a full 28,800 seconds and no
-active systemd PID. At 05:35 UTC it correctly returned deployment-not-ready
+active systemd PID. At 05:44 UTC it correctly returned deployment-not-ready
 while PID 5493 remained active. No console was opened and no DUT files
 were changed. The hourly monitor knows this release path and gate.
 Actual C5 deployment and served-asset hash verification remain pending;
 preserve its vendor assets, configuration and logged measurements.
+
+This release supersedes the earlier `1b79d14` staged bundle. Review found
+that the native model loop omitted the Stop signal when placing work in
+the shared SQL queue. A behavioral regression using the actual portal
+loop and queue reproduced a stopped query reaching the engine. The
+one-line correction forwards that signal: stopped queued work now skips
+the engine, normal work still executes, and temporary sessions are
+released. Both new regressions, the ten existing browser-AI integration
+tests and all thirteen SQL validation groups pass. The mobile fallback
+already forwarded its signal and is unchanged.
 
 The separate first-association investigation narrowed the Python error
 to `WIFI_RADIO_ERROR_UNSPECIFIED` (1), rather than the event-result
