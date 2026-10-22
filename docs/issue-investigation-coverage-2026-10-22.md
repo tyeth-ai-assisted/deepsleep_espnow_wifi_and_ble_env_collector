@@ -6,7 +6,26 @@ index. More soak time is now lower priority than these specific gaps. A source
 fix, a native fault-injection test and a physical-board test are separate kinds
 of evidence. Historical notes below are not new reproductions.
 
-## New targeted evidence
+## Update at 23:41 UTC: connected-session BLE passes on Feather S3
+
+A real BlueZ central received all 10,240 bytes from an unpaced Nordic UART
+transfer, with the expected SHA-256. It then disconnected during an active
+PacketBuffer burst. The write loop returned zero, reported disconnected and
+returned to the host in 2.20 seconds after the disconnect request. Bytes queued
+at disconnect were intentionally not expected to arrive. Reconnection produced
+no unsolicited stale bytes, then delivered an exact fresh 1,024-byte payload.
+
+After these connections, BLE disabled, re-enabled and scanned successfully
+(59 advertisements) with Wi-Fi enabled and an ESP-NOW object still resident.
+This addresses the connected-session part of original report 11 on this S3.
+It also supplies physical regression evidence for reports 8/9 on S3, beyond
+the upstream-source ancestry check. The original C6 and sustained radio/display
+load variants remain unverified; do not close those reports from this result.
+Bleak warned that its reported MTU was a default: negotiated MTU was not measured.
+No flash writes or resets were requested, and the original USB/port state was
+restored. See [sanitized evidence](s3-connected-ble-2026-10-22.json).
+
+## Earlier targeted evidence
 
 - Feather ESP32-S3, 4 MB flash / 2 MB PSRAM, actual banner
   `CircuitPython 11.0.0-alpha.2-15-gcb5301b6fb-dirty on 2026-10-22`:
@@ -30,7 +49,7 @@ of evidence. Historical notes below are not new reproductions.
 - Historical ESP BLE notification changes `8042913c2e` (PacketBuffer) and
   `f3926284f8` (Characteristic.value) are ancestors of both official alpha.2
   (`d53b2277cf`) and deployed ESP integration `cb5301b6fb`. They are upstream
-  changes, not missing fork patches. Fresh burst/disconnect regression remains.
+  changes, not missing fork patches. The later S3 connected-session regression above passes; C6/load variants remain.
 - Existing host regressions for RTC logic, UTC/timezone rules, ESP-NOW message
   confirmation, and datastore/history relabel/recovery pass. The datastore
   suite used an isolated scratch directory; the first attempt was stopped by
@@ -61,9 +80,9 @@ Numbers refer to headings in the original bug document, not GitHub IDs.
 | 3: failed SD init leaves SPI locked | Current constructor unlocks after normal `init_card` error returns. Five physical S3 absent-card cases now pass. | C6/shared display setup and exceptional SPI/configure failures. Do not close the broader report from S3 alone. |
 | 4: e-paper splash refresh / misleading errors | Workaround assigns a real root group; display behaviour has not been freshly measured. | Instrument timer, busy and bus ownership separately; reproduce splash versus explicit group on the actual panel. |
 | 7: BLE-mode memory starvation | Historical application fix gates HTTP imports; recorded resolved on the earlier bench. | Current constrained C6 boot and GATT connection with the intended display configuration. Silent low-memory GATT failure remains a separate diagnostic concern. |
-| 8: dropped BLE notifications | Upstream alpha.2 contains notification/PacketBuffer retry fixes. | Count a long unpaced transfer at low MTU under radio/display load, including its final packet. |
-| 9: PacketBuffer blocks after disconnect | Upstream code now checks disconnect inside its wait loop and retains/retries ENOMEM data. | Disconnect a real central mid-burst, bound return time, reconnect and verify no stale bytes. |
-| 11: S3 adapter disable hard-fault / cannot re-enable | Five physical disable/re-enable/scan cycles pass on current Feather S3. | Repeat after a connected Nordic UART session with Wi-Fi and ESP-NOW resident, the historical trigger. |
+| 8: dropped BLE notifications | Upstream alpha.2 contains retry fixes; S3 unpaced 10,240-byte transfer passes exactly. | C6, verified low negotiated MTU and sustained radio/display load. |
+| 9: PacketBuffer blocks after disconnect | Actual S3 mid-burst disconnect returns in 2.20 seconds; reconnect has no stale bytes and transfers 1,024 fresh bytes exactly. | C6 and sustained radio/display load; broader timing/race coverage. |
+| 11: S3 adapter disable hard-fault / cannot re-enable | Five basic cycles plus post-connected-NUS teardown with Wi-Fi/ESP-NOW resident pass on current Feather S3. | Sustained concurrent traffic and the original application/sensor configuration; no crash reproduced in this targeted check. |
 | Large code.py prevents Wi-Fi initialization | Historical MPY shim and current frozen libraries address memory placement. Eleven variants build; current app has completed deep-sleep/report cycles. | Board-specific cold-boot qualification, especially C6 with the real sensor/display load; no claim that compilation removes all memory limits. |
 | Raw-REPL write then hard-reset filesystem corruption; S3 MSC write crashes | Historical evidence and safe deployment workarounds retained. | Disposable backed-up filesystem with explicit flush/soft reload controls and concurrent-radio variants. Avoid corrupting the live application store to obtain evidence. |
 | sleep_memory after soft reload | Original document distinguishes reload from deep sleep. True deep-sleep confirmations passed in the application run. | Inspect the intended lifetime contract before treating reload clearing as a firmware defect; targeted sentinel check if needed. |
@@ -123,7 +142,7 @@ rollout and follow-up reports.
   a 64 KiB prefix. Root cause and full backup remain unresolved; no Metro
   firmware writes occurred. Do not attribute this to S31 definitively.
 - Feather S3 is updated and has the targeted tests above. Metro S3, other
-  build-only variants, connected-session BLE, physical displays/RTC/sensors
+  build-only variants, C6/load variants of BLE, physical displays/RTC/sensors
   and the instrumented Pico tests remain explicit gaps. Three completed
   overnight runs and later targeted follow-ups retain their actual revisions;
   a newer image is not retrospectively covered by an older soak.
