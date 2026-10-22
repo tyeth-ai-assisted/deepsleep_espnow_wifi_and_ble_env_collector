@@ -1,0 +1,34 @@
+{
+  "recorded_utc": "2026-10-22T20:37:47.374254+00:00",
+  "boards": [
+    {
+      "board": "ESP32-C61 DevKit",
+      "revision": "cb5301b6fb9ede7442d84e8aba72baad87430a80",
+      "image_sha256": "58d5d48d3673c2fa4fb4510edba08618ad88b05e33d47805d557a442debdc982",
+      "upgraded_utc": "2026-10-22T20:16:09.415954+00:00",
+      "runtime_verified_utc": "2026-10-22T20:16:47.802693+00:00",
+      "full_backup_verified": true,
+      "protected_regions_verified": true,
+      "trusted_fullchain_verified": true,
+      "wrong_hostname_rejected": true,
+      "followup_soak_verified": false,
+      "upgrade_job": "bfbf52d9-ac31-421e-942a-cfddeee3fe4d",
+      "runtime_job": "473982f3-cae3-43ab-b904-86fd207c48c2"
+    },
+    {
+      "board": "Feather ESP32 V2",
+      "revision": "cb5301b6fb9ede7442d84e8aba72baad87430a80",
+      "image_sha256": "b393922d552551a2f097eea8c9a27607579a873328617e231a042b4c21935183",
+      "upgraded_utc": "2026-10-22T20:32:23.164190+00:00",
+      "runtime_verified_utc": "2026-10-22T20:33:16.838094+00:00",
+      "full_backup_verified": true,
+      "protected_regions_verified": true,
+      "trusted_fullchain_verified": true,
+      "wrong_hostname_rejected": true,
+      "followup_soak_verified": false,
+      "upgrade_job": "22730d98-9e2b-4d3c-9240-37def2db551e",
+      "runtime_job": "33108582-a474-41b3-9e3d-c9973d9d0a50"
+    }
+  ],
+  "note": "Post-soak firmware rollout; earlier overnight passes retain their original image attribution. Private recovery files are not published."
+}
