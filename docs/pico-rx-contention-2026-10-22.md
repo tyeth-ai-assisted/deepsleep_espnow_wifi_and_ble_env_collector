@@ -42,6 +42,18 @@ defect; it does **not** establish that this exact path caused the physical stall
 The fix is in [Zephyr PR 11](https://github.com/tyeth/zephyr/pull/11), pinned by
 [CircuitPython PR 32](https://github.com/tyeth/circuitpython/pull/32).
 
+## Current integration validation
+
+The exact `7d4ef1aac7` / `7379648278` integration was rebuilt and tested after
+the receive-lock fix. All ten BLE scan cases pass across the nRF5340 and
+nRF54LM20 simulators (39.54 seconds): beacon reception, reload, entry properties,
+passive scanning, and preserving an active scan after an unsupported extended
+request. All 85 build-tool tests pass (1.20 seconds). Actual checkout pins and
+tracked cleanliness were checked before and after, with empty `CP_VERSION`.
+See the [command, pins and log digest](pico-rx-integration-tests-2026-10-22.json).
+These Nordic simulator checks cover integration behavior; they do not exercise
+the CYW43 hardware driver or replace the running Pico W soak.
+
 ## New candidate and physical checks
 
 CircuitPython `7d4ef1aac72bf322f1bcead966a8d3eac0acb2af` selects Zephyr
