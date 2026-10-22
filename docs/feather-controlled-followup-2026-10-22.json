@@ -70,5 +70,15 @@
   "fixture_sha256": {
     "status.json": "cd53b23ffa06d5646ef0b0c9527b79ff42a2fa2bf5ad6b989e29ee2109005d56",
     "checks.jsonl": "6e63240193668f4065c7716e59b11dbe1e0c9116f0674960e4c5170619c3c6a1"
+  },
+  "post_failure_recovery": {
+    "verified_utc": "2026-10-22T22:17:23Z",
+    "revision": "7d4ef1aac72bf322f1bcead966a8d3eac0acb2af",
+    "same_firmware_no_flash_write": true,
+    "advertising_before_explicit_stop": true,
+    "advertising_stopped_verified": true,
+    "physical_mcu_power_cycle_proven": false,
+    "scope": "Later USB recovery and runtime check only; original fixture remains cleanup_failed",
+    "private_job_evidence_sha256": "245f8ae5d766e09c8ca4e1ff94202665acf7c49658f3d22f95daa1295bdbdd05"
   }
 }

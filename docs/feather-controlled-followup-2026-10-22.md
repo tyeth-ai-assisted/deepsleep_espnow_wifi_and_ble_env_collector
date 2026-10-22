@@ -30,3 +30,11 @@ result and does not relabel it or establish a firmware regression's cause.
 The [earlier eight-hour Feather result](completed-soaks-2026-10-22.md) used an
 older image. This new result is a thirty-minute follow-up to the verified
 [firmware and trusted-TLS rollout](post-soak-firmware-rollout-2026-10-22.md).
+
+At 22:17 UTC, a later host-hub USB recovery restored the Pico W console on
+the same `7d4ef1aac7` firmware without reflashing it. The runtime reported
+that advertising was still active; an explicit stop then passed verification.
+Hub off/on status and USB re-enumeration therefore did not establish a physical
+MCU cold boot. This later recovery does not change the failed fixture result
+or establish the cause of the USB failure. Subsequent direct-hub USB errors
+are being investigated separately from S31 USB/IP endpoint capacity.
