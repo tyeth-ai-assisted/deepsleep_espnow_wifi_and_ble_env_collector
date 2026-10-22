@@ -1,5 +1,45 @@
 # CircuitPython 11 refresh and farm soak â€” 22 October 2026
 
+## Source-audit correction and build-version repair, 14:20 UTC
+
+The release API still lists **11.0.0-alpha.2** as the newest published release.
+This follow-up checked actual source against the release tag, separately from
+the open/closed state of the issues in the [escalation index](https://github.com/tyeth/circuitpython/issues/15#issuecomment-5617383669).
+
+The earlier patch-disposition row for [CP #28](https://github.com/tyeth/circuitpython/issues/28)
+was too broad: the empty `CP_VERSION` fallback was present in the ESP integration
+`cb5301b6fb`, but **absent from the Pico integration through `5bb1d64004`**.
+The custom-board workflow can still pass an empty version to mpy-cross for
+boards with frozen libraries. A regression invoking the real
+`py/makeversionhdr.py` against an isolated tagged Git repository reproduced
+`Cannot determine version` only for the empty override (one failure out of
+four cases).
+
+Pico branch commit `d86cb7ae956e953afb076cbb896a5a2934deb732` restores the same
+`os.environ.get("CP_VERSION")` fix already carried by the ESP branch.
+`python3 tools/check_build_version.py` now passes all four cases: unset and
+empty values use Git, a nonempty explicit version wins, and an invalid
+nonempty override still fails. Ruff and whitespace checks pass. This is
+version-generation evidence, not a claim that a fresh hosted CI run passed.
+
+| Follow-up | Current evidence and disposition |
+|---|---|
+| CP #10, stale incremental version | Already carried in `5afc122780`: version-header generation uses `always_run=True`, while unchanged output retains its timestamp. Both existing `cptools/tests/test_cpbuild.py` regressions pass. The issue remains open; the earlier blanket statement that this report had no integration fix is superseded. |
+| CP #27, failed Bluetooth startup/retry | Readiness and settings-error handling are present in the candidate source; its 60 source-level checks are recorded above. Physical failure/retry and the new eight-hour candidate soak remain outstanding. |
+| CP #26, TLS client-certificate policy | The source still carries the server-specific default authentication policy in `shared-module/ssl/SSLSocket.c`; it was not removed as upstreamed. |
+| CP #9, ignored extended-scan argument | Current `Adapter.c` still explicitly discards `extended`. Keep open; the host scan deadline does not fix this separate capability issue. |
+| Zephyr #3, zero settings sectors | Current `settings_nvs.c` still declares an uninitialized `hw_flash_sector` and uses it after the return-code check without validating `sector_cnt`. The aligned board partition avoids this trigger; it is not a general fix. Keep open. |
+| ESP-IDF #19074 | GitHub still reports open and unmerged. Do not retire it as upstreamed. |
+
+The new commit changes build-time version handling and adds its regression;
+it changes no runtime C source or dependency pin. **Existing staged Pico
+binaries remain the explicitly identified `5bb1d64004` builds**, not builds of
+`d86cb7ae95`. Their saved hashes, manifests and guarded updater are unchanged.
+Do not relabel those artifacts as the newer branch head. The running Pico
+baseline still has the separate Zephyr provenance limitation described below.
+No device was flashed or reset, and no issue was closed in this audit.
+
+
 ## Build-provenance correction, 13:30 UTC
 
 The earlier Pico manifests requested Zephyr `560a6a2f4`, but the build-local checkout remained at `ea703e85b6`. Preserved ELFs confirm the current Pico soak lacks the Bluetooth wake-before-access guard, although the HAL locking changes are present. Treat it as baseline evidence. The historical hardware observations below remain valid for their binaries; their attribution to the complete bus-power candidate is superseded.
