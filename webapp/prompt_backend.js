@@ -28,6 +28,9 @@
               const adapter = await host.navigator?.gpu?.requestAdapter();
               if (adapter) device = "webgpu";
             } catch (_) {}
+            // The fully quantized q8 file is smaller than this model's q4
+            // file. Keep the separately validated q4 setting on WebGPU.
+            if (device === "wasm") dtype = "q8";
             host.TRANSFORMERS_CONFIG = {
               apiKey: "dummy",
               modelName: "onnx-community/Qwen2.5-0.5B-Instruct",
@@ -76,8 +79,9 @@ ${context}`;
   function queryText(reply) {
     const text = String(reply).trim();
     // A small model can continue with another example after its answer. Take
-    // only the first explicitly fenced SQL block; validate that whole block.
-    const fenced = /^```(?:sql)?[ \t]*\n([\s\S]*?)\n```/i.exec(text);
+    // only the first explicitly fenced SQL block, even after a preface;
+    // validate that whole block, including any additional statements.
+    const fenced = /(?:^|\n)```(?:sql)?[ \t]*\r?\n([\s\S]*?)\r?\n```/i.exec(text);
     return (fenced ? fenced[1] : text).trim();
   }
   const api = {createResolver, progress, systemPrompt, queryPrompts, queryText, POLYFILL_URL};

@@ -60,11 +60,13 @@ by Chrome; state at `chrome://on-device-internals`. See
   [Prompt API polyfill](https://github.com/GoogleChromeLabs/web-ai-demos/tree/main/prompt-api-polyfill)
   1.22.2 with Transformers.js 4.3.0 and
   [Qwen2.5-0.5B-Instruct](https://huggingface.co/onnx-community/Qwen2.5-0.5B-Instruct).
-  The q4 model download is approximately 786 MB. It uses full-precision
-  arithmetic: q4f16 produced incorrect inference on the tested AMD GPU even
-  though that adapter advertises shader-f16 support.
-  It uses WebGPU when an adapter is available, otherwise WASM in a worker
-  so the page and Stop button remain responsive.
+  WebGPU uses q4 (approximately 786 MB) with full-precision arithmetic:
+  q4f16 produced incorrect inference on the tested AMD GPU despite advertised
+  shader-f16 support. Without a GPU adapter, WASM uses the smaller q8 export
+  (approximately 512 MB) in a worker so the page and Stop remain responsive.
+  The CPU fallback completed a real query-and-summary test and an immediate
+  retry after Stop. Observed desktop renderer memory was 2.46 GB with q8
+  versus 3.72 GB with q4; these are snapshots, not peak-memory guarantees.
   This requires HTTPS or localhost, an initial download of hundreds of MB,
   and sufficient memory. It needs no API key and sends no readings to an AI
   server. Script/model hosts still receive download requests. The browser may

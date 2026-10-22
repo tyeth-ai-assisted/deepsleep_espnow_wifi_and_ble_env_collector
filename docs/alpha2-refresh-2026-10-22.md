@@ -5,6 +5,52 @@ The newest published upstream release checked on 22 October is
 was not published at that check. This integration is based on that exact tag,
 not the older 10.x release or an arbitrary main snapshot.
 
+## CPU fallback and HTTPS soak follow-up, 11:20 UTC
+
+The CPU-only browser test used the real polyfill with WebGPU disabled,
+WASM inference in a worker and a 390 by 844 touch viewport. The q4 model
+generated correct SQL but a wrong summary: it omitted the local zone and
+called bedroom's 2261 ppm the highest value despite local's 2573 ppm.
+This failure is preserved; it is not counted as a successful answer.
+
+The same model's q8 export is now selected for WASM only. WebGPU retains
+the separately validated q4 setting. The published q8 download is about
+512 MB versus q4's 786 MB. Observed renderer working-set snapshots during
+the same question were 2.46 GB (q8) and 3.72 GB (q4); these are desktop
+observations, not peak-memory measurements or proof of phone compatibility.
+
+The q8 model returned valid SQL inside a fence after a short introduction.
+The parser previously required the fence at the beginning and rejected the
+whole reply. A regression reproduced that failure. Extraction now accepts
+a prefaced SQL fence and still validates the entire extracted block;
+write statements, multiple statements and unfenced prose remain rejected.
+The service-worker cache advances to v19.
+
+After the fix, the actual CPU model completed the full query-and-answer
+flow in 42.1 seconds, reporting bedroom 2261 and local 2573. Its prose was
+verbose, but both values and zone mappings matched the displayed SQL result.
+Stop during another request followed by immediate retry completed in
+43.1 seconds with the same correct mapping. All portal regressions pass
+(11 browser integration tests, two native cancellation tests, plus the
+SQL/certificate/history/clock groups). Physical-phone memory, latency and
+answer quality remain unverified. No active DUT portal was modified for
+these browser changes; deploy them after every active soak finishes.
+
+A fourth, network-only eight-hour observer now exercises the upgraded C5's
+trusted HTTPS. It began 11:13:32.712613 UTC, due 19:13:32 UTC (20:13 BST),
+in `https-fullchain-overnight-01`. Each cycle checks the system CA chain,
+hostname and pinned leaf, then reuses one TLS socket for latest readings,
+history listing and certificate status. Every response is logged with a
+hash. There are no hidden retries or device resets; any error prevents a
+terminal pass. The first cycle passed all three routes in 1.244 seconds.
+Running remains provisional. C5 must stay undisturbed through this later
+deadline, even after the application and radio runs finish.
+
+The independent evidence reporter now validates HTTPS cycles, response
+coverage, trust settings, sequence, timestamps, count and maximum gap.
+Thirteen report tests pass, including rejection of short/sparse evidence,
+missing responses, hidden failures and disabled trust checks.
+
 ## Actual-origin WebMCP pass and fresh soaks, 10:56 UTC
 
 Chromium 155 loaded 333 rows from the actual C5 over normally verified

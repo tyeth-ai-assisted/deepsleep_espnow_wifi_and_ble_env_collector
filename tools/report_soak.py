@@ -96,7 +96,52 @@ def report(directory, required_hours=8):
         if terminal and status.get(key) != actual:
             issues.append(f"{key} count differs between status and logs")
 
-    if "cycles" in status:
+    if "normal_ca_trust" in status:
+        mode = "trusted_https"
+        rows = records("cycles.jsonl")
+        compare("cycles", len(rows))
+        failed = sum(row.get("status") != "passed" for row in rows)
+        compare("errors", failed)
+        if failed or status.get("errors"):
+            issues.append("HTTPS request failures recorded")
+        if (status.get("normal_ca_trust") is not True
+                or status.get("hostname_checking") is not True
+                or not status.get("host")
+                or not re.fullmatch(r"[0-9a-f]{64}", status.get("leaf_sha256", ""))):
+            issues.append("missing trusted HTTPS identity evidence")
+        interval = finite(status["interval_s"])
+        if interval != 120:
+            issues.append("unexpected HTTPS observation interval")
+        if not rows or (terminal and len(rows) < math.floor(duration / 120)):
+            issues.append("insufficient HTTPS observations")
+        previous = 0
+        for index, row in enumerate(rows, 1):
+            offset = finite(row["elapsed_s"])
+            if row["cycle"] != index or not previous < offset <= elapsed + 1:
+                issues.append("HTTPS sequence or elapsed time is inconsistent")
+            previous = offset
+            seconds = finite(row["seconds"])
+            if not 0 < seconds <= 65:
+                issues.append("HTTPS cycle exceeded its bound")
+            if abs(stamp(row["utc"]) - start - (offset - seconds)) > 2:
+                issues.append("HTTPS timestamp differs from elapsed evidence")
+            if row.get("status") == "passed":
+                responses = row.get("responses", [])
+                if ([r.get("path") for r in responses]
+                        != ["/api/latest", "/api/history", "/api/cert"]
+                        or row.get("tls_version") not in ("TLSv1.2", "TLSv1.3")):
+                    issues.append("incomplete HTTPS session evidence")
+                for response in responses:
+                    if (response.get("status") != 200
+                            or not 0 < finite(response.get("bytes")) <= 65536
+                            or not re.fullmatch(r"[0-9a-f]{64}", response.get("sha256", ""))):
+                        issues.append("invalid HTTPS response evidence")
+        metrics.update(cycles=len(rows), errors=failed,
+                       seconds=summary([r["seconds"] for r in rows]),
+                       max_cycle_gap_s=gap([r["elapsed_s"] for r in rows], 0, elapsed))
+        if metrics["max_cycle_gap_s"] > 185:
+            issues.append("HTTPS evidence gap exceeds recorder bound")
+    elif "cycles" in status:
         mode = "wifi_ble_scan"
         rows = records("cycles.jsonl")
         compare("cycles", len(rows))

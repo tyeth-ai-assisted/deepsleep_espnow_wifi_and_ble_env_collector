@@ -92,6 +92,63 @@ class EvidenceTest(unittest.TestCase):
         self.lines("cycles.jsonl", rows)
         self.assertIn("three consecutive empty radio scans", report(self.root)["issues"])
 
+    def https(self):
+        rows = [dict(cycle=i+1, elapsed_s=t+1, seconds=1, utc=self.at(t),
+                     status="passed", tls_version="TLSv1.2",
+                     responses=[dict(path=path, status=200, bytes=24, sha256="a"*64)
+                                for path in ("/api/latest", "/api/history", "/api/cert")])
+                for i, t in enumerate(range(0, 28800, 120))]
+        state = dict(status="passed", started_utc=self.at(0), finished_utc=self.at(28800),
+                     duration_s=28800, elapsed_s=28800, interval_s=120, cycles=len(rows),
+                     errors=0, failures=[], normal_ca_trust=True, hostname_checking=True,
+                     host="device.example", leaf_sha256="b"*64)
+        self.write("status.json", state)
+        self.lines("cycles.jsonl", rows)
+        return state, rows
+
+    def test_full_https_and_live_is_provisional(self):
+        state, _ = self.https()
+        result = report(self.root)
+        self.assertEqual(result["evidence_verdict"], "consistent")
+        self.assertEqual(result["mode"], "trusted_https")
+        state.update(status="running")
+        state.pop("finished_utc")
+        self.write("status.json", state)
+        self.assertEqual(report(self.root)["evidence_verdict"], "provisional")
+
+    def test_https_hidden_failure_or_missing_route_rejected(self):
+        for mutation in (lambda r: r.update(status="failed"),
+                         lambda r: r["responses"].pop(),
+                         lambda r: r["responses"][0].update(status=500)):
+            with self.subTest(mutation=mutation):
+                _, rows = self.https()
+                mutation(rows[10])
+                self.lines("cycles.jsonl", rows)
+                self.assertEqual(report(self.root)["evidence_verdict"], "inconsistent")
+
+    def test_https_short_sparse_or_untrusted_rejected(self):
+        for mutation in (lambda s: s.update(elapsed_s=1000, finished_utc=self.at(1000)),
+                         lambda s: s.update(normal_ca_trust=False),
+                         lambda s: s.update(hostname_checking=False)):
+            with self.subTest(mutation=mutation):
+                state, _ = self.https()
+                mutation(state)
+                self.write("status.json", state)
+                self.assertEqual(report(self.root)["evidence_verdict"], "inconsistent")
+        state, rows = self.https()
+        rows = rows[3:]
+        for index, row in enumerate(rows, 1): row["cycle"] = index
+        state["cycles"] = len(rows)
+        self.write("status.json", state)
+        self.lines("cycles.jsonl", rows)
+        self.assertIn("HTTPS evidence gap exceeds recorder bound", report(self.root)["issues"])
+
+    def test_https_false_timestamps_rejected(self):
+        _, rows = self.https()
+        rows[5]["utc"] = self.at(0)
+        self.lines("cycles.jsonl", rows)
+        self.assertIn("HTTPS timestamp differs from elapsed evidence", report(self.root)["issues"])
+
     def test_full_application_and_restart_detection(self):
         self.write("manifest.json", {"boards":[{"name":"node"}], "ble_name":"test", "sensor":"sim"})
         messages = [self.at(0) + " collector running; portal: test\n"]

@@ -1,6 +1,6 @@
 # C5 full-chain firmware and portal rollout
 
-Updated 22 October 2026, 10:50 UTC. The original C5/C61 application soak
+Updated 22 October 2026, 11:20 UTC. The original C5/C61 application soak
 passed its full eight hours. The protected firmware upgrade, portal and
 certificate deployment, and trusted HTTPS verification have completed.
 
@@ -15,8 +15,7 @@ historical pre-validation state; it is not a reason to rerun installation.
 
 Native WebMCP tools passed actual-origin data-query validation at 10:55 UTC: 333 device rows, correct grouped counts, DELETE rejection and unchanged row count. Earlier intermittent history empty responses remain unexplained; subsequent controlled TLS and clock-sync sequences passed.
 Model initialization on the controller triggered an OOM kill; do not count
-that as a successful fallback-model test. A new full-duration soak of this
-firmware started at 10:52:13 UTC and is due 18:52:13 UTC; it has not passed yet. The sections below retain the original guarded
+that as a successful fallback-model test. A new full-duration application soak started at 10:52:13 UTC and is due 18:52:13 UTC. A separate trusted-HTTPS soak started at 11:13:32 UTC and is due 19:13:32 UTC (20:13 BST). Neither has passed yet. Leave C5 untouched until both finish; newer CPU-fallback portal assets remain undeployed during these runs. The sections below retain the original guarded
 rollout procedure and preparation evidence; they are not instructions to
 repeat completed transactions.
 

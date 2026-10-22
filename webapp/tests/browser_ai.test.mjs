@@ -81,7 +81,7 @@ test("local inference chooses an available GPU and survives adapter rejection",a
   const resolver=createResolver(host,async()=>({LanguageModel:{create(){}}}));
   await resolver.resolve({allowLocal:true});
   assert.equal(host.TRANSFORMERS_CONFIG.device,expected);
-  assert.equal(host.TRANSFORMERS_CONFIG.dtype,"q4");
+  assert.equal(host.TRANSFORMERS_CONFIG.dtype,expected==="wasm"?"q8":"q4");
   assert.equal(host.TRANSFORMERS_CONFIG.env.backends.onnx.wasm.proxy,expected==="wasm");
  }
 });
@@ -92,4 +92,13 @@ test("phone model SQL fences are removed but unsafe statements still fail valida
  for(const reply of ["```sql\nDELETE FROM readings\n```", "```sql\nSELECT co2 FROM readings; DELETE FROM readings\n```", "SELECT co2 FROM readings; DELETE FROM readings", "Here is a query: SELECT co2 FROM readings"]){
   assert.throws(()=>validateSql(queryText(reply),SQL_TABLES,50));
  }
+});
+
+test("a prefaced fenced model query validates the entire SQL block",()=>{
+ const reply="To answer your question:\n\n```sql\nSELECT src, MAX(co2) FROM readings GROUP BY src;\n```\nThis groups the readings by zone.";
+ assert.match(validateSql(queryText(reply),SQL_TABLES,50),/^SELECT src, MAX\(co2\)/);
+ for(const sql of ["DELETE FROM readings", "SELECT * FROM readings; DELETE FROM readings"]){
+  assert.throws(()=>validateSql(queryText("Here is the query:\n```sql\n"+sql+"\n```"),SQL_TABLES,50));
+ }
+ assert.throws(()=>validateSql(queryText("Here is the query: SELECT * FROM readings"),SQL_TABLES,50));
 });
