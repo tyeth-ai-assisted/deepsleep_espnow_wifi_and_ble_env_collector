@@ -1548,7 +1548,7 @@ async function askWithTools(q,signal){
    if(i===TOOL_ITER)break;
    setStatus("aistatus","querying your data...",true);
    let step={reason:reply.reason,sql:reply.query};
-   try{step={reason:reply.reason,...(await sqlTool(reply.query))};}
+   try{step={reason:reply.reason,...(await sqlTool(reply.query,signal))};}
    catch(e){step.error=String(e.message||e);}
    steps.push(step);showSteps(steps);
    throwIfStopped(signal);   // a query is capped at ~2 s, but stop should land after it
