@@ -1,5 +1,19 @@
 # Upstream disposition and reproduction notes — 22 October 2026
 
+## Update at 17:56 UTC: TLS server policy reproduced and validated
+
+[CP #26](https://github.com/tyeth/circuitpython/issues/26) is freshly reproduced
+with the actual alpha.2 policy block, which still matches current upstream's
+source blob. A normal client without a certificate fails with `-0x7480`; the
+carried fix accepts it. Eight test cases cover fourteen real TLS handshakes,
+including encrypted application data on success. Explicit CA loading still
+requires a trusted client certificate, and clients still reject untrusted
+servers and wrong hostnames. All assertions pass; the baseline failure is an
+explicitly asserted control. See the [standalone reproduction](../tools/repro_tls_server_policy/README.md)
+and [source-pinned evidence](tls-server-policy-reproduction-2026-10-22.json).
+This is native shared-policy/cryptography validation, not a new physical-board
+test. Production firmware and active soaks remain unchanged.
+
 ## Update at 17:44 UTC: p256-m report freshly reproduced
 
 [Zephyr #10](https://github.com/tyeth/zephyr/issues/10) remains reproducible with
@@ -65,7 +79,7 @@ listed in the last column was executed in this refresh.
 | Tracker / candidate | Current fix or review branch | Minimal reproduction and validation boundary |
 |---|---|---|
 | [CP #28](https://github.com/tyeth/circuitpython/issues/28), empty version override | [CP #32](https://github.com/tyeth/circuitpython/pull/32), `d86cb7ae95` carried in `1ca79521f3` | In a tagged checkout, run `CP_VERSION= python3 py/makeversionhdr.py /tmp/version.h`; compare with `env -u CP_VERSION python3 py/makeversionhdr.py /tmp/version.h`. Empty must fall back to Git. Four header-generation cases pass; current upstream still tests presence rather than a nonempty value. |
-| [CP #26](https://github.com/tyeth/circuitpython/issues/26), TLS server client-certificate policy | Shared-module fix carried in [CP #32](https://github.com/tyeth/circuitpython/pull/32) | Create a server context with its own certificate/key and a CA bundle, accept a TCP connection and wrap with `server_side=True`. Connect a normal TLS client without a client certificate. The server should not demand one by default. Current shared-module source still selects `VERIFY_REQUIRED` from the CA configuration without a server-side distinction. No new isolated server-side regression was run in this audit; outbound TLS success does not prove this case. |
+| [CP #26](https://github.com/tyeth/circuitpython/issues/26), TLS server client-certificate policy | Shared-module fix carried in [CP #32](https://github.com/tyeth/circuitpython/pull/32) | Create a default server context, load only its own certificate/key, then wrap with `server_side=True` and connect without a client certificate. The inherited default root bundle must not demand client authentication. Alpha.2/current upstream fails with `-0x7480`; the carried fix passes. Explicit `load_verify_locations()` deliberately retains client verification. The [native reproduction](../tools/repro_tls_server_policy/README.md) passes eight cases / fourteen real TLS handshakes, including trusted/untrusted client controls and client-side CA/hostname rejection. It compiles unmodified source-policy extracts with real Mbed TLS, not the whole interpreter or a physical board. |
 | [CP #27](https://github.com/tyeth/circuitpython/issues/27), failed BLE startup/retry | [CP #32](https://github.com/tyeth/circuitpython/pull/32) plus [Zephyr #11](https://github.com/tyeth/zephyr/pull/11) | Inject one `-EIO` return from the first `bt_hci_open`, then retry initialization. Require a real second open; never load settings on an uninitialized host or manufacture a random identity. From the CircuitPython checkout, `python3 tools/check_zephyr_ble_startup.py --circuitpython . --zephyr ports/zephyr-cp/zephyr` passes 60 actual-source checks; old sources fail 37. Physical failed-open injection remains unrun because the SWD probe is unavailable. |
 | [Zephyr #3](https://github.com/tyeth/zephyr/issues/3), zero-sector settings geometry | [Zephyr #11](https://github.com/tyeth/zephyr/pull/11), `353bcd30f7`; CP pin in #32 | Configure a 2 KiB settings partition offset by 2 KiB on a 4 KiB erase-page flash simulator. `flash_area_get_sectors` returns zero sectors with success; initialization must return `-EINVAL` before mount. Run `west twister -T tests/subsys/settings/sector_geometry -p native_sim/native/64` in the configured Zephyr environment. NVS and both ZMS modes: six scenarios / twelve cases pass; all three malformed controls fail before the fix. Current upstream NVS and ZMS still lack the guard. |
 | [Zephyr #6](https://github.com/tyeth/zephyr/issues/6), USB thread stack headroom | 2048-byte downstream setting in [CP #32](https://github.com/tyeth/circuitpython/pull/32) | On Pico 2 W, exercise USB CDC/MSC concurrently with sustained radio activity and compare stack instrumentation at 512 versus 2048 bytes. Upstream's default remains 512. Current builds verify 2048; a new instrumented Pico 2 W comparison is still needed before proposing a universal driver default. |
