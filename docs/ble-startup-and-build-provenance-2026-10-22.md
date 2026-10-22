@@ -1,5 +1,51 @@
 # BLE startup retry and build provenance, 22 October 2026
 
+## Extended-scan guard and replacement Pico builds, 15:17 UTC
+
+[CP #9](https://github.com/tyeth/circuitpython/issues/9) now has a source fix in
+`a0c1485cf53a1f333a28cd3bb9dd307fd2470f36`: Zephyr `_bleio.start_scan(extended=True)`
+raises `NotImplementedError` before replacing an existing scan or allocating
+results. This explicitly reports the port limitation; it does not implement
+extended-advertising support. Ordinary active/passive scanning is preserved.
+The historical audit row saying the argument is still discarded is superseded.
+The issue remains open pending review and hardware validation.
+
+The actual C entry-point regression reproduces 11 failures out of 26 checks
+before the fix, then passes all 26 with the guard. The 85 build-tool tests,
+Ruff and whitespace checks pass. A BabbleSim integration case checks that an
+existing scan survives rejection and a later ordinary scan still sees a beacon.
+The focused integration case now passes on **both** `native_nrf5340bsim`
+and `native_nrf54lm20bsim` (2 passed, 8 unrelated cases deselected, 28.51 s),
+through `make test` after building both simulator boards. Each receives the
+beacon with the original scan after the rejected request, then receives it
+again with a subsequent ordinary scan. The same invocation passes all 85
+build-tool tests. This is simulated radio evidence, not Pico hardware evidence.
+
+Both Pico boards build from this exact commit with empty `CP_VERSION`, clean
+tracked inputs, Zephyr `0589940bee`, HAL Infineon `7f93dc6067` and HAL RPi Pico
+`725e9e429e`. Pico W BIN/RAM: 1,252,368/208,208 bytes. Pico 2 W BIN/RAM:
+1,208,772/275,756 bytes. Both compiled wake/transfer/unlock checks pass, with
+the older baseline rejected by the same check. Full hashes and pins are in
+[the new manifest](firmware-pico-scan-a0c-2026-10-22.json).
+
+The new `*-scan-a0c` binaries are staged and hash-verified on the Pi, not flashed.
+The separate `update_picow_scan_a0c.py` retains the immediate full backup,
+protected-region checks, readback and rollback safeguards; its nine Linux
+transaction tests pass. Its live check refuses all four active soaks before
+identity checks, SWD access, reset or flash. Prior d86 images/updaters remain
+historical artifacts rather than being relabelled.
+
+The physical failed-start test boundary was rechecked offline against the new
+Pico W BIN and ELF. No debug attachment or injected failure has been performed.
+The running Pico soak still covers the older baseline, not this candidate.
+
+Perfetto 0.58.2 is installed in the existing WSL test environment, with protobuf
+6.33.5 retained to match the port's CI pin. The missing protobuf compiler was
+supplied by grpcio-tools 1.81.1; `pip check` reports no broken requirements.
+All twelve BabbleSim project revisions match the pinned manifest and its tools
+build successfully. Initial missing-Perfetto/missing-protoc failures and the
+pre-setup simulator skips are environment results, not successful test runs.
+
 The synchronized candidate builds and source regressions pass. It is staged on Pi, not flashed. Physical failed-start recovery, a fresh full eight-hour soak and Pico 2 W runtime validation remain outstanding. CircuitPython issue #27 stays open.
 
 ## Correction to earlier Pico build attribution
