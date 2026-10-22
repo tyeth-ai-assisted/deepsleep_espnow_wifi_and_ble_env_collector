@@ -51,3 +51,47 @@ Nine offline transaction tests pass. They cover success, incomplete or unexpecte
 Staging job `7bc0bbb8-7c33-47dd-ac3b-e2253fa5ebd8` passed at 13:45:24 UTC. Both image hashes validated, and `--check` returned refusal for all four active observers before device identity, SWD, reset or flash access.
 
 The 13:37 USB inventory found the running Pico W, Feather and S31 UART on Pi, plus the two imported C5/C61 UARTs. Other S31 board ports remain off. The previously used SWD probe was absent from enumeration. Its cause is not established: read-only port-status attempts could not run because `uhubctl` and PyUSB are absent on the selected Pi environments. No hub power or reset was attempted. Revalidate topology before the eventual update; the helper refuses a missing probe. Latest confirmed Pico baseline progress at 13:36 UTC was 322 cycles/9,635.84 seconds with no recorded failure, exceeding the prior attempt's stopping point but still short of eight hours.
+
+## Current branch rebuilt and staged, 14:28 UTC
+
+Both boards now also build from CircuitPython `d86cb7ae956e953afb076cbb896a5a2934deb732`,
+including the restored empty-version fallback. The build deliberately exported
+`CP_VERSION=""`, used new `build-envhub-version-d86-*` directories, and verified
+the exact CircuitPython/Zephyr/HAL checkouts before and after compilation.
+Zephyr `0589940bee`, HAL Infineon `7f93dc6067` and HAL RPi Pico `725e9e429e`
+are unchanged. Both embedded version strings identify the clean d86 commit.
+
+| Board | BIN bytes | Linked RAM bytes | BIN SHA-256 |
+|---|---:|---:|---|
+| Pico W | 1,252,352 | 208,208 | `9b94e04baee6941bb8d064bbacb0f9489cb51cf305dda654d9308a349e7c0399` |
+| Pico 2 W | 1,208,764 | 275,756 | `f5b980f2307b3a4edca731b277c30e6b913c81c0dc84d555d7efde252b226255` |
+
+Artifact collection checks the actual compiler input paths and TLS/USB
+configuration. The disassembly check now parses call instructions in each
+function: the read path must call `bt_backplane_begin`, then the transfer,
+then unlock; the begin function must lock before its WLAN wake call and
+contain failure-path unlock. Both new ELFs pass. The preserved single-MSC
+Pico W ELF fails the same check, confirming it distinguishes the baseline
+that lacks the wake guard. This proves compiled call structure, not runtime
+concurrency or full-duration stability.
+
+Full BIN/UF2/ELF/MAP metadata is in
+`firmware-pico-version-d86-2026-10-22.json`. Pi staging job
+`f422c552-2174-490b-9b66-b94a0679a1ea` passed at 14:27:33 UTC and verified both
+BIN hashes under distinct `*-zephyr-alpha2-version-d86.bin` names. Previous
+5bb candidate artifacts and baseline evidence are preserved.
+
+The preferred Pico W updater is now `update_picow_version_d86.py`, SHA-256
+`0e7960168466008641029b2baa6ec3aa7128252f2a95df3805a30be3529bf836`.
+It retains the earlier identity, private-backup, protected-region readback,
+rollback and active-observer guards, with the new image hash and separate
+`pico-version-d86-update` evidence names. Nine transaction tests pass under
+Linux/WSL. The Windows attempt could not exercise the Linux `fcntl` paths;
+it is not counted as a pass.
+
+Updater staging job `b55da51a-394c-4a28-a095-c153d91a9a74` passed at 14:27:54
+UTC: exact old/new inputs validated, and the readiness check refused all
+four active observers before identity, SWD, reset or flash access. Neither
+new image is installed or physically validated. The missing probe, physical
+startup-failure/retry test, Pico 2 W validation and a fresh full eight-hour
+candidate soak remain outstanding.

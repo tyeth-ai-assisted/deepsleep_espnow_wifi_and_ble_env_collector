@@ -1,5 +1,14 @@
 # CircuitPython 11 refresh and farm soak â€” 22 October 2026
 
+## Updated Pico artifacts, 14:28 UTC
+
+Both Pico variants have now been rebuilt from `d86cb7ae95` with an explicitly
+empty `CP_VERSION`, verified against actual dependency checkouts and compiled
+wake-call structure, and staged under new filenames. Neither has been flashed.
+This supersedes the 14:20 artifact-availability note below; the prior builds
+and hashes remain historical evidence. See [the new build and rollout evidence](ble-startup-and-build-provenance-2026-10-22.md#current-branch-rebuilt-and-staged-1428-utc).
+
+
 ## Source-audit correction and build-version repair, 14:20 UTC
 
 The release API still lists **11.0.0-alpha.2** as the newest published release.
