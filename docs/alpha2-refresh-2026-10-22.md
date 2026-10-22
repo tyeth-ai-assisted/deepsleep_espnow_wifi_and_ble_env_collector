@@ -1,4 +1,4 @@
-# CircuitPython 11 refresh and farm soak — 22 October 2026
+# CircuitPython 11 refresh and farm soak â€” 22 October 2026
 
 The newest published upstream release checked on 22 October is
 **11.0.0-alpha.2**, released 21 October, including prereleases. An alpha.3
@@ -101,8 +101,8 @@ Zephyr Pico 2 W and Pico W builds also pass (1,230,244 and 1,273,652 bytes
 of firmware respectively), with 83 cptools tests passing. Pico W required
 two BLE connections, IPv4 only and six network contexts to fit the new
 stack in 264 KB RAM; Pico 2 W retains dual stack and the larger limits.
-These Zephyr images have not been flashed in this refresh. A custom
-firmware `BUILD` directory was leaking into the nested host mpy-cross
+The Pico W has since been flashed and tested as detailed below; Pico 2 W
+hardware validation remains outstanding. A custom firmware `BUILD` directory was leaking into the nested host mpy-cross
 build; host preparation now explicitly selects its expected output path.
 
 Application deployment caught and fixed the collector's assumption that
@@ -145,6 +145,85 @@ Use a private JSON configuration with `boards` (name, role, by-id `port`,
 The output directory must not already exist, so a new run cannot overwrite
 an earlier failed run. The Pi's test Wi-Fi profile never supplies the
 default route; SSH remains on Ethernet.
+
+## Expanded Feather and Metro builds
+
+Commit `2c096e11e7` extends the ESP integration after testing the remaining
+board configurations. This does not replace the C5/C61 firmware during
+the active soak.
+
+| Target | Firmware bytes | Application slot | Build result |
+|---|---:|---:|---|
+| Feather C6 4 MB, no PSRAM | 2,207,760 | 2,883,584 | Pass |
+| Feather S3 no PSRAM | 2,040,976 | 2,097,152 | Pass |
+| Feather S3 4 MB flash / 2 MB PSRAM | 1,996,704 | 2,883,584 | Pass |
+| Metro S3 16 MB flash / 8 MB PSRAM | 2,106,880 | 3,145,728 | Pass |
+
+The original Metro build exceeded its 2 MB slot by 9,728 bytes. It now
+uses two 3 MB slots, while keeping the existing TinyUF2 factory app at
+`0x410000`. Its filesystem moves to `0x750000`, size 8,896 KiB. The
+Feather C6 also exceeded its old 2 MB slot; it now uses the standard
+2,816 KiB application layout, filesystem at `0x2d0000`, size 1,216 KiB.
+Back up, reformat and restore files when upgrading either layout. An
+application-only UF2 update cannot install a changed partition table.
+
+All four builds explicitly allow 4,096-byte outbound TLS records for the
+collector's certificate chain; inbound records retain the upstream size.
+Artifact collection decoded and verified each built partition table,
+checked application size against every slot, confirmed the actual TLS
+configuration, and recorded SHA-256 hashes for the BIN/available UF2 files.
+These are compilation/configuration results, not hardware passes. The
+physical S31 Feather/Metro ports remain off until the C5/C61 soak ends.
+
+The directly attached Pico W was independently identified at Pi 6 USB
+`1-1.2.2`, flash ID `E663AC91D3444127`. It ran WipperSnapper rather than
+CircuitPython. Before upgrading, its full 2 MiB flash was saved with
+picotool verification as `picow-before.bin` (SHA-256
+`4b86f3fa60e115d93396cfcc15bc38f33660bfe76863017a85f4e8374ad8c9ba`),
+plus its 512 KiB WIPPER disk image. Backups remain private on Pi 6.
+The controller's supported inline jobs provide a working route while
+the desktop SSH agent cannot sign; no S31 binding or active soak console
+was changed for Pico preparation.
+
+## Pico W runtime validation
+
+The original alpha.2 integration linked but exposed only USB mass storage:
+the default WHD packet pool and thread stacks left too little runtime RAM
+to allocate USB CDC. CircuitPython commit `168149058e` and Zephyr dependency
+`62aa864927d3ae43ede3b2b557b6f410aae8899a` reduce only Pico W's shared WHD
+pool from 20 to 10 full-sized buffers and its main stack to 16 KiB. The
+six-buffer Bluetooth coexistence reserve remains; Pico 2 W keeps defaults.
+Both builds pass, at 1,273,644 and 1,230,244 bytes respectively. The Pico W
+link map now leaves 32,168 bytes below `0x20040000`, plus the remaining
+upper SRAM. This is build headroom, not a runtime free-heap measurement.
+
+The physical debug probe `E6654854576EB830` was matched to the Pico by
+comparing its first 4 KiB of flash against the installed UF2 before recovery.
+SWD flashing and verification of the revised image passed. USB CDC then
+enumerated, Python ran, BLE enabled, and a two-second BLE scan returned
+42 entries in 2.047 seconds. The firmware's cached version header still
+reported `cef2fe5f7a`; artifact hashes and build inputs identify this build.
+
+**Pico W is not yet a compatibility or soak pass.** Wi-Fi scanning returned
+`OSError(11)` / EAGAIN, including bounded follow-up scans with BLE enabled
+and disabled (about five seconds to failure). USB stalled afterwards and
+the host attempted recovery. A separate RTT diagnostic image was installed;
+its boot logs show WLAN firmware, Bluetooth firmware and USB initialization.
+The remaining radio/USB behavior needs diagnosis before an overnight test.
+The ESP observer was not interrupted by these Pico jobs.
+
+Revised Pico W UF2 SHA-256:
+`ae65271a434aa715d346cca9ce82401d05e36911ecad2176e6c9d3dfe4028863`.
+Diagnostic RTT UF2 SHA-256:
+`50c092757fa7959df9a8064ad68f048a8fb19cbf64c4c26295597c53e7678c81`.
+Full original firmware/filesystem backups remain private on Pi 6.
+
+At 03:12 UTC the ESP observer was still running after 94 minutes:
+47 confirmed deliveries and true deep-sleep wakes, 188 HTTP successes
+(one startup error), 45 BLE successes, one collector start, zero serial
+errors and no recorded test failures. The full eight-hour result is pending.
+The follow-up can use the controller API when desktop SSH signing fails;
+credentials are obtained at execution time rather than saved in its prompt.
 
 ## Portal browser validation
 
