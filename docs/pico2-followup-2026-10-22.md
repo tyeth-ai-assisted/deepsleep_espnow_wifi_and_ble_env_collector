@@ -45,3 +45,5 @@ before toggling either radio. A fresh controlled-advertiser follow-up started
 at 21:28:41 UTC and is still pending at this report's cutoff. The older
 [eight-hour Feather pass](completed-soaks-2026-10-22.md) retains its original
 firmware attribution. This report does not replace or relabel either run.
+
+Later update: the [controlled-advertiser Feather follow-up](feather-controlled-followup-2026-10-22.md) passed its complete thirty-minute run. The earlier failed attempt remains preserved.
