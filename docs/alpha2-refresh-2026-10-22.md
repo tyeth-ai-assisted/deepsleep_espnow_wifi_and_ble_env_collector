@@ -5,6 +5,49 @@ The newest published upstream release checked on 22 October is
 was not published at that check. This integration is based on that exact tag,
 not the older 10.x release or an arbitrary main snapshot.
 
+## Second Pico overnight failure, 09:25 UTC
+
+Pico W run `pico-radio-overnight-02` FAILED at 09:06:33 UTC on 22 October after 9,576.07 seconds and 318 completed cycles, on firmware `6fc7497ef4` with HAL `12f662c34e21e7c1addd3f7aad0488d35bffd8c2`. Controller job `aa40cc1a-dc2c-4141-aa86-2e395798ee50` is terminal with result `fail`. The next scan command accepted raw REPL input but produced no terminator within 35 seconds. The shared-window race fix remains supported by its deterministic regression, but it does not resolve the complete long-run hardware failure. Both failed runs remain failed.
+
+The failed state was preserved before any reset or reflash. Capture job
+`708168e9-03ff-4640-8533-1c2722393dca` briefly halted only the Pico through its
+identified SWD probe, saved RAM/registers, and resumed without reset. Private
+evidence is in Pi `pico-radio-failure-02/`; the 270,336-byte RAM image SHA-256
+is `5b00becb086a707cb603bf7e9c1670e05d23d9a4593a438ac92a374e4ba98756`.
+Do not publish RAM or flash images.
+
+The matching bus-lock ELF confirms the main thread is again waiting in
+`common_hal_wifi_scannednetworks_next()` / `k_poll(K_FOREVER)`. This time the
+channel index is 10, the result queue and completion signal are empty, the
+scan is in progress and the driver callback remains registered. Corrected
+saved-state decoder job `c7e19c75-6f99-41c5-b28b-f837808018c6` passed.
+
+The Bluetooth polling thread owns the recursive bus mutex (count 1) while
+waiting for space in the deferred log buffer. Public static formats in that
+buffer include repeated out-of-range Bluetooth ring indices and exhausted
+rereads. The separate "RX transfer already in progress" warning comes from
+USB CDC ACM, **not the SPI driver**; it does not establish a SPI failure.
+Detailed decode job `db8f9bef-ac79-4780-83a6-b97d295e292a` confirms an intact
+main stack sentinel, at most 3,536 bytes touched, 4,652 untouched stack bytes,
+42,116 libc heap bytes free, and no WHD packet-allocation failure counters.
+Two later CPU/UART samples progressed through different PCs; they do not
+establish a permanently stuck UART FIFO. The ring corruption and scan hang
+remain unresolved; no new full-duration run has started.
+
+The independent C5/C61 and Feather V2 observers remain active. At 09:11 UTC,
+C5/C61 had 223 confirmed deliveries/true wakes, 905 successful HTTP checks
+(one startup error), 213 BLE successes/no BLE errors, one collector start
+and no recorder failures. Feather V2 had 327 cycles without recorded failure.
+
+The tested final C5 portal transaction is now staged; its eight preservation
+and recovery tests and exact hashes are in the
+[rollout procedure](c5-fullchain-rollout-2026-10-22.md). Guarded controller job
+`7cf4ddd9-b209-4f30-8d03-bbc4e1759052` waits for all 28,800 application-soak
+seconds, an independently consistent pass and observer shutdown before reading
+and verifying a fresh C5 backup. It does not write firmware. C5 deployment and
+actual secure-origin browser validation remain pending; Pico diagnosis does
+not justify interrupting either healthy soak.
+
 ## C5 transaction and browser preparation at 08:45 UTC
 
 The [concrete rollout procedure](c5-fullchain-rollout-2026-10-22.md) now
