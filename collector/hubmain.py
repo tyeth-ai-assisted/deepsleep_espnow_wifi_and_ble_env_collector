@@ -589,9 +589,13 @@ try:
         i2c = board.STEMMA_I2C()
     elif hasattr(board, "I2C"):
         i2c = board.I2C()
-    else:  # bare devkit: SDA=IO19 SCL=IO20
+    elif hasattr(board, "IO20") and hasattr(board, "IO19"):
+        # Legacy bare-devkit wiring: SDA=IO19 SCL=IO20. These pins are
+        # unavailable on boards such as the C5 with external PSRAM.
         import busio
         i2c = busio.I2C(board.IO20, board.IO19)
+    else:
+        raise ValueError("No default I2C bus on this board")
     local_sensor = sensors_local.LocalSensor(i2c)
     print("SEN66:", local_sensor.product, local_sensor.serial)
 except (OSError, ValueError, RuntimeError, MemoryError) as exc:
