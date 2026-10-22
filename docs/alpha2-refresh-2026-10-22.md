@@ -567,6 +567,8 @@ USB/IP and hub-port cleanup waits for active tests; the final C5 portal-only
 release remains gated on its own complete ESP observer. Pico 2 W and the
 remaining Feather/Metro board runtime validation remain pending.
 
+Pico 2 W also builds at CircuitPython `6fc7497ef4` with HAL `12f662c34e21e7c1addd3f7aad0488d35bffd8c2`: 1,208,548 bytes firmware and 275,756 bytes linked RAM. Its replacement BIN SHA-256 is `bb7416ab8261e2a83f50db6bcfbaf8351b53d070a2dd7557c9e78f21b292f0bd`. Staging job `b0274c48-137c-42fc-ae87-120340c994dc` verified it and the unchanged Feather/Metro images, then updated `remaining-firmware-manifest.json`. The older Pico 2 W artifact remains preserved. The new image is not flashed or runtime validated.
+
 ## Portal browser validation
 
 WebMCP uses the current `document.modelContext.registerTool` API with
