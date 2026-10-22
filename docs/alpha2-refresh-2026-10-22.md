@@ -430,6 +430,48 @@ existing hourly monitor now tracks both runs; shared Wi-Fi/Bluetooth and
 hub cleanup must wait until the Pico run also finishes. Remaining Pico
 2 W, Feather and Metro hardware validation stays pending.
 
+### Remaining firmware staged on Pi
+
+The previously built Feather C6, Feather S3 (both RAM variants), Metro S3
+and Pico 2 W BIN images are staged under
+`/home/pi/envhub-bench-20261022/`, with their source revisions, lengths
+and SHA-256 values in `remaining-firmware-manifest.json`. Job
+`b63bcafd-16f8-4928-bd35-57e5f2fe5eea` independently verified all five
+destination hashes. This copied host files only: no DUT console, flash or
+USB port state was changed. Hardware identification, full private flash
+backup and board-specific flashing still precede any runtime claim.
+In particular, confirm the physical Feather's RAM/flash variant before
+selecting its image, and preserve files across the changed C6/Metro
+partition layouts described above.
+
+### Post-soak portal release staging
+
+The exact tested portal commit
+`1b79d14d94e506d92e6ac4786763f2f537450f55` is now staged on Pi 6 at
+`/home/pi/envhub-bench-20261022/portal-release-1b79d14`. Its
+`release.json` identifies only `index.html`, `sw.js`, `manifest.json`,
+`icon.svg`, `ai_tools.js`, `webmcp.js` and `prompt_backend.js`, with byte
+counts and SHA-256 hashes. The archive SHA-256 is
+`3a5755bd1714f1a26bc3b52a69f49c32b57fda8dc22067d1c6bcd19823c795df`.
+
+Staging job `604372aa-fcf5-48c7-80b3-7175c3786089` verified all assets.
+The read-only gate `/home/pi/envhub-bench-20261022/check_portal_release_ready.py`
+also requires a terminal ESP observer with a full 28,800 seconds and no
+active systemd PID. At 05:35 UTC it correctly returned deployment-not-ready
+while PID 5493 remained active. No console was opened and no DUT files
+were changed. The hourly monitor knows this release path and gate.
+Actual C5 deployment and served-asset hash verification remain pending;
+preserve its vendor assets, configuration and logged measurements.
+
+The separate first-association investigation narrowed the Python error
+to `WIFI_RADIO_ERROR_UNSPECIFIED` (1), rather than the event-result
+`WIFI_RADIO_ERROR_CONNECTION_FAIL` (205). AIROC performs WHD join
+synchronously and collapses its failures to `-EAGAIN`; current logging
+does not retain the underlying WHD result. The cause is not established.
+After the Pico soak, capture that result and compare a clean disconnect
+before reset with an abrupt restart against the same AP. Do not add an
+automatic retry or close the issue based solely on the successful retry.
+
 ## Portal browser validation
 
 WebMCP uses the current `document.modelContext.registerTool` API with
