@@ -39,3 +39,26 @@ read; no Pico 2 W firmware write had been attempted at this report's cutoff.
 Later update: [Pico 2 W migration and short-soak result](pico2-followup-2026-10-22.md) records the subsequent verified installation and qualification. The discovery and failed-console observations above retain their original cutoff.
 
 Later update: the [controlled-advertiser Feather follow-up](feather-controlled-followup-2026-10-22.md) passed its complete thirty-minute run. The earlier failed attempt remains preserved.
+
+## Feather ESP32-S3 update at 23:17 UTC
+
+The 4 MB flash / 2 MB PSRAM Feather S3 now runs the `cb5301b6fb` integration.
+Its actual banner is `CircuitPython 11.0.0-alpha.2-15-gcb5301b6fb-dirty on
+2026-10-22`; the exact candidate SHA-256 is recorded in the JSON. A verified
+4 MiB private backup preceded the application-only update. A fresh comparison
+against the device and whole-flash verification preserved the bootloader,
+partition table, NVS, OTA metadata and existing 960 KiB FAT filesystem.
+The nominal TinyUF2 slot was already entirely erased and remains unchanged;
+this board does not have a verified TinyUF2 recovery application.
+
+The normal RTS reset left the board in its ROM loader. After another whole-flash
+verification, esptool's watchdog reset resumed CircuitPython successfully.
+The exact board/revision identity passed, existing filenames remained present,
+and three overlapping Wi-Fi/BLE scan cycles found three Wi-Fi networks and
+25, 25 and 24 BLE advertisements. Free GC memory was 2,069,056 bytes in each
+cycle. This is a short runtime check, not a soak, leak verdict or TLS result.
+The original port-off state was restored and the USB/IP import detached.
+
+Fourteen offline plan/rollback checks pass. Earlier refused preflight and
+failed RTS-resume evidence remain preserved separately from the successful
+transaction and runtime check. Metro S3 qualification remains pending.
