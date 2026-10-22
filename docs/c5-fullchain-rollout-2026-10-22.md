@@ -109,3 +109,53 @@ readings, check read-only SQL behavior, and exercise the explicitly enabled
 Prompt API fallback. Save browser evidence and final HTTPS results. Neither
 the earlier desktop demo nor the headless simulator TLS result substitutes
 for this secure-origin check.
+
+
+## Prepared portal file transaction, 09:10 UTC
+
+The final installer is now staged, but has **not accessed the C5**. Staging
+job `e5bf2478-9afe-403a-bfc8-052ce2d8153b` verified both helper hashes, all
+eight pinned release files, the full three-certificate chain and staged key
+hash. Both live guards refused console access while the application observer
+was active (26,969 seconds elapsed).
+
+| Helper | SHA-256 |
+|---|---|
+| `inspect_c5_portal.py` | `271da0ed58e6e756ff138196c41a8cf194d822acd113d31b1cfa7054b72a3a25` |
+| `deploy_c5_fullchain_portal.py` | `3306a6d481a3c9c7b5b0b39ac8516b1a1733b11332287aa38c2b6eea61cff102` |
+
+After the verified firmware transaction, run the inspector with the Pi
+esptool virtual environment (allow 180 seconds). It checks exact board/MAC/
+firmware identity and reads only filesystem metadata, current working
+directory, loaded module location, storage ownership/free space, certificate
+override and served portal root. It requests a collector restart afterwards;
+`metadata_verified` does not establish successful restart or HTTPS.
+
+Review the resulting `c5-portal-inspection-*.json` before installation. The
+installer supports an MCU-writable `/www` portal and a certstore module at
+the observed root or `/lib` location. It normalizes relative module names
+against the observed working directory. It refuses an SD portal/certificate
+override, unexpected module location, insufficient free space or pre-existing
+upload partials, preserving those for inspection.
+
+Then run `deploy_c5_fullchain_portal.py --check`, followed by the helper without
+`--check` in a 1,200-second runner job. It rechecks readiness and physical
+identity under the same deployment lock, privately backs up the exact selected
+files, verifies temporary files before replacement, and verifies each installed
+file. The existing `.mpy` module, `/www/vendor`, configuration and measurements
+are preserved. It synchronizes the RTC and uses `certstore.Installer` for the
+complete certificate. No key contents or raw upload exceptions are logged.
+
+Eight offline tests pass against the actual transaction logic: successful
+preservation and backup, lost acknowledgement after rename, partial certificate
+pair, final corruption, failed rollback, pre-existing partial refusal,
+read-only/SD/module-layout refusal, and the active-soak gate. Recovery restores
+and verifies exact originals, including removing newly introduced files. A
+failed recovery reports `recovery_required` and leaves the collector stopped
+in REPL. These tests are not hardware rollout evidence.
+
+Success reports `installed_runtime_validation_pending`, with both HTTPS and
+browser verification still false. Read `c5-portal-deployment.json` and its
+private recovery directory before retrying anything. Verify collector restart,
+the loaded new module, normal trusted HTTPS with `verify_c5_https.py`, and the
+actual browser WebMCP/Prompt API flow before declaring deployment complete.
