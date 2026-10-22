@@ -5,6 +5,58 @@ The newest published upstream release checked on 22 October is
 was not published at that check. This integration is based on that exact tag,
 not the older 10.x release or an arbitrary main snapshot.
 
+## Verified staging and headless TLS check at 08:10 UTC
+
+The corrected eight-file portal package is verified on Pi storage in
+`portal-release-a53f137`; it includes the seven web assets and the corrected
+`certstore.py`. Job `7d0868c8-19c9-4892-9c15-d268518ad0ba` checked every
+size/hash and confirmed the active-soak guard refused console access.
+The 53,535-byte archive SHA-256 is
+`ec5b89772624a3a55d4f0aa9fe5e9ac2be6bdb08c3c6e9de5df2f54e4a38ef8f`.
+See the [file manifest](portal-a53f137-manifest.json). The module destination
+is a planning hint: inspect the installed `.py`/`.mpy` layout before writing.
+No replacement firmware, certificate or asset has reached a DUT yet.
+
+The staged `backup_c5_for_fullchain.py` helper has SHA-256
+`0209e0f4700c2095313df5c49d6bf66ee27494a601105759e5b6761ceabf33ea`.
+It requires all 28,800 seconds, a terminal pass, consistent independent
+evidence and an inactive observer before opening the exact C5 UART. Job
+`628b2560-8e51-40d8-93c0-5307fd00e80f` proved its live refusal. Seven offline
+guard tests also pass: running, short, failed, incomplete, still-active,
+unreadable-service and inconsistent-evidence cases cannot become ready;
+completed transient units may be collected safely. The fresh backup itself
+has **not run**. It will read and verify 8 MiB, compare partition layouts,
+save private recovery evidence, and resume the unchanged old firmware.
+Before any later flash, establish active/inactive OTA selection as well as
+FAT bounds; an unchanged partition table alone does not establish where an
+extended filesystem currently lives.
+
+The native simulator now builds at `e4553033a1` with a temporary headless
+configuration and overlay disabling SDL display/audio/input. The generated
+TLS limits remain 16 KiB input / 8 KiB output. Standard 32-bit GCC dependencies
+were installed in WSL (24 new packages, no upgrades/removals); protoc and
+Perfetto Python dependencies were isolated under `/tmp`. The existing pinned
+MP3 submodule was initialized. No SDL/Mesa packages were installed.
+
+All 85 cptools tests pass. The normal SSL pytest launch still fails because
+its fixture always supplies SDL-only options. A separate launch omitted only
+those options and executed the **unchanged** `tests/test_ssl.py` function and
+assertions. It passed verified TLS to `www.adafruit.com`, HTTP 200, JSON quote
+content and clean completion at 08:06 UTC. Evidence is in WSL
+`/tmp/envhub-headless-ssl-wjt4mg80`; executable SHA-256 is
+`7a69065130816dba59ce0bb75bf1928482b7b763cc792a36562efd8b49ad3ec8`.
+The headless generated board metadata was preserved with the evidence and
+restored afterwards. This is a headless simulator client-TLS pass, not a
+standard full-simulator suite pass, hardware TLS pass or server-chain test.
+
+The 07:56 UTC read-only snapshot (job
+`9e881bda-b6e3-420e-a852-d9300c8491ce`) still showed three running soaks:
+C5/C61 187 confirmations/true wakes, 756 HTTP successes/one startup error,
+178 BLE successes/no BLE errors, one collector start and no serial errors;
+Pico W 180 scan cycles; Feather V2 177 scan cycles. No recorder reported a
+failure. The full-duration deadlines remain 09:37:42 UTC for C5/C61 and
+14:26:57 / 14:28:07 UTC for Pico W / Feather V2. These results are provisional.
+
 ## Full-chain HTTPS correction at 07:35 UTC
 
 Final portal deployment is on hold. The previously staged `30e57d2` release
