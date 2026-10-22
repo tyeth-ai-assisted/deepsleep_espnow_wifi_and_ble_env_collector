@@ -1,5 +1,8 @@
 # Bugs, upstream issues & TODOs
 
+> Current investigation status: [22 October coverage ledger](docs/issue-investigation-coverage-2026-10-22.md).
+> This document retains historical observations and later corrections; unchecked entries do not all represent current firmware defects.
+
 **22 October 2026 refresh:** see [the alpha.2 audit and farm soak record](docs/alpha2-refresh-2026-10-22.md).
 The farm devkits identified by ROM are C5/C61; the historical C6/S3
 observations below are not automatically evidence against the new build.

@@ -1,5 +1,9 @@
 # Upstream disposition and reproduction notes — 22 October 2026
 
+## Update at 23:35 UTC: targeted investigation takes priority
+
+The [coverage ledger](issue-investigation-coverage-2026-10-22.md) now includes the original ESP/application reports as well as this index. Fresh HAL Pico startup/cache fault injection and Feather S3 BLE-toggle/failed-SD-init checks are recorded there. Earlier running-soak and hardware-availability statements below are historical; the later rollout/follow-up reports contain their terminal results. Several targeted physical checks remain outstanding.
+
 ## Update at 17:56 UTC: TLS server policy reproduced and validated
 
 [CP #26](https://github.com/tyeth/circuitpython/issues/26) is freshly reproduced
