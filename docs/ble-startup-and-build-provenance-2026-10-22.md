@@ -3,7 +3,7 @@
 ## Extended-scan guard and replacement Pico builds, 15:17 UTC
 
 [CP #9](https://github.com/tyeth/circuitpython/issues/9) now has a source fix in
-`a0c1485cf53a1f333a28cd3bb9dd307fd2470f36`: Zephyr `_bleio.start_scan(extended=True)`
+`a0c1485cf53a1f333a28cd3bb9dd307fd2470f36`: Zephyr `_bleio.Adapter.start_scan(extended=True)`
 raises `NotImplementedError` before replacing an existing scan or allocating
 results. This explicitly reports the port limitation; it does not implement
 extended-advertising support. Ordinary active/passive scanning is preserved.
