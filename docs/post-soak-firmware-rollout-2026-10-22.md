@@ -35,3 +35,5 @@ probe; one port was empty. These USB descriptors establish presence, not an
 installed-firmware version or qualification result. The Pico 2 W's subsequent
 USB/IP console attempt returned I/O errors before firmware identity could be
 read; no Pico 2 W firmware write had been attempted at this report's cutoff.
+
+Later update: [Pico 2 W migration and short-soak result](pico2-followup-2026-10-22.md) records the subsequent verified installation and qualification. The discovery and failed-console observations above retain their original cutoff.
