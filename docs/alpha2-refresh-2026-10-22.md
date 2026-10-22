@@ -26,6 +26,12 @@ Pico W BIN/RAM: 1,252,376/208,208 bytes; Pico 2 W: 1,208,780/275,756 bytes.
 Their BINs and [full manifest](firmware-pico-settings-1ca-2026-10-22.json) are
 hash-verified on the Pi, **not flashed**. Existing artifacts are unchanged.
 
+The full BLE scan simulator file also passes at the new `1ca79521f3` /
+`353bcd30f7` integration: **10/10 cases** across nRF5340 and nRF54LM20 in
+54.40 seconds, covering ordinary scans, reloads, entry properties, passive
+scans and extended-mode rejection. The same `make test` invocation passes
+all **85 build-tool tests**. Input revisions were verified before and after.
+
 The running two-hour Pico soak remains the physically validated `a0c1485cf5`
 image with Zephyr `0589940bee`; it does not include this latest settings guard.
 Its configured partition is aligned and the new regression separately covers

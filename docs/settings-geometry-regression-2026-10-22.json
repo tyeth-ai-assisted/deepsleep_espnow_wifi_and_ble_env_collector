@@ -186,5 +186,13 @@
     "before": "2b2e15fe76a03b687f9bbbda9c0a16d59e44dec15fee2d8dad2e3487ad27dbd4",
     "after": "30c09f5771917404dd035b831451a43446aebdf3e4b2f4a6469cef6fb1728958"
   },
-  "test_sha256": "cfb1f15116cf8910f5ffb2b642997513f2158793fb4b40e9ad6bb3a3876ef7ab"
+  "test_sha256": "cfb1f15116cf8910f5ffb2b642997513f2158793fb4b40e9ad6bb3a3876ef7ab",
+  "integration_validation": {
+    "circuitpython": "1ca79521f3261cf90e0e7c6dfa398d5ad9885735",
+    "zephyr": "353bcd30f76e1fa140291540dde20334e952e0e6",
+    "ble_scan_cases_passed": 10,
+    "build_tool_tests_passed": 85,
+    "ble_scan_elapsed_s": 54.4,
+    "log_sha256": "0fe680c6b951fda9a7de87a04cbe5cd5a84c24a453c510db7a863600ddd42098"
+  }
 }
