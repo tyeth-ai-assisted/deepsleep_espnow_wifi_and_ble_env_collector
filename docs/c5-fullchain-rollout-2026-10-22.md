@@ -1,8 +1,56 @@
 # C5 full-chain firmware and portal rollout
 
-Prepared 22 October 2026, 08:45 UTC. **Preparation only:** no new firmware,
-certificate or portal file has been installed on the C5. Its eight-hour
-application observer remains active until at least 09:37:42 UTC.
+Updated 22 October 2026, 10:50 UTC. The original C5/C61 application soak
+passed its full eight hours. The protected firmware upgrade, portal and
+certificate deployment, and trusted HTTPS verification have completed.
+
+Portal job `4a5527fa-de15-4790-a5b3-1fc90336b5d4` passed at 10:19 UTC,
+readback-verifying eight files and retaining ten private recovery files.
+The complete three-certificate chain is installed. Hardware inspection
+confirmed the corrected `certstore.py` is loaded. Final HTTPS verification
+`1339ccfb-342d-40e0-8a3a-a92e8805a652` passed at 10:43:50 UTC: system CA
+trust, correct hostname, all seven portal asset hashes, valid latest JSON,
+and rejection of a wrong hostname. The installer status records its
+historical pre-validation state; it is not a reason to rerun installation.
+
+Native WebMCP tools passed actual-origin data-query validation at 10:55 UTC: 333 device rows, correct grouped counts, DELETE rejection and unchanged row count. Earlier intermittent history empty responses remain unexplained; subsequent controlled TLS and clock-sync sequences passed.
+Model initialization on the controller triggered an OOM kill; do not count
+that as a successful fallback-model test. A new full-duration soak of this
+firmware started at 10:52:13 UTC and is due 18:52:13 UTC; it has not passed yet. The sections below retain the original guarded
+rollout procedure and preparation evidence; they are not instructions to
+repeat completed transactions.
+
+The first backup attempt failed before reading flash because separate
+esptool CLI processes tried to synchronize with the prior high-baud stub.
+No firmware was written. The corrected helpers re-enter ROM for every fresh
+CLI invocation; seven transaction tests pass. Recovery of the unchanged
+application and HTTP succeeded at 09:43:49 UTC.
+
+The corrected full 8 MiB backup passed in job
+`9a6c5e31-4df2-4f57-a5b8-2e3a280e44da`, private directory
+`c5-before-fullchain-20261022T094833716143Z`, SHA-256
+`c7125ad50929b2f76bcf18e41a45ee6739f757e062d46ec2181f50f55d994ecd`.
+The actual plan check passed with `ota_0` active and a 5,177,344-byte logical
+filesystem. Firmware transaction job `51f3261d-6943-4545-8db9-e5d5f94e834a`
+passed at 10:00:20 UTC. Its immediate recovery image SHA-256 is
+`0336746e3c0e4b4eeda62f1912efb9b58c240f2a815a845ab3c090a28dabd2b8`.
+All written and protected regions verified before resume. Private state is
+`c5-fullchain-upgrade-20261022T095510926124Z/`; status is
+`firmware_written_boot_validation_pending`, not HTTPS success.
+
+The first UART inspection timed out without modifying files. A subsequent
+passive capture received application output and the existing AP profile
+rejoined successfully; `/api/latest` returned HTTP 200. Console inspection
+is being retried before the portal installer. Preserve all failed evidence.
+
+Current helper hashes supersede the preparation table below:
+
+| Helper | SHA-256 |
+|---|---|
+| `backup_c5_for_fullchain.py` | `e46b730811c21d2de2ec274370654a21edd5d4d612fa8ce88477513d698d6192` |
+| `upgrade_c5_fullchain.py` | `5719035d73a53c00cf5eeae4dcc17edc511ef7b0ffc5d06efd5d6170703f88eb` |
+| `inspect_c5_portal.py` | `326382a351f3f77d86ca0c1226161b38045f2acea0bf763985efe1662f60c25c` |
+| `deploy_c5_fullchain_portal.py` | `7e0105479c99f22419bdf929162874ba9820e1445c5562a6a268fb90d611759f` |
 
 ## Firmware transaction
 

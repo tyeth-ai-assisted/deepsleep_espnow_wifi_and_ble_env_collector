@@ -5,6 +5,120 @@ The newest published upstream release checked on 22 October is
 was not published at that check. This integration is based on that exact tag,
 not the older 10.x release or an arbitrary main snapshot.
 
+## Actual-origin WebMCP pass and fresh soaks, 10:56 UTC
+
+Chromium 155 loaded 333 rows from the actual C5 over normally verified
+HTTPS. Native `envhub_dataset` reported both sources and the correct date
+range. `envhub_query` grouped 238 `bench-c61-sim` and 95 `local` rows, both
+with peak CO2 616 ppm. A DELETE attempt returned `SELECT only`; a subsequent
+count remained 333. Job `6ac73090-0da2-4d68-ba64-e36a118fccdb` passed at
+10:55:05 UTC. These are synthetic bench measurements, not environmental
+accuracy validation. The intermittent earlier empty responses remain an
+open observation: a later controlled clock-sync and repeated TLS sequence
+also passed, so neither clock sync nor connection reuse is a proven cause.
+
+A new C5/C61 application soak began at 10:52:13 UTC, due 18:52:13 UTC
+(19:52 BST), in separate `overnight-fullchain-01` evidence. C5 runs
+`cb5301b6fb`; C61 remains on `2a7f9987f3`. At 221 seconds it had two confirmed
+deliveries/true wakes, seven HTTP successes/one startup error, two BLE
+successes/no errors, one collector start and no serial failures. Running
+does not mean passed. This supersedes the older statement that no new run
+was active; it does not change the original eight-hour pass or failed runs.
+
+Pico run 03 was dispatched separately with firmware `1609ec9b0b` and the
+current verified recorder. An initial start guard rejected the older
+staged recorder before touching the device; the published recorder was
+then staged under a distinct filename. Feather run 02 is also dispatched
+on its existing `4730c980ca` firmware, with C5 left running as a BLE source.
+Both radio runs still require confirmed startup and their full eight hours.
+
+## Portal and Pico RAM validation, 10:50 UTC
+
+The C5 full-chain firmware and eight-file portal deployment are complete.
+The loaded `certstore.py` and firmware `cb5301b6fb` were checked on hardware.
+Normal system-CA and hostname verification passed twice, most recently at
+10:43:50 UTC: seven served asset hashes match release `a53f1378ef6a`, the
+three-certificate chain is accepted, the wrong hostname is rejected, and
+the latest-reading API returns valid JSON. Clock synchronization restores
+the certificate lifetime display after a soft restart. This is a real
+trusted HTTPS pass, without disabling verification.
+
+Chromium 155 registers both native WebMCP tools at the device's HTTPS
+origin through a loopback-only tunnel. A first history load held 329 rows;
+subsequent history requests return an empty response after reconnect/clock
+sync, including a separate Python keep-alive reproduction. Diagnosis is
+ongoing; this is not yet an end-to-end data-query pass. Local-model startup
+on the controller exhausted memory and the kernel killed Chrome at 10:30.
+The recovered browser leaves that fallback disabled. Prior desktop WebGPU
+inference, WASM worker checks and phone-viewport tests do not establish
+physical-phone performance or memory compatibility.
+
+Pico W's larger TLS buffers exhausted its native heap on candidate
+`9f2ff6968d`, even after successful Wi-Fi association. Candidate
+`1609ec9b0b` disables MSC double buffering on Pico W only, reclaiming 4,132
+bytes of static RAM while preserving the full 4,096-byte transfer buffer.
+The Pico 2 W setting is unchanged. Both builds pass; Pico W BIN/RAM sizes
+are 1,252,176/208,208 bytes, Pico 2 W 1,208,580/275,756 bytes. Exact hashes
+are in `firmware-pico-singlemsc-2026-10-22.json`.
+
+Pico W programming and verification passed, followed by a physical test
+of public-network association, RSA HTTPS (126 response bytes), 123 BLE
+advertisements and wrong-hostname rejection. USB reset/re-enumeration was
+then observed, beginning before the failed first storage check. It
+recovered without a requested reset. A later read-only storage check
+passed two matching 64 KiB reads at 10:43:07 UTC. These checks do not prove
+long-run USB or radio stability. The previous two failed soaks remain
+failed, and no new eight-hour run has yet passed. Pico 2 W is staged only.
+
+## Completed ESP soak and bus-power follow-up, 10:04 UTC
+
+The C5/C61 application run **passed its complete eight hours**: 28,800.6
+seconds, finished 09:37:42.407915 UTC, 236 confirmations and true deep-sleep
+wakes, 958 HTTP successes/one startup error, 225 BLE successes/zero errors,
+one collector start and no serial errors or failures. The independent report
+found consistent terminal evidence and the observer was inactive/PID zero.
+Synthetic readings remain labelled `sim`. This pass covers `2a7f9987f3`.
+
+The Feather scan run **failed**, after 382 completed cycles/11,465.06 seconds
+at 09:39:12 UTC. The final two saved scans still saw two Wi-Fi networks but
+zero BLE adverts, after 26 adverts and three networks at 09:37:42. Its
+three-empty-BLE condition coincided with the C5 entering backup mode. The
+missing radio source is a plausible test-environment explanation, not a
+proven firmware diagnosis. Preserve this run; a new full-duration run needs
+stable radio sources throughout. Read-only evidence job:
+`c9e443d7-90df-480f-8bd0-0659763f1f9e`.
+
+Pico run 02 remains failed. Two additional defects were reproduced with
+actual-source harnesses: Bluetooth accesses a sleeping WLAN bus, and a
+competing wake can interleave with a sleep transition, leaving software awake
+while hardware is asleep. Zephyr `560a6a2f4` now wakes and accesses under the
+shared recursive mutex; HAL `7f93dc6` serializes software state and hardware
+clock/KSO transitions under that same mutex. Old commits fail; the fixes
+pass 25 BT-shim and 40 vendor power-transition UBSan cases. The prior
+28-case window-lock regression remains applicable. This does not establish
+resolution of the long-run hardware failure.
+
+CircuitPython `9f2ff6968d` pins both commits. Pico W and Pico 2 W builds pass
+with TLS input/output 16/8 KiB. BIN sizes are 1,252,224 and 1,208,580 bytes;
+linked RAM is 212,340 and 275,756 bytes. Exact candidate hashes are in
+`firmware-pico-buspower-2026-10-22.json`; original full-chain artifacts remain
+unchanged. Both candidates were staged and verified on Pi in job
+`0e8958bc-6a29-42d6-8c6c-e62cf0280c60`.
+
+Pico W's immediate private 2 MiB snapshot matches the previous firmware,
+and SWD programming/verification of the candidate passed in job
+`13f708b4-50be-4fde-a42a-244656212f3f`. It boots as `9f2ff6968d` and associates
+with the public bench network. The first TLS preflight hit ECONNREFUSED at
+the expired Pi test endpoint; this is not a TLS pass. No new eight-hour
+Pico run has yet passed. Pico 2 W remains staged, not physically validated.
+
+C5's protected full-chain firmware update passed at 10:00:20 UTC, job
+`51f3261d-6943-4545-8db9-e5d5f94e834a`: immediate backup, new firmware,
+protected data regions and resume all verified. Its portal returned HTTP 200
+after Pi rejoined the AP. Runtime console inspection and final portal/certificate
+deployment are still in progress; HTTPS is not yet verified. See the rollout
+document for private backup references and transaction limits.
+
 ## Second Pico overnight failure, 09:25 UTC
 
 Pico W run `pico-radio-overnight-02` FAILED at 09:06:33 UTC on 22 October after 9,576.07 seconds and 318 completed cycles, on firmware `6fc7497ef4` with HAL `12f662c34e21e7c1addd3f7aad0488d35bffd8c2`. Controller job `aa40cc1a-dc2c-4141-aa86-2e395798ee50` is terminal with result `fail`. The next scan command accepted raw REPL input but produced no terminator within 35 seconds. The shared-window race fix remains supported by its deterministic regression, but it does not resolve the complete long-run hardware failure. Both failed runs remain failed.
