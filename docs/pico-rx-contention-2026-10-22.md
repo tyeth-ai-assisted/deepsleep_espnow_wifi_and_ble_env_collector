@@ -52,7 +52,7 @@ request. All 85 build-tool tests pass (1.20 seconds). Actual checkout pins and
 tracked cleanliness were checked before and after, with empty `CP_VERSION`.
 See the [command, pins and log digest](pico-rx-integration-tests-2026-10-22.json).
 These Nordic simulator checks cover integration behavior; they do not exercise
-the CYW43 hardware driver or replace the running Pico W soak.
+the CYW43 hardware driver or replace physical qualification.
 
 ## New candidate and physical checks
 
@@ -77,16 +77,26 @@ rejection, 226 on a later ordinary scan, Wi-Fi connection, trusted TLS with 55
 BLE advertisements, and wrong-hostname rejection. This is Pico W proof only;
 Pico 2 W is built and staged, not physically qualified.
 
-A **new two-hour soak** began at 17:26:05 UTC, due about 19:26 UTC. At 17:28 UTC
-it had four successful cycles and remained running, not passed. Two hours was
-chosen to exceed the prior failure at 71 minutes; it supersedes the earlier
-one-hour plan for the uninstalled `1ca79521f3` candidate. Its run-record SHA256
-is `a119c4a3b5d3114e5445c9d2213674bbdf9e3a801a846d31702613a74b645594`.
+The **new two-hour soak passed**: 17:26:05–19:26:05 UTC, 7,200 seconds and
+240 Wi-Fi/BLE scan cycles. A separate read-only verification at 19:27 UTC
+confirmed the stopped successful service, pinned run/preflight/firmware identity,
+matching logs and status, complete duration, and unchanged failed predecessor.
+There were no recorded failures or inconsistent evidence. Cycle times ranged
+from 5.706 to 6.622 seconds; the largest cycle gap was 30.77 seconds. Every
+cycle found Wi-Fi networks (31–80) and BLE advertisements (23–26).
+
+GC allocated bytes ranged from 2,032 to 2,208, ending 16 bytes below the first
+sample. The free-memory estimate ranged from 71,264 to 71,440 bytes. These are
+observed port estimates, not a proof that all workloads are leak-free.
+See the [independent report and evidence hashes](pico-rx-soak-pass-2026-10-22.json).
+This is a two-hour Pico W result, not an eight-hour or Pico 2 W pass. It exceeds
+the failed predecessor's 71 minutes but does not establish that stall's cause.
 
 The three original eight-hour application, Feather and trusted-HTTPS runs remain
-uninterrupted. At 17:28 UTC: 170 application deliveries/true wakes, 688 HTTP
-successes plus the earlier startup error, 162 BLE successes without BLE errors;
-686 Feather cycles; 172 HTTPS cycles without errors. None has completed yet.
+uninterrupted. At 19:27 UTC: 228 application deliveries/true wakes, 925 HTTP
+successes plus the earlier startup error, 218 BLE successes without BLE errors;
+925 Feather cycles; 232 HTTPS cycles without errors. Those runs have not yet
+completed. Their original deadlines remain approximately 19:43–19:45 UTC.
 
 The revised portal rollout gate requires those three full eight-hour passes and
 the new Pico two-hour pass, plus the preserved failed predecessor. Nineteen gate
