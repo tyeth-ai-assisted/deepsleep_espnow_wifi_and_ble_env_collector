@@ -1,6 +1,6 @@
 # Android model retention test, 2026-10-22
 
-Result: **FAIL** for retention of the local Prompt API polyfill model on the tested Android emulator. Successful inference does not establish that the weights were saved for later visits. No retention fix is included in this report.
+Result: **baseline FAIL; persistence fix PASS on the same Android emulator**. The original failure evidence below is preserved. The fix and offline restart/inference results follow it. This does not establish physical-phone compatibility or prevent storage eviction.
 
 ## Environment
 
@@ -25,4 +25,27 @@ The local-model opt-in is reset on page reload; this test explicitly re-enabled 
 
 The current service worker's activation handler deletes every cache except its own versioned `envhub-v19` cache. That also includes `transformers-cache` on a service-worker update. This is a separate code-inspection finding and is not an explanation for the initial Cache.put failure, which occurred during the first successful model initialization.
 
-Do not claim that this fallback is a reliable one-time download or works offline after first use until model persistence is repaired and the same reload/restart/offline checks pass. The staged DUT assets remain unchanged; the active hardware soaks were not interrupted for this test.
+The baseline did not support a one-time-download claim; the repaired implementation was subsequently tested as described below. The staged DUT assets remain unchanged; the active hardware soaks were not interrupted for this test.
+
+
+## Persistence fix and actual Android validation, 12:50 UTC
+
+`prompt_backend.js` now supplies a Transformers custom cache. Small configuration, tokenizer and runtime files retain their existing Cache Storage path. ONNX weights use the origin-private file system, keyed by the complete model URL, with writes bounded to 4 MiB. A replacement is published only after a complete response and successful atomic close. A partial/failed download never replaces a previously saved file. Browsers without the necessary file-storage API keep the existing browser-cache fallback.
+
+The v20 service worker removes only older `envhub-vN` app-shell caches, preserving model/runtime caches owned by their loaders. Updating the actual emulator from v19 to v20 retained the existing six Transformers cache entries. The Android test then established:
+
+- A fresh online initialization saved a **512,096,557-byte** weight file in `envhub-models-v1` and reached ready without the previous Cache.put warning. Total origin usage was 594,365,331 bytes, including 512,097,019 bytes of file storage.
+- With Playwright's browser-context network disabled, a page reload and explicit local-model opt-in reached ready. An uncached external fetch failed independently.
+- Android Wi-Fi and mobile data were then disabled, Chrome was fully force-stopped, and the same profile was reopened. `navigator.onLine` was false and an uncached external fetch failed. Saved weights again initialized successfully. The portal was served via the local ADB-forwarded origin; the model host was unreachable.
+- A complete offline question-to-SQL-to-answer flow over the 2,377 demo rows returned bedroom **2,261 ppm** and local **2,573 ppm**, with **99.6 seconds / one query** reported. Resource entries contained no model-weight URL; the only Hugging Face request was the deliberately failing connectivity probe.
+- Six storage/cache lifecycle tests cover bounded writes and a fresh cache instance, truncated downloads, failed writes and commits preserving old content, partial/empty responses, previous Cache Storage entries, revision separation, unavailable storage, and service-worker cache ownership. Existing 11 browser-AI tests, two native cancellation tests and 13 SQL test groups also pass.
+
+The tested weight filename is `5aefcc105338ab75ffba9fa2231bcde7028e56b13ca51b8caafc90fee197f626.onnx`. No model download or data clearing occurred between the successful online write and the offline checks. The first-load failure and before/after conditions remain distinct. Browser data clearing or storage eviction can still require another download, and this result is specific to the tested Android/Chrome image. The progress label can still say downloading while a saved model initializes; it is not evidence of network transfer.
+
+The implementation uses the documented [Transformers custom cache interface](https://huggingface.co/docs/transformers.js/api/env) and the file API's [publish-on-close behavior](https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileHandle/createWritable).
+
+## AICore check
+
+On the fully booted emulator, `pm list packages aicore` returned no package; Google Play services was present as a positive control. The actual image model is `sdk_gphone64_x86_64`, regardless of the Pixel 6 hardware profile. AICore/Gemini Nano has not been set up or validated here.
+
+The linked [ML Kit Prompt API setup](https://developers.google.com/ml-kit/genai/prompt/android/get-started) is a native Android integration, with model availability checked through its native SDK. Google's [supported-device list](https://developers.google.com/ml-kit/genai#prompt-api-device-support) does not list this emulator. Separately, [Chrome's web Prompt API requirements](https://developer.chrome.com/docs/ai/prompt-api#review_the_hardware_requirements) still exclude Android. Installing an AICore APK alone would therefore not establish a working web LanguageModel API. The successful tests above used the separate Qwen JavaScript polyfill, not AICore.

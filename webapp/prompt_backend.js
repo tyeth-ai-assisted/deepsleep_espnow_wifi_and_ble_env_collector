@@ -2,6 +2,77 @@
 (function (root) {
   "use strict";
   const POLYFILL_URL = "https://cdn.jsdelivr.net/npm/prompt-api-polyfill@1.22.2/dist/prompt-api-polyfill.js";
+  // Android Cache.put failed for the 512 MB weight response. Keep small
+  // runtime/config files in Cache Storage, and stream weights into OPFS.
+  // createWritable publishes the replacement only when close succeeds.
+  async function createModelCache(host = root) {
+    if (!host.navigator?.storage?.getDirectory || !host.caches || !host.crypto?.subtle) return null;
+    let directory, small;
+    try {
+      directory = await (await host.navigator.storage.getDirectory())
+        .getDirectoryHandle("envhub-models-v1", {create: true});
+      small = await host.caches.open("transformers-cache");
+    } catch (error) {
+      host.console?.warn("Local model file storage is unavailable; using browser cache.", error);
+      return null;
+    }
+    async function filename(request) {
+      const value = typeof request === "string" ? request : request.url || String(request);
+      let url;
+      try { url = new URL(value, host.location?.href); } catch (_) { return null; }
+      if (!/^https?:$/.test(url.protocol) || !/\.onnx(?:_data)?$/.test(url.pathname)) return null;
+      const digest = await host.crypto.subtle.digest("SHA-256", new TextEncoder().encode(url.href));
+      return Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, "0")).join("") + ".onnx";
+    }
+    return {
+      async match(request) {
+        const name = await filename(request);
+        if (name) {
+          try {
+            const file = await (await directory.getFileHandle(name)).getFile();
+            // A first write that was interrupted can leave an empty handle.
+            if (file.size) return new Response(file, {headers: {
+              "Content-Type": "application/octet-stream", "Content-Length": String(file.size),
+            }});
+          } catch (error) {
+            if (error.name !== "NotFoundError") host.console?.warn("Cannot read saved model.", error);
+          }
+        }
+        // Reuse weights retained by older versions or other supported browsers.
+        return small.match(request);
+      },
+      async put(request, response) {
+        const name = await filename(request);
+        if (!name) return small.put(request, response);
+        if (response.status !== 200 || !response.body) throw new Error("Cannot save a partial model response.");
+        const expected = response.headers.get("Content-Length");
+        const writer = await (await directory.getFileHandle(name, {create: true})).createWritable();
+        const reader = response.body.getReader();
+        let size = 0;
+        try {
+          for (;;) {
+            const {done, value} = await reader.read();
+            if (done) break;
+            // Transformers can hand us the entire ArrayBuffer as one chunk.
+            // Bound each browser storage write, without copying the whole model.
+            for (let offset = 0; offset < value.byteLength; offset += 4 * 1024 * 1024) {
+              const chunk = value.subarray(offset, offset + 4 * 1024 * 1024);
+              await writer.write(chunk);
+              size += chunk.byteLength;
+            }
+          }
+          if (!size || (expected !== null && size !== Number(expected))) throw new Error("Incomplete model download; not saved.");
+          await writer.close();
+        } catch (error) {
+          await writer.abort().catch(() => {});
+          await reader.cancel().catch(() => {});
+          throw error;
+        } finally {
+          reader.releaseLock();
+        }
+      },
+    };
+  }
   function createResolver(host = root, load = url => import(url)) {
     let pending = null;
     let local = false;
@@ -31,13 +102,17 @@
             // The fully quantized q8 file is smaller than this model's q4
             // file. Keep the separately validated q4 setting on WebGPU.
             if (device === "wasm") dtype = "q8";
+            const cache = await createModelCache(host);
             host.TRANSFORMERS_CONFIG = {
               apiKey: "dummy",
               modelName: "onnx-community/Qwen2.5-0.5B-Instruct",
               device,
               dtype,
               // Keep WASM inference off the UI thread so Stop remains usable.
-              env: {backends: {onnx: {wasm: {proxy: device === "wasm", numThreads: 1}}}},
+              env: {
+                ...(cache ? {useCustomCache: true, customCache: cache} : {}),
+                backends: {onnx: {wasm: {proxy: device === "wasm", numThreads: 1}}},
+              },
             };
             const module = await load(POLYFILL_URL);
             const model = module?.LanguageModel || host.LanguageModel;
@@ -84,7 +159,7 @@ ${context}`;
     const fenced = /(?:^|\n)```(?:sql)?[ \t]*\r?\n([\s\S]*?)\r?\n```/i.exec(text);
     return (fenced ? fenced[1] : text).trim();
   }
-  const api = {createResolver, progress, systemPrompt, queryPrompts, queryText, POLYFILL_URL};
+  const api = {createModelCache, createResolver, progress, systemPrompt, queryPrompts, queryText, POLYFILL_URL};
   if (typeof module !== "undefined") module.exports = api;
   else root.EnvPromptBackend = api;
 })(globalThis);
