@@ -357,6 +357,79 @@ confirmed deliveries and true deep-sleep wakes, 393 HTTP successes (one
 startup error), 93 BLE successes, one collector start, zero serial errors
 and no recorded failures. The eight-hour deadline remains 09:37 UTC.
 
+### Pico TLS RAM validation and eight-hour radio soak
+
+The published Pico W update is now CircuitPython
+`3e8c1601cf8511ad691170906a98eeca412744ed`, with the same Zephyr
+`ea703e85b630897a5df75f4156f22f72edd5a81d` pin. It keeps full TLS
+records and full network MTU while reducing WHD packet pools to 4+4,
+network packets to eight per direction and chained data buffers to 24.
+An 8 KiB main stack, initialization pattern, stack sentinel and allocator
+counters retain measurable stack/heap evidence. The six-buffer shared-radio
+reserve remains intact. Pico 2 W configuration is unchanged.
+
+The pool-only and 12 KiB-stack candidates still failed the RSA handshake
+with `MemoryError`. The 8 KiB candidate passed local RSA-2048 TLS with a
+trusted self-signed certificate, correct hostname verification and BLE
+scanning; a wrong hostname was rejected (`OSError(-9984)`). Its post-TLS
+stack sentinel was intact, with 4,652 untouched bytes and an upper bound
+of 3,536 touched bytes. The allocator peak was 53,640 bytes. This is
+controlled-endpoint evidence, not a guarantee for larger certificate
+chains. The existing test RNG setting has not been changed.
+
+The committed, clean-source build uses 1,252,124 bytes of firmware flash
+and leaves 49,800 bytes in SRAM0 before runtime allocations (plus the
+remaining SRAM region). Its BIN is 1,252,352 bytes, SHA-256
+`0bc60f402d3cd3bc8bb073980090b770cf2c886882924ba5b418426923de9fa9`;
+UF2 is 2,504,704 bytes, SHA-256
+`d7957a79df767f1391bb7505479a6c0e289ccd810fbc8d9cd16f860aafc4f475`.
+SWD programming/verification and normal USB enumeration passed in job
+`efad2eb1-1a4b-4159-a17f-5dde3dba9560`.
+
+**First association remains an open runtime issue.** Both the 8 KiB
+candidate and the clean committed image failed the first association
+after boot with `ConnectionError: Unknown failure 1`. One bounded retry
+succeeded on each. The clean-image retry, job
+`a449335a-3d1a-4323-a54a-c67b27bd09cd`, received HTTP 200 with 120 BLE
+advertisements, then a verified TLS response with 63 BLE advertisements,
+and rejected the wrong hostname. The failed first attempt is retained as
+job `61a36b12-e3d1-4a43-9799-cc8064b821dc`. No first-connect reliability
+claim or related issue closure is justified by the retry.
+
+`tools/pico_radio_soak.py` records simultaneous Wi-Fi/BLE scan cycles,
+atomic status and JSONL samples. It selects the exact USB serial and
+checks the firmware revision, never reconnects/resets automatically, and
+requires the full requested duration for a pass. It fails on bounded scan
+or serial errors and three consecutive empty-radio cycles. Four evidence
+parsing/validation tests pass. A separate 30-second recorder preflight
+completed three cycles; it was not the overnight run.
+
+The real eight-hour Pico radio soak started **2026-10-22 05:28:11 UTC**,
+due **13:28:11 UTC (14:28 BST)**, controller job
+`c39ae3ca-1470-4839-b90b-7b1c078ad31e`, on Pico serial
+`E663AC91D3444127`. Status and samples live on Pi 6 under
+`/home/pi/envhub-bench-20261022/pico-radio-overnight-01/`. The first cycle
+returned 81 Wi-Fi results and 26 BLE advertisements in 5.71 seconds.
+**Running, not passed.** This is scan coexistence testing, not sustained
+TLS, association reliability or the full ESP-NOW collector application.
+The port's `gc.mem_free()` includes a fixed growth estimate; the recorder
+labels it `gc_free_estimate` and does not claim physical RAM from it.
+
+Reproduction uses pyserial plus the adjacent `serial_deploy.py`:
+
+```sh
+python tools/pico_radio_soak.py --serial-number E663AC91D3444127 \
+  --revision 3e8c1601cf --hours 8 --interval 30 --output /new/run-directory
+```
+
+At 05:28 UTC the separate ESP observer remained active after 230 minutes:
+114 confirmed deliveries and true deep-sleep wakes, 460 HTTP successes
+(one startup error), 108 BLE successes, one collector start, zero serial
+errors and no recorded failures. Its deadline remains 09:37 UTC. The
+existing hourly monitor now tracks both runs; shared Wi-Fi/Bluetooth and
+hub cleanup must wait until the Pico run also finishes. Remaining Pico
+2 W, Feather and Metro hardware validation stays pending.
+
 ## Portal browser validation
 
 WebMCP uses the current `document.modelContext.registerTool` API with
