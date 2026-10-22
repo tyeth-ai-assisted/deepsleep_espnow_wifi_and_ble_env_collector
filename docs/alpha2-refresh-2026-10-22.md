@@ -1,5 +1,26 @@
 # CircuitPython 11 refresh and farm soak â€” 22 October 2026
 
+## Upstream issue disposition, 16:46 UTC
+
+Three fork defect trackers are now closed after confirming the fixes in current
+upstream source and verifying their commit ancestry: [Zephyr #5](https://github.com/tyeth/zephyr/issues/5)
+(USB DPRAM alignment), [Zephyr #7](https://github.com/tyeth/zephyr/issues/7)
+(the transfer-queue busy log), and [HAL Pico #7](https://github.com/tyeth/hal_rpi_pico/issues/7)
+(flash helpers executing while XIP is disabled). Their fixes are upstream commits
+`c2d5de2a0ac6`, `2f0bc11264a8` and `74cc3dfda63e`, respectively.
+
+This supersedes older blanket statements below that all these trackers remain
+open. It does not change the alpha.2 dependency pins or remove compatibility
+patches still needed on that older base. In particular, another endpoint-busy
+log remains in a different path upstream; its presence does not mean the
+transfer-queue fix is missing.
+
+The [updated disposition and minimal reproduction notes](upstream-disposition-2026-10-22.md)
+separate current upstream source, carried fork fixes, historical reports and
+executed validation. [Exact source revisions and blob IDs](upstream-escalation-source-audit-2026-10-22.json)
+are recorded. No hardware or running soak was changed during this audit.
+The concluding comment on CircuitPython #15 remains pending final results.
+
 ## Zero-sector settings fix and new Pico builds, 16:16 UTC
 
 [Zephyr issue 3](https://github.com/tyeth/zephyr/issues/3) is now addressed in
