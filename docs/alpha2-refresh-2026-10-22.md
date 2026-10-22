@@ -1,5 +1,44 @@
 # CircuitPython 11 refresh and farm soak â€” 22 October 2026
 
+## Zero-sector settings fix and new Pico builds, 16:16 UTC
+
+[Zephyr issue 3](https://github.com/tyeth/zephyr/issues/3) is now addressed in
+`353bcd30f76e1fa140291540dde20334e952e0e6`: both NVS and ZMS reject a returned
+sector count of zero with `-EINVAL` before reading the undefined descriptor
+or attempting to mount storage. The valid first-sector result returned with
+`-ENOMEM` remains accepted. The issue stays open pending review.
+
+Six native-simulator scenarios use real flash-map enumeration and settings
+backends: valid and misaligned 2 KiB partitions for NVS, ZMS automatic sector
+count and ZMS custom sector count. Before the fix, all three malformed cases
+fail while the valid controls pass. After the fix, all six scenarios / twelve
+cases pass, including settings save/load. Test-only mount wrappers prove that
+invalid geometry is rejected before mounting; valid cases call the real mount.
+An earlier unwrapped ZMS run crashed on the malformed partition. NVS initially
+returned `EINVAL` later in mounting, which motivated checking the rejection
+point rather than only its errno. Zephyr checkpatch reports zero errors/warnings.
+See [the regression results and source hashes](settings-geometry-regression-2026-10-22.json).
+
+CircuitPython `1ca79521f3261cf90e0e7c6dfa398d5ad9885735` pins this new Zephyr
+commit. Both Pico variants have fresh builds with empty `CP_VERSION`, verified
+actual dependency checkouts, clean embedded versions and compiled wake calls.
+Pico W BIN/RAM: 1,252,376/208,208 bytes; Pico 2 W: 1,208,780/275,756 bytes.
+Their BINs and [full manifest](firmware-pico-settings-1ca-2026-10-22.json) are
+hash-verified on the Pi, **not flashed**. Existing artifacts are unchanged.
+
+The running two-hour Pico soak remains the physically validated `a0c1485cf5`
+image with Zephyr `0589940bee`; it does not include this latest settings guard.
+Its configured partition is aligned and the new regression separately covers
+valid geometry. Preserve its actual image attribution and complete its run
+before further Pico firmware changes. The three original eight-hour runs also
+remain untouched. A completed soak result is still pending.
+
+The official release list rechecked at 16:16 UTC still begins with
+**11.0.0-alpha.2** (published 21 October); no alpha.3 is listed. The parameterized
+release-list query returned an empty array, so the unparameterized list and
+the direct alpha.2 release endpoint were checked instead.
+
+
 ## Pico W installed and shorter soak started, 15:54 UTC
 
 Following explicit authorization to repurpose the Pico and use a shorter soak,
