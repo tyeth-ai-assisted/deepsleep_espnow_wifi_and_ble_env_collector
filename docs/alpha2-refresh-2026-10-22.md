@@ -1,5 +1,12 @@
 # CircuitPython 11 refresh and farm soak â€” 22 October 2026
 
+## Build-provenance correction, 13:30 UTC
+
+The earlier Pico manifests requested Zephyr `560a6a2f4`, but the build-local checkout remained at `ea703e85b6`. Preserved ELFs confirm the current Pico soak lacks the Bluetooth wake-before-access guard, although the HAL locking changes are present. Treat it as baseline evidence. The historical hardware observations below remain valid for their binaries; their attribution to the complete bus-power candidate is superseded.
+
+The synchronized candidate is now CircuitPython `5bb1d64004` / Zephyr `0589940bee`. Both Pico variants build, actual checkout pins and compiled wake calls are verified, and 60 startup-retry checks pass. It is staged, not flashed. See [the full correction and new validation evidence](ble-startup-and-build-provenance-2026-10-22.md). The older artifact JSON files now record actual and requested revisions separately.
+
+
 The newest published upstream release checked on 22 October is
 **11.0.0-alpha.2**, released 21 October, including prereleases. An alpha.3
 was not published at that check. This integration is based on that exact tag,
