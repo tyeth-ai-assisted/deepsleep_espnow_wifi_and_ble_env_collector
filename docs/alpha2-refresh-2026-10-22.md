@@ -1,5 +1,15 @@
 # CircuitPython 11 refresh and farm soak â€” 22 October 2026
 
+## Completed soaks, 19:45 UTC
+
+The three original eight-hour runs and the replacement Pico W two-hour run
+have now passed independent terminal verification. This supersedes the running
+statuses in the historical entries below. The failed Pico predecessor remains
+failed and preserved; its physical root cause is not claimed proven.
+See [durations, exact firmware attribution, counts, limits and evidence hashes](completed-soaks-2026-10-22.md).
+New portal and C61 deployments require separate validation.
+
+
 ## Update at 17:28 UTC: Pico failure and replacement candidate
 
 The a0c two-hour Pico run failed after 140 cycles/4,236.05 seconds. A separately

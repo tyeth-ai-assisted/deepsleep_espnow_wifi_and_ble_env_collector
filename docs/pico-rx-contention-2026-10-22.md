@@ -92,14 +92,14 @@ See the [independent report and evidence hashes](pico-rx-soak-pass-2026-10-22.js
 This is a two-hour Pico W result, not an eight-hour or Pico 2 W pass. It exceeds
 the failed predecessor's 71 minutes but does not establish that stall's cause.
 
-The three original eight-hour application, Feather and trusted-HTTPS runs remain
-uninterrupted. At 19:27 UTC: 228 application deliveries/true wakes, 925 HTTP
-successes plus the earlier startup error, 218 BLE successes without BLE errors;
-925 Feather cycles; 232 HTTPS cycles without errors. Those runs have not yet
-completed. Their original deadlines remain approximately 19:43–19:45 UTC.
+The three original eight-hour application, Feather and trusted-HTTPS runs also
+passed independent terminal verification at 19:45 UTC: 236 deliveries/true
+wakes, 960 Feather scan cycles and 240 HTTPS cycles. Their exact firmware
+attribution and the single application startup HTTP error are documented in
+[the completed soak report](completed-soaks-2026-10-22.md).
 
-The revised portal rollout gate requires those three full eight-hour passes and
-the new Pico two-hour pass, plus the preserved failed predecessor. Nineteen gate
-tests pass; the live check refused all four active runs before device access.
-Portal revision `83526b0` remains staged, not installed. Physical failure/retry
-injection, remaining board/USB/AP coverage and final upstream index remain open.
+The revised portal rollout gate passed all three full eight-hour runs and the
+new Pico two-hour run, including verification that the failed predecessor is
+preserved. Subsequent portal/C61 updates require separate runtime checks.
+Physical failure/retry injection, remaining board/USB/AP coverage and the final
+upstream index remain separate work.
