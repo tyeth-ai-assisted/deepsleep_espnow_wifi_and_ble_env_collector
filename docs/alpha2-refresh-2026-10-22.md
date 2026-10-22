@@ -244,8 +244,8 @@ The same image accepts a scan before CircuitPython startup. With automatic
 BLE workflow startup suppressed only for diagnosis, it accepts the later
 scan too. With BLE startup restored, the later scan fails again. Request
 acceptance is not a completed scan, association, TLS or soak pass. Disabling
-BLE is not proposed as a compatibility fix. USB enumeration remains an
-independent unresolved problem, including in the no-BLE-startup control.
+BLE is not proposed as a compatibility fix. USB enumeration also remains an
+unresolved problem, including in the no-BLE-startup control.
 
 Two controlled candidates did not fix the failure: notifying WHD whenever
 the shared IRQ pin is asserted on re-enable, and locking complete backplane
@@ -266,6 +266,59 @@ At 03:52 UTC, the ESP observer process was verified active after 134 minutes:
 66 confirmed deliveries and true deep-sleep wakes, 268 HTTP successes
 (one startup error), 63 BLE successes, one collector start, zero serial
 errors and no recorded failures. The eight-hour result remains pending.
+
+### Validated CYW43 coexistence repair
+
+The Pico SDK selects a different WLAN image when Bluetooth is enabled.
+Using its `wb43439A0_7_95_49_00_combined.h` WLAN/CLM pair fixes the
+post-Bluetooth Wi-Fi control timeout on Pico W. The generic Murata image
+reported WLAN 7.95.88; the SDK combo image reports 7.95.61. The fix follows
+the SDK's coexistence selection rather than choosing the higher version.
+NVRAM is unchanged. Prior failed IRQ and transaction-lock candidates remain
+reverted.
+
+Zephyr commit `ea703e85b630897a5df75f4156f22f72edd5a81d` extracts the pair
+from the already pinned hal_rpi_pico header during configuration, validates
+the length metadata and retains explicit custom-resource overrides.
+Eight extractor tests pass. The durable selector produces an image
+byte-identical to the successful diagnostic build. Its preceding commit
+`8d632a8238990c624a3e407f93bdf8694b775977` also fixes HCI TX length counting:
+the H:4 type byte was counted twice, advertising an extra byte and allowing
+an out-of-bounds read at maximum length. A sanitizer harness using the real
+send function fails on the original and passes the corrected framing,
+boundary, error and ownership cases.
+
+Hardware job `0147637e-9a23-45cd-a786-018de6df887c` completed three Wi-Fi
+scans while BLE scanning was active. They returned 3, 7 and 8 AP results;
+BLE received eight advertisements. All scan request/completion statuses
+and BLE start/stop returned zero. This is C-level radio validation through
+RTT; it does not establish Python API, association, TLS or long-soak results.
+Diagnostic UF2 SHA-256:
+`fb9ec7660f5a86f6ff21f82ed1df4f0b95f6c709edb76545642a29122d35e51a`.
+
+CircuitPython commit `a24d38f09fd11e0a20c599a8eeaead2b7e3ba9fa` pins the
+fixed Zephyr revision. Normal builds with clean tracked source pass for
+Pico W (1,251,876 bytes, 32,168 bytes SRAM0 headroom) and Pico 2 W
+(1,208,484 bytes). Both report `11.0.0-alpha.2-20-ga24d38f09f`.
+The Pico W incremental build initially stopped at a generated-file cache
+check; rerunning without source changes completed successfully.
+Normal UF2 hashes are Pico W
+`dd0f032b54ac6e8e5beeb6f9f9a3a6188ba8aca0fa591928a17783440264e132`
+and Pico 2 W
+`e7a732980af901dd74fa996ded84561c2d1ad37cc6b90d415f3f36e31df1708c`.
+The normal Pico W image passed SWD flash verification, but the host still
+times out reading USB descriptors and no CDC console appears. Its CPU
+remains active. Python API checks and extended Pico testing are therefore
+still blocked by USB; the successful C-level radio scans do not resolve
+this separate validation gap. Pico 2 W hardware testing remains pending.
+
+The three firmware draft PRs now target comparison branches pinned exactly
+to the CircuitPython alpha.2 tag and its upstream Zephyr revision, so their
+diffs contain the carried integration changes rather than upstream history.
+At 04:40 UTC the ESP observer was active after 182 minutes: 90 confirmed
+deliveries and true deep-sleep wakes, 364 HTTP successes (one startup
+error), 86 BLE successes, one collector start, zero serial errors and no
+recorded failures. Its eight-hour result remains pending.
 
 ## Portal browser validation
 
