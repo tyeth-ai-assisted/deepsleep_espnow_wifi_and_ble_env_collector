@@ -1,5 +1,16 @@
 # Upstream disposition and reproduction notes — 22 October 2026
 
+## Update at 17:44 UTC: p256-m report freshly reproduced
+
+[Zephyr #10](https://github.com/tyeth/zephyr/issues/10) remains reproducible with
+real PSA ECDH in the native simulator. p256-m gives TLS a one-byte premaster
+buffer and returns -138; the built-in provider gives 32 bytes and succeeds.
+Both providers pass an explicit 32-byte control. The relevant TLS and ECP header
+blobs match current upstream. Keep the existing workaround; see the
+[minimal reproduction](../tools/repro_p256_premaster/README.md) and
+[exact evidence](p256-premaster-reproduction-2026-10-22.json). No firmware pin,
+running device or soak changed for this test.
+
 ## Update at 17:28 UTC: Pico failure and replacement candidate
 
 The a0c two-hour Pico run failed after 140 cycles/4,236.05 seconds. A separately
@@ -60,7 +71,7 @@ listed in the last column was executed in this refresh.
 | [Zephyr #6](https://github.com/tyeth/zephyr/issues/6), USB thread stack headroom | 2048-byte downstream setting in [CP #32](https://github.com/tyeth/circuitpython/pull/32) | On Pico 2 W, exercise USB CDC/MSC concurrently with sustained radio activity and compare stack instrumentation at 512 versus 2048 bytes. Upstream's default remains 512. Current builds verify 2048; a new instrumented Pico 2 W comparison is still needed before proposing a universal driver default. |
 | [Zephyr #8](https://github.com/tyeth/zephyr/issues/8), AIROC softAP channel/events | Rebased in [Zephyr #11](https://github.com/tyeth/zephyr/pull/11) | Enable a CYW43439 softAP on channel 1 through the non-supplicant management path; check the channel passed to `whd_wifi_init_ap`, then associate/deauthenticate a station. Current upstream still constructs a chanspec for that call. The fork passes a bare channel and handles AP events; no fresh alpha.2 Pico 2 W AP/DHCP run is claimed. |
 | [Zephyr #9](https://github.com/tyeth/zephyr/issues/9), legacy scan timeout | CircuitPython host deadline in [CP #20](https://github.com/tyeth/circuitpython/pull/20), carried in #32 | With `CONFIG_BT_EXT_ADV=n`, privacy disabled and an advertiser nearby, start a passive Zephyr scan with `.timeout=300` (3 seconds, 10 ms units). Check for reports beyond the deadline. Current upstream legacy start still does not use the timeout; the downstream deadline is a workaround, not a Zephyr fix. |
-| [Zephyr #10](https://github.com/tyeth/zephyr/issues/10), p256-m premaster sizing | Configuration workaround from [CP #21](https://github.com/tyeth/circuitpython/pull/21), carried in #32 | Build TLS 1.2 ECDHE/P-256 with p256-m enabled and the ECP module absent; inspect premaster size and perform a handshake. Compare with p256-m disabled. The old report records a one-byte buffer and `PSA_ERROR_BUFFER_TOO_SMALL`; a fresh upstream configuration reproduction remains necessary. Current outbound TLS tests use the workaround. |
+| [Zephyr #10](https://github.com/tyeth/zephyr/issues/10), p256-m premaster sizing | Configuration workaround from [CP #21](https://github.com/tyeth/circuitpython/pull/21), carried in #32 | Build TLS 1.2 ECDHE/P-256 with p256-m enabled and the ECP module absent; inspect premaster size and perform a handshake. Compare with p256-m disabled. Fresh native reproduction now confirms the one-byte buffer and real `PSA_ERROR_BUFFER_TOO_SMALL` (-138): p256-m fails the TLS-sized output while its explicit 32-byte control succeeds; disabling p256-m passes both cases. Relevant tested headers match current upstream blobs. Run the [standalone reproduction](../tools/repro_p256_premaster/README.md); three of four cases pass and the affected case intentionally fails. This is component evidence, not a new network handshake. Current outbound TLS tests retain the workaround. |
 | [HAL Pico #3](https://github.com/tyeth/hal_rpi_pico/issues/3), cached HOST_CTRL check | Report only | Instrument the backplane-read hook while calling `cybt_reg_read(HOST_CTRL_REG_ADDR, ...)`; current upstream returns `host_ctrl_cache_reg` without reading hardware. Simulate a lost hardware write to demonstrate divergence. No production cache-policy change or new hardware fault injection is claimed. |
 | [HAL Pico #6](https://github.com/tyeth/hal_rpi_pico/issues/6), startup assertions pre-empt errno | [HAL Pico #5](https://github.com/tyeth/hal_rpi_pico/pull/5), carried at `725e9e429e` | Force ready/init-buffer/awake to fail one at a time during `cyw43_btbus_init`; require an error return with the host still alive. Current upstream still asserts success before those existing returns. The real failed-start hardware path remains unverified here. |
 | [HAL Infineon #2](https://github.com/tyeth/hal_infineon/issues/2), coexistence asset | [HAL Infineon #1](https://github.com/tyeth/hal_infineon/pull/1), extended by [#3](https://github.com/tyeth/hal_infineon/pull/3) | Inspect the selected CYW43439 Murata 1YN NVRAM and loaded WLAN/CLM assets, then run concurrent Wi-Fi/BLE traffic. Upstream's text asset still contains `btc_mode=0`. Current integration selects its documented matching coexistence resources; the shortened hardware soak is not yet complete. |
