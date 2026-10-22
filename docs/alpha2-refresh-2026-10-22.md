@@ -525,6 +525,48 @@ Staging job `e4a01886-c56e-4083-b1fb-c4042b8e2adb` verified the Pi copy.
 Flash job `5609ec7b-f3ca-4890-b024-1ed61301ce86` was submitted after preserving
 Pico diagnostics; runtime validation is still pending.
 
+### Atomic backplane fix and new independent eight-hour runs
+
+Pico firmware `6fc7497ef4` now pins HAL `12f662c34e21e7c1addd3f7aad0488d35bffd8c2` (https://github.com/tyeth/hal_infineon/pull/3). The old mutex protected individual SPI transfers but left backplane window selection and access exposed to a competing Bluetooth thread. The actual-source regression reproduces a wrong-window access on the old code; 28 corrected success/error/cleanup/recursive-lock cases pass under UBSan. This is a demonstrated race fix, not yet proof that the overnight failure is resolved. The clean build and SWD write verification pass. Same-session first association to the public bench network, verified RSA TLS with 79 BLE advertisements and wrong-host rejection pass. A NEW eight-hour scan soak started 06:26:57 UTC, due 14:26:57 UTC (15:26:57 BST), job `aa40cc1a-dc2c-4141-aa86-2e395798ee50`, separate evidence `pico-radio-overnight-02`. Three initial cycles passed; running is not passed. The failed first run remains intact.
+
+The failed run's saved log buffer contains repeated CYW43 out-of-range
+Bluetooth ring indices, including exhaustion of all eight rereads. The
+concurrent USB CDC warning is `RX transfer already in progress`; its
+presence does not establish it caused the radio failure. Extracted static
+log strings are recorded in job `0e984d78-9cc7-4254-af54-83c9f5609010`.
+No private dynamic RAM values were published.
+
+The corrected Pico BIN is 1,252,188 bytes, SHA-256
+`20ed2907a0ae42b4adb86e4fc2c1ce1e313478061e712f251278e4b1c3b90e8a`;
+UF2 SHA-256
+`187046a87efed286a788a4752626790285930793662c2c72f0ea406943f2a915`.
+Original firmware artifacts and failed-run RAM remain preserved. Flash
+job `4610fd80-3d2c-4694-9828-ee8de1983994` verified the new write and normal
+USB enumeration; TLS preflight job `3ab93b72-5c3c-4a43-8035-6093db4c409b`
+passed. This successful first association used a different public bench
+network from earlier failed attempts, so it does not close that issue.
+
+Feather ESP32 V2 write verification passed in job `5609ec7b-f3ca-4890-b024-1ed61301ce86`. Runtime identity matches `4730c980ca`; HTTP with 61 BLE advertisements and verified RSA TLS with 56 BLE advertisements passed, with wrong-host rejection (`MBEDTLS_ERR_X509_CERT_VERIFY_FAILED`). The successful TLS job is `de6a83c5-73d7-49f5-b028-d02f1ca7df3b`. Earlier TLS attempts failed because the bounded test server expired and a later REPL session had no Wi-Fi association; those failed jobs remain recorded. The successful test uses documented public bench Wi-Fi and associates within the TLS session. An independent eight-hour scan soak started 06:28:07 UTC, due 14:28:07 UTC (15:28:07 BST), Pi service `envhub-feather-radio`, evidence `feather-radio-overnight-01`. Its first cycle received three Wi-Fi results and 25 BLE advertisements. Running is not passed; this is scan coexistence, not sustained TLS or the full collector application.
+
+The reusable recorder now accepts an explicit USB vendor ID and `--uart`,
+keeping UART DTR/RTS deasserted. Selection requires exactly one matching
+serial/vendor pair and refuses missing or ambiguous matches. Six recorder
+tests pass. The separate Pi Feather copy has SHA-256
+`d2b9e56c34ada9e621df6d28bde1ee8131283372693cf9f59d574a143fda0477`;
+the already-running Pico recorder was not overwritten. Feather service
+launch job: `10bc9da2-5e5f-463b-9bab-370f024364c5`.
+
+Read-only status job `17401d4b-6f92-4cd7-b54e-380d6703b827` confirmed all
+three active runs at 06:28 UTC. The ESP application run had 143 confirmed
+deliveries/true wakes, 579 HTTP successes (one startup error), 136 BLE
+successes, one collector start, no serial errors and no recorded failures.
+The corrected Pico had three completed cycles and no failures; Feather
+had its first successful cycle. Full duration is still required for each.
+The hourly monitor tracks their separate deadlines. Shared Wi-Fi/Bluetooth,
+USB/IP and hub-port cleanup waits for active tests; the final C5 portal-only
+release remains gated on its own complete ESP observer. Pico 2 W and the
+remaining Feather/Metro board runtime validation remain pending.
+
 ## Portal browser validation
 
 WebMCP uses the current `document.modelContext.registerTool` API with
