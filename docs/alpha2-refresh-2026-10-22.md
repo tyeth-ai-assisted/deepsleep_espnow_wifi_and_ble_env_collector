@@ -5,6 +5,25 @@ The newest published upstream release checked on 22 October is
 was not published at that check. This integration is based on that exact tag,
 not the older 10.x release or an arbitrary main snapshot.
 
+## Current state at 06:40 UTC
+
+| Work | Verified state | Still required |
+|---|---|---|
+| C5 collector / C61 node | Alpha.2 flash and application preflight pass; full eight-hour run active | Terminal soak evidence after 09:37:42 UTC / 10:37:42 BST |
+| Pico W | `6fc7497ef4` with atomic backplane fix; flash, first public-bench association and TLS/BLE preflight pass | New eight-hour scan run ends 14:26:57 UTC / 15:26:57 BST; failed run 01 remains failed |
+| Feather ESP32 V2 | `4730c980ca`; flash and HTTP/TLS/BLE preflight pass | Eight-hour scan run ends 14:28:07 UTC / 15:28:07 BST |
+| Pico 2 W | Corrected `6fc7497ef4` image built and hash-verified on Pi storage | Backup, flash and runtime/application validation |
+| Feather C6, Feather S3 variants, Metro S3 | Alpha.2 images built; effective partitions/TLS checked; staged hashes verified | Physical identity, backups, required filesystem migration and runtime/application validation |
+| Chrome WebMCP | Actual Chrome tool discovery/query/rejection tests pass | Final staged portal deployment to C5 and served-byte verification after its soak |
+| Separate mobile Prompt API polyfill | Opt-in native/fallback integration; actual desktop WebGPU/WASM inference and phone-size layout checked | Final C5 asset deployment; physical-phone performance is unverified |
+
+No active run is an overnight pass. The Pico/Feather radio runs cover scan
+coexistence; they do not replace the ESP collector/node application soak.
+Shared USB/IP, hub-port, Wi-Fi and Bluetooth cleanup waits for all active
+tests and portal verification. Subsequent sections preserve earlier build
+and failed-run evidence; this table and the latest dated run records
+supersede their historical pending/running statements.
+
 ## Hardware and recovery
 
 Pi 6 (`rpi-hil006`) hosts the ESP32-S31 bridge on its USB hub. The S31
@@ -44,8 +63,8 @@ not proof of a CircuitPython crash. Pi 6 also needed one reboot to recover
 its stuck physical USB inventory.
 
 Ports temporarily off for this run: `1-1.1`, `1-1.2`, `1-1.3.1`,
-`1-1.3.2`, `1-1.3.4.2`, `1-1.3.4.4`. Restore them after collecting the
-soak result. UARTs at `1-1.3.4.1` and `1-1.3.4.3` remain on. Opening
+`1-1.3.2`, `1-1.3.4.2`, `1-1.3.4.4`. Restore them only after all active tests and portal verification permit
+shared-hub changes. UARTs at `1-1.3.4.1` and `1-1.3.4.3` remain on. Opening
 these UART bridges can reset a board even with DTR/RTS deasserted; do not
 open another serial client during a soak.
 
@@ -72,15 +91,22 @@ issue alone does not establish that a patch is missing upstream.
 | [CP #29](https://github.com/tyeth/circuitpython/issues/29), Windows BLE cache | Host GATT-cache diagnosis; not evidence of a new upstream CircuitPython fix. |
 | [ESP-IDF #19074](https://github.com/espressif/esp-idf/pull/19074) | Still open at audit; do not describe as merged. |
 
-Zephyr CircuitPython work was separately rebased onto alpha.2, retaining
-Pico W/Pico 2 W BLE, USB stack headroom, scan timeout, AP DHCP, socket/TLS,
-and RTT work. The Zephyr dependency's four patches were rebased onto
-alpha.2's `3ab36efea64edda80e45ece016753e3686bb763f` pin, yielding
-`4b1c753a769b507077c7fd69732d15d7c326d0fe`. HAL upstream bases did not
-move, so their fixes remain pinned at:
+Zephyr CircuitPython integration `6fc7497ef4` pins Zephyr
+`ea703e85b630897a5df75f4156f22f72edd5a81d`, based on alpha.2's upstream
+`3ab36efea64edda80e45ece016753e3686bb763f`. It retains Pico W/Pico 2 W BLE,
+USB stack headroom, association-related scan waits, AP DHCP, socket/TLS
+and RTT work, plus the HCI framing and WLAN/CLM coexistence corrections
+described below. The asynchronous Python scan iterator still waits for
+driver completion; the old association timeout did not bound the failed
+overnight scan.
+
+Current HAL pins are:
 
 * `hal_rpi_pico`: `725e9e429eab65eda01762a1af9016426dee00ac`
-* `hal_infineon`: `daae5ca73811dbee8ad01fb1aaeafa98896ef94b`
+* `hal_infineon`: `12f662c34e21e7c1addd3f7aad0488d35bffd8c2`, adding atomic
+  backplane window/access locking to the prior coexistence pin
+  `daae5ca73811dbee8ad01fb1aaeafa98896ef94b`; see
+  [HAL follow-up #3](https://github.com/tyeth/hal_infineon/pull/3).
 
 Review drafts: [ESP integration #31](https://github.com/tyeth/circuitpython/pull/31),
 [Zephyr CircuitPython #32](https://github.com/tyeth/circuitpython/pull/32),
@@ -97,8 +123,9 @@ ESP builds succeeded for C5, C61, C6 devkit and S3 devkit. C5/C61 UART
 variants also built and booted. C61's 2 MB app slot has only about 30 KB
 headroom; adding more frozen libraries requires another size check.
 
-Zephyr Pico 2 W and Pico W builds also pass (1,230,244 and 1,273,652 bytes
-of firmware respectively), with 83 cptools tests passing. Pico W required
+Current Zephyr Pico 2 W and Pico W builds at `6fc7497ef4` pass
+(1,208,548 and 1,252,188 firmware bytes respectively). The cptools suite
+passed 85 tests, and the HAL transaction harness passes 28 cases. Pico W required
 two BLE connections, IPv4 only and six network contexts to fit the new
 stack in 264 KB RAM; Pico 2 W retains dual stack and the larger limits.
 The Pico W has since been flashed and tested as detailed below; Pico 2 W
@@ -523,7 +550,7 @@ verified artifact source. The combined BIN is 2,175,440 bytes, SHA-256
 Bootloader, partition table and app offsets were checked against the build.
 Staging job `e4a01886-c56e-4083-b1fb-c4042b8e2adb` verified the Pi copy.
 Flash job `5609ec7b-f3ca-4890-b024-1ed61301ce86` was submitted after preserving
-Pico diagnostics; runtime validation is still pending.
+Pico diagnostics; runtime preflight later passed, as recorded in the next section.
 
 ### Atomic backplane fix and new independent eight-hour runs
 
@@ -594,7 +621,7 @@ brief generated wrong queries or extra examples; those failures informed
 the shorter SQL brief, two examples, first-fence extraction and separate
 summary session. Read-only validation is enforced regardless of model output.
 
-Ten browser integration unit tests, 13 SQL test groups, 20 certificate
+Twelve browser integration tests, 13 SQL test groups, 20 certificate
 test groups and inline/helper syntax checks pass. The controls fit a
 390-pixel viewport. This is desktop browser validation, not a physical
 phone performance claim. Browser cache writes were sometimes refused;
@@ -604,3 +631,58 @@ still be wrong, and executed SQL/results remain visible for inspection.
 The C5 copy was deployed before these final browser fixes. Update only its
 `/www` assets after the eight-hour observer finishes, then verify the
 served files. Do not interrupt the soak to update the portal.
+
+### Prepared portal-only deployment
+
+The Pi now has `deploy_portal_release_30e57d2.py`, SHA-256
+`61a58fe3a4d4de2f06b1bb694e43f3f065d9e9b796a1441241ae8cf3be7bcf4d`.
+It invokes the existing full-duration readiness gate before any console
+access. A nonblocking host lock prevents concurrent deployments. After
+the gate passes, it selects only the C5 UART serial, verifies the known
+chip MAC, backs up the seven existing `/www` assets, writes only the
+manifest-listed replacements using the UART-safe helper, reads each back
+for hash verification, resumes the collector, then checks every HTTP-served
+asset hash and `/api/latest`. Configuration, logged measurements and
+`/www/vendor` are outside its write set. Backups and atomic deployment
+status are saved under the existing private Pi evidence root.
+
+Staging/check job `97fd1e6c-f21d-4f89-a11f-bf77b91fdb24` verified the helper
+hash and confirmed exit 2 while the observer was active at 06:42 UTC,
+18,288 seconds into the run. No console was opened and no portal asset
+was deployed. The eventual rollout still needs actual terminal-soak,
+device-file and served-byte evidence; a prepared helper is not deployment.
+
+### Independent evidence snapshot at 06:56 UTC
+
+The read-only `tools/report_soak.py` recomputes log counts, delivery/HTTP/BLE
+coverage, reset/fatal evidence and memory summaries without opening hardware.
+It hashes the input snapshots, rejects short or failed terminal runs, and
+labels every active run provisional. A terminal consistency result still
+requires separate confirmation that the observer process has stopped. Nine
+regression tests cover premature passes, count drift, corrupt terminal logs,
+partial live appends, failed-run preservation, missing scan spans, empty
+radio scans and collector restarts. Memory summaries are observations, not
+statistical leak verdicts; Pico GC free is a port estimate.
+
+Pi reporter SHA-256:
+`bf010eb4b7a5c113d33b29a827752245eed6e7eb87d5e1f368e04665b2f907f7`.
+Read-only analysis job `2c420bb1-a451-4467-a69f-08184a72954a` found:
+
+* ESP application run: 19,101 seconds, 157 confirmations and true deep-sleep
+  wakes, 635 HTTP successes / one startup error, 150 BLE successes / no BLE
+  errors, one collector start, no fatal lines. Largest observed delivery,
+  HTTP and BLE gaps were 122.509, 31.000 and 131.015 seconds. BLE-reported
+  free memory ranged from 3,985,904 to 3,988,304 bytes; the latest sample was
+  2,240 bytes below the first. Synthetic sensor values remain labelled `sim`.
+* Corrected Pico run 02: 59 cycles, maximum cycle 5.883 seconds, maximum
+  cycle gap 30.150 seconds. GC allocation ranged from 2,032 to 2,208 bytes.
+* Feather V2: 56 cycles, maximum cycle 5.007 seconds and 30-second maximum
+  gap. GC allocation ranged from 1,984 to 3,152 bytes. At least one isolated
+  BLE scan returned zero advertisements; the three-consecutive-empty
+  failure condition was not reached.
+* Failed Pico run 01 remains rejected: 1,416.05 seconds and 46 cycles,
+  below the required eight hours, with a recorded failure.
+
+All three current runs remain provisional. Their log hashes are snapshots,
+not final immutable evidence. Repeat this report after each observer stops
+and retain the terminal hashes with the final result.
