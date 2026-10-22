@@ -410,7 +410,7 @@ due **13:28:11 UTC (14:28 BST)**, controller job
 `E663AC91D3444127`. Status and samples live on Pi 6 under
 `/home/pi/envhub-bench-20261022/pico-radio-overnight-01/`. The first cycle
 returned 81 Wi-Fi results and 26 BLE advertisements in 5.71 seconds.
-**Running, not passed.** This is scan coexistence testing, not sustained
+**Failed after 46 cycles; see the failure analysis below.** This is scan coexistence testing, not sustained
 TLS, association reliability or the full ESP-NOW collector application.
 The port's `gc.mem_free()` includes a fixed growth estimate; the recorder
 labels it `gc_free_estimate` and does not claim physical RAM from it.
@@ -481,6 +481,49 @@ does not retain the underlying WHD result. The cause is not established.
 After the Pico soak, capture that result and compare a clean disconnect
 before reset with an abrupt restart against the same AP. Do not add an
 automatic retry or close the issue based solely on the successful retry.
+
+### Pico overnight failure and independent Feather V2 build
+
+The Pico W eight-hour scan soak FAILED at 2026-10-22 05:51:47 UTC after 1,416.05 seconds and 46 good cycles, job `c39ae3ca-1470-4839-b90b-7b1c078ad31e`. Cycle 47 accepted the raw-REPL command but produced no terminator before the 35-second deadline. This is not an overnight pass. The preserved main thread is blocked in `common_hal_wifi_scannednetworks_next()` / `k_poll(K_FOREVER)`, on channel index 3 with no queued results or completion signal; the driver still has its scan callback registered. Root cause remains under investigation. The stack sentinel is intact, touched stack is at most 3,536 bytes, and libc reports 42,116 bytes free. UART samples do not establish a stuck FIFO. No USB resets or disconnects were reported around the failure. The failed run is retained; Pico 2 W validation remains pending.
+
+Failure occurred during the independent Feather V2 backup read/verify, but
+timing alone does not establish causation. No shared hub reset occurred.
+The private RAM snapshot remains on Pi in `pico-radio-failure-01/ram.bin`
+(270,336 bytes, SHA-256
+`c6056b860d69700dd8f37fd4ac45833b139606457533a666df77f3ddee42f9c6`).
+Do not publish this RAM or full-flash backup: either can contain credentials.
+Snapshot job: `9b815563-f0e9-4ad7-8fa8-a27f5bd3d6dc`; decoded scan/thread
+state job: `3398f984-7fe1-4e6f-9101-2b2018250408`.
+The AIROC 12-second timeout protects association-related scans, not this
+asynchronous `airoc_mgmt_scan` path. A recovery or bounded timeout alone
+will not establish reliable scan coexistence; a new full-duration run is needed.
+
+At 06:03 UTC the independent ESP soak was still active: 131 confirmed
+deliveries and true sleep wakes, 529 HTTP successes (one startup error),
+125 BLE successes, one collector start, zero serial errors, no recorded
+failures. Its eight-hour deadline remains 09:37:42 UTC. The hourly monitor
+now records the Pico failure and preserves its evidence instead of waiting
+for its obsolete deadline. Shared cleanup remains deferred while diagnostics
+or additional tests are active.
+
+The directly attached Feather ESP32 V2 has USB serial `564E053407`, ROM MAC
+`E8:9F:6D:32:50:04`, and 8 MiB flash. Backup/verification job
+`e59059c9-ca53-494c-a7a6-e186924af8e6` passed before any write. Its private
+8,388,608-byte backup SHA-256 is
+`c2d4abdd4554c680555729669ceb5a0a91eef4dbf23db8d93b883757669e150e`.
+
+The first Feather V2 integration build exceeded its 2 MiB slot by 12,736
+bytes. ESP integration `4730c980cafabb18ed889d680db26ff4ffafeb28`
+adds two 3 MiB OTA slots and a 1,984 KiB filesystem at 0x610000, with
+16 KiB inbound / 4 KiB outbound TLS records. A fresh build uses 2,109,904
+application bytes, leaving 1,035,824 bytes. An incremental build retained
+the old generated sdkconfig and failed; the fresh output directory is the
+verified artifact source. The combined BIN is 2,175,440 bytes, SHA-256
+`146ca9a4b13f88a11a78dc4570f25c4c2886347b72c667301411dca33d3362dc`.
+Bootloader, partition table and app offsets were checked against the build.
+Staging job `e4a01886-c56e-4083-b1fb-c4042b8e2adb` verified the Pi copy.
+Flash job `5609ec7b-f3ca-4890-b024-1ed61301ce86` was submitted after preserving
+Pico diagnostics; runtime validation is still pending.
 
 ## Portal browser validation
 
