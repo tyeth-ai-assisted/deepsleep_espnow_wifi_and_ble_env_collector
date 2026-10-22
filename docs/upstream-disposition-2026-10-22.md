@@ -1,5 +1,15 @@
 # Upstream disposition and reproduction notes — 22 October 2026
 
+## Update at 17:28 UTC: Pico failure and replacement candidate
+
+The a0c two-hour Pico run failed after 140 cycles/4,236.05 seconds. A separately
+reproduced receive-lock defect is fixed in Zephyr `7379648278`, pinned by CP
+`7d4ef1aac7`; both Pico builds pass and Pico W runtime preflight passes. Its new
+two-hour soak began at 17:26 UTC and is still running. The physical stall's root
+cause remains unproven; no completed replacement soak is claimed. The three
+eight-hour runs remain uninterrupted. The prior one-hour/settings-only plan is
+superseded. See [the incident, minimal reproduction and current evidence](pico-rx-contention-2026-10-22.md).
+
 This updates the [3 October escalation index](https://github.com/tyeth/circuitpython/issues/15#issuecomment-5617383669).
 It is an interim review record; the final issue comment and completed hardware
 results are still pending. Fork issue state, current upstream source and the
