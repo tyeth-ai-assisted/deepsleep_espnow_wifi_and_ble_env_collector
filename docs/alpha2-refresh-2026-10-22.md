@@ -5,6 +5,80 @@ The newest published upstream release checked on 22 October is
 was not published at that check. This integration is based on that exact tag,
 not the older 10.x release or an arbitrary main snapshot.
 
+## Full-chain HTTPS correction at 07:35 UTC
+
+Final portal deployment is on hold. The previously staged `30e57d2` release
+does not contain the newly verified certificate-chain correction. Current
+portal source is `a53f137`; the new ESP and Zephyr firmware revisions are
+`cb5301b6fb` and `e4553033a1`. None has replaced the images under soak.
+
+A normal HTTPS probe of the C5 was refused (job
+`73c03d66-7269-4755-ae1b-8307e8af155a`). Its `/api/cert` reports no certificate
+and HTTPS disabled. HTTP asset verification alone cannot establish a secure
+origin for WebMCP or the Prompt API.
+
+The configured public certificate source now supplies three certificates.
+Truncating to leaf plus one intermediate failed OpenSSL verification;
+retaining all three passed normal CA/hostname checks and key matching in job
+`d20500e4-01c1-4e79-b788-94dc24789766`. This matches the current
+[Let's Encrypt chain hierarchy](https://letsencrypt.org/certificates/): a
+cross-signed Root YR must be sent between YR2 and the trusted ISRG Root X1.
+The verified chain/key are staged privately in `portal-https-staging` on Pi,
+expire 16 December 2026, and are not installed on the C5. No key material is
+included in this repository or controller output.
+
+The browser's `pemChain()` and device-side `certstore.renew()` both discarded
+that third certificate. Regression expectations failed on each old path and
+pass after preserving the complete supplied chain. The service-worker cache
+is now `envhub-v18`. Twenty browser certificate groups, the new renewal
+regression, existing BLE certificate transport checks, 12 browser AI/tool
+tests and inline syntax checks pass.
+
+The complete chain is 5,781 PEM bytes / 4,143 DER bytes. The actual mbedTLS
+TLS 1.2 server writer needs 4,159 bytes including message/certificate lengths
+and explicitly rejects a chain that exceeds `MBEDTLS_SSL_OUT_CONTENT_LEN`.
+The former 4,096-byte output limit cannot serve this chain. All nine ESP
+integration boards and the Zephyr integration now use 16 KiB input / 8 KiB
+output. Fresh builds pass for all nine ESP configurations (C5/C61 UART,
+C6/S3 devkits, Feather C6, both Feather S3 variants, Feather V2, Metro S3)
+and both Pico W/2 W. Generated limits, partition bounds, app-slot fit and
+combined image placement were checked before collecting artifacts. See the
+[new image manifest](firmware-alpha2-fullchain-2026-10-22.json); previous
+images and evidence remain intact. C61 still has only 30,272 application
+bytes free. Pico W/Pico 2 W BIN sizes are 1,252,192 / 1,208,552 bytes, with
+212,340 / 275,756 bytes of linked RAM. TLS allocations need hardware retesting.
+
+All 85 cptools tests pass at the new Zephyr revision. The required `make test`
+target was attempted with the native simulator SSL test, but configuration
+stopped on missing SDL2/SDL2_image development libraries. That simulator
+test did not run. No packages were installed; the dependency check was a
+simulation only.
+
+At 07:29 UTC the original ESP service was still active: 173 confirmed
+deliveries/true wakes, 702 HTTP successes/one startup error, 165 BLE
+successes/no BLE errors, no serial errors or failures. The corrected Pico
+controller job was running with 125 cycles; Feather V2's service was active
+with 123 cycles, both without recorded failures. These are provisional
+results on the previously documented images, not tests of the new TLS builds.
+
+After the full ESP run ends, save its terminal evidence and a fresh backup
+of the C5's current firmware/filesystem before its HTTPS upgrade. Preserve
+measurement files, configuration and the failed-run records. Install and
+validate the new firmware, complete certificate chain, corrected renewal
+module and portal assets, then verify trusted HTTPS and browser secure-context
+behavior. Do not use the old seven-asset helper as proof of this expanded
+deployment, and do not interrupt the Pico/Feather scans.
+
+Filesystem migration preparation also found that extended ESP CircuitPython
+storage appends the inactive OTA partition to the FAT partition. The
+read-only `extract_esp_fat.py` helper on Pi requires an established inactive
+partition label rather than guessing. Five offline tests with real FAT tools
+passed, including byte-for-byte recovery of a file spanning that seam.
+The already-saved C5/C61 backups have no CircuitPython FAT partition and
+were correctly refused as extraction candidates; this is not yet a recovery
+test of the remaining Feather/Metro filesystems. Their physical identity,
+verified backups, file preservation and runtime checks remain pending.
+
 ## Current state at 06:40 UTC
 
 | Work | Verified state | Still required |
