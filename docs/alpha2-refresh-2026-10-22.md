@@ -1,5 +1,50 @@
 # CircuitPython 11 refresh and farm soak â€” 22 October 2026
 
+## Pico W installed and shorter soak started, 15:54 UTC
+
+Following explicit authorization to repurpose the Pico and use a shorter soak,
+the old Pico baseline was deliberately stopped after 545 scan cycles and
+16,337 seconds (about 4 h 32 min). Its snapshot and final interrupted status
+are preserved. The recorder's `KeyboardInterrupt` is the authorized stop,
+not a spontaneous radio failure or an eight-hour pass.
+
+Pico W now runs `11.0.0-alpha.2-28-ga0c1485cf5`, built with the synchronized
+Zephyr/HAL pins in [the candidate manifest](firmware-pico-scan-a0c-2026-10-22.json).
+The missing SWD probe did not recover after a reset and power cycle of its
+empty dedicated hub. The update therefore used the Pico USB ROM loader.
+An initial picotool argument/selector failure occurred before any flash write;
+it is preserved separately. The corrected transaction passed at 15:49:24 UTC:
+immediate 2 MiB backup, exact installed-image check, new-image readback and
+byte preservation of all untouched flash, including settings, NVM and FAT.
+
+Physical runtime checks passed at 15:51:02 UTC:
+
+- The extended-scan request raises `NotImplementedError`; the original scan
+  remains usable and receives 181 advertisements. A later ordinary scan receives 214.
+- The BLE address is unchanged across the firmware update.
+- Wi-Fi connects; trusted TLS returns the expected response during BLE scanning
+  (68 advertisements); the wrong hostname is rejected.
+
+The replacement **two-hour Wi-Fi/BLE scan soak** started at
+15:51:33 UTC and is due at 17:51:33 UTC (18:51 BST). It has six cycles with no
+recorded failures at 15:54 UTC; this is progress, not a completed soak result.
+The other three original eight-hour observers retain their original processes:
+124 app deliveries/true sleep-wakes, 499 Feather scan cycles and 125 HTTPS cycles.
+Their failures lists are empty; the app retains its single earlier startup HTTP
+error. Their latest deadline remains 19:45 UTC (20:45 BST).
+
+The separately staged portal updater now requires three full eight-hour passes
+and this exact replacement two-hour pass, with independent evidence validation.
+Eight guard tests pass and its live check refuses the four active observers.
+The retained-model/loading portal candidate remains staged, not deployed.
+
+Physical failed-open/retry injection still requires a working debug probe;
+normal boot, scanning and TLS success do not establish that recovery case.
+Pico 2 W and the remaining board variants still need runtime qualification.
+No issue has been closed or draft PR merged. Older sections below are historical
+snapshots; their “not flashed” and four-original-run requirements are superseded.
+
+
 ## Extended-scan guard and replacement Pico builds, 15:17 UTC
 
 [CP #9](https://github.com/tyeth/circuitpython/issues/9) now has a source fix in
