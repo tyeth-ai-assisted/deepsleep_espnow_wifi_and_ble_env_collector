@@ -5,6 +5,17 @@ The newest published upstream release checked on 22 October is
 was not published at that check. This integration is based on that exact tag,
 not the older 10.x release or an arbitrary main snapshot.
 
+## C5 transaction and browser preparation at 08:45 UTC
+
+The [concrete rollout procedure](c5-fullchain-rollout-2026-10-22.md) now
+records a staged exact-image firmware transaction, nine offline layout/FAT
+tests, six transaction fault-injection tests, live active-soak refusal,
+the trusted-HTTPS verifier and a working Chromium 155 session on Tachyon.
+The browser path is loopback-only and keeps normal TLS validation. No new
+firmware or portal files have been installed on any active DUT. Actual module
+inspection, deployment, secure-origin browser checks and the full-duration
+results remain pending.
+
 ## Verified staging and headless TLS check at 08:10 UTC
 
 The corrected eight-file portal package is verified on Pi storage in
