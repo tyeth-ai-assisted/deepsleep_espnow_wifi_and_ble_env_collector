@@ -1,5 +1,13 @@
 # CircuitPython 11 refresh and farm soak â€” 22 October 2026
 
+## Portal installed and verified, 19:59 UTC
+
+The staged mobile loading/retention UI and service-worker revision is now
+installed on C5. All seven served assets passed trusted HTTPS verification;
+native Chromium 155 WebMCP queried 697 actual device rows and rejected a DELETE
+without changing the count. See [deployment evidence and boundaries](portal-rx-rollout-2026-10-22.md).
+
+
 ## Completed soaks, 19:45 UTC
 
 The three original eight-hour runs and the replacement Pico W two-hour run
