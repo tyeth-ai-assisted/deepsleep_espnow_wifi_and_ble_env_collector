@@ -320,6 +320,43 @@ deliveries and true deep-sleep wakes, 364 HTTP successes (one startup
 error), 86 BLE successes, one collector start, zero serial errors and no
 recorded failures. Its eight-hour result remains pending.
 
+### USB recovery and Python radio validation
+
+The USB investigation found a host-side contributor: Pico W also failed
+enumeration while executing its built-in ROM USB boot loop (verified by
+SWD). Resetting the Genesys hub's single transaction translator, followed
+by toggling only Pico's USB pull-up, restored ROM enumeration. A picotool
+reboot then exposed the unchanged normal CircuitPython image's CDC, MSC
+and HID interfaces. No shared hub power was switched. The exact trigger
+for the stuck translator is not established.
+
+On clean-source firmware `a24d38f09f`, Python-level simultaneous scan job
+`38523d67-198c-408a-9577-7cea6c4870b1` passed three cycles: Wi-Fi returned
+87/103/96 scan results and BLE received 26/27/26 advertisements, each cycle
+taking about 8.2 seconds. Association to the bench AP and an HTTP 200
+response also passed while BLE received 128 advertisements. The console
+remained responsive.
+
+The reported `gc.mem_free()` near 71 KB is **not actual free physical RAM**.
+This port adds a fixed 64 KB fallback estimate for a possible new split
+heap. Treat it only as an estimate; linked RAM bounds and actual allocation
+success remain the relevant constraints.
+
+TLS preflight is still failing. The published image raises `MemoryError`
+while wrapping the socket, both with and without active BLE scanning.
+A local, unpublished Pico W-only candidate reduces WHD pools from 5+5 to
+4+4, network packet counts from 14 to 8 per direction, and data-buffer
+counts from 36 to 24. It frees 9,456 bytes and gets past wrapping, but an
+RSA TLS handshake still raises `MemoryError`. HTTP/BLE continues to pass.
+Full TLS records and the six-buffer Bluetooth reserve are retained.
+Further checked-stack RAM testing is in progress; no TLS compatibility or
+Pico overnight pass is claimed.
+
+At 04:54 UTC the ESP observer remained active after 197 minutes: 97
+confirmed deliveries and true deep-sleep wakes, 393 HTTP successes (one
+startup error), 93 BLE successes, one collector start, zero serial errors
+and no recorded failures. The eight-hour deadline remains 09:37 UTC.
+
 ## Portal browser validation
 
 WebMCP uses the current `document.modelContext.registerTool` API with
