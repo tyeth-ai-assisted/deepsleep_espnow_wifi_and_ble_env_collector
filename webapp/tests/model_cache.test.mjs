@@ -111,12 +111,12 @@ test("service-worker activation removes only older app-shell versions", async ()
   vm.runInNewContext(await readFile(new URL("../sw.js", import.meta.url), "utf8"), {
     self: {addEventListener(name, handler) {handlers[name] = handler;}, skipWaiting() {}, clients: {claim() {}}},
     caches: {
-      async keys() {return ["envhub-v1", "envhub-v19", "envhub-v20", "transformers-cache", "another-app", "envhub-models-v1"];},
+      async keys() {return ["envhub-v1", "envhub-v19", "envhub-v20", "envhub-v21", "transformers-cache", "another-app", "envhub-models-v1"];},
       async delete(key) {deleted.push(key);},
     },
   });
   let finished;
   handlers.activate({waitUntil(promise) {finished = promise;}});
   await finished;
-  assert.deepEqual(deleted.sort(), ["envhub-v1", "envhub-v19"]);
+  assert.deepEqual(deleted.sort(), ["envhub-v1", "envhub-v19", "envhub-v20"]);
 });

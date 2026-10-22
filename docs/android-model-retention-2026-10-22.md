@@ -6,7 +6,7 @@ Result: **baseline FAIL; persistence fix PASS on the same Android emulator**. Th
 
 - Official Android 36 Google APIs x86_64 system image, revision 7; Pixel 6 hardware profile, 4 GiB RAM, four cores, 8 GiB data partition.
 - Preinstalled Chrome 133.0.6943.137. This is an emulator result, not physical-phone validation or a claim about all Chrome versions.
-- Collector assets from `eff562bd0d46a0491156c26e064c7058a2083b98`, served over secure-context localhost with the v19 service worker.
+- Collector assets from `eff562bd0d46a0491156c26e064c7058a2083b98`, served at the secure-context loopback origin `http://127.0.0.1:8974` with the v19 service worker.
 - Prompt API polyfill 1.22.2, Transformers.js 4.3.0, `onnx-community/Qwen2.5-0.5B-Instruct`, WASM worker / q8. Native LanguageModel was absent and WebGPU returned no adapter.
 - Model file: `onnx/model_quantized.onnx`, response Content-Length **512,096,557 bytes** (512 MB decimal / 488 MiB). Resolved model revision observed on the initial load: `22942cb7d7ba4cc81bb4673549ca4d4614469b5e`.
 
@@ -49,3 +49,11 @@ The implementation uses the documented [Transformers custom cache interface](htt
 On the fully booted emulator, `pm list packages aicore` returned no package; Google Play services was present as a positive control. The actual image model is `sdk_gphone64_x86_64`, regardless of the Pixel 6 hardware profile. AICore/Gemini Nano has not been set up or validated here.
 
 The linked [ML Kit Prompt API setup](https://developers.google.com/ml-kit/genai/prompt/android/get-started) is a native Android integration, with model availability checked through its native SDK. Google's [supported-device list](https://developers.google.com/ml-kit/genai#prompt-api-device-support) does not list this emulator. Separately, [Chrome's web Prompt API requirements](https://developer.chrome.com/docs/ai/prompt-api#review_the_hardware_requirements) still exclude Android. Installing an AICore APK alone would therefore not establish a working web LanguageModel API. The successful tests above used the separate Qwen JavaScript polyfill, not AICore.
+
+## Emulator restart and loading-label follow-up, 14:08 UTC
+
+After shutting down and restarting the same emulator, the original `http://127.0.0.1:8974` origin still held the complete 512,096,557-byte OPFS model. An initial visit to `http://localhost:8974` appeared empty because it is a different browser-storage origin; no data was cleared or model downloaded during this check. Keep the hostname and port identical when comparing revisits.
+
+With the updated portal page and Android Wi-Fi/mobile data disabled, enabling the saved model displayed `loading local model...`, an `ai: loading` chip, and indeterminate progress, then reached `local phone model ready`. `navigator.onLine` was false and resource entries contained no ONNX request. The loading message no longer implies a download while saved weights initialize. Native Prompt API download progress retains its existing determinate behavior. The progress control's accessible label is now `AI model loading`.
+
+All 19 existing browser-AI, model-cache and native-cancellation tests pass. The app-shell version is v21. This follow-up verifies saved-model initialization after emulator restart and page update; the earlier offline inference result remains the end-to-end answer evidence. No DUT portal was updated during the active hardware soaks.

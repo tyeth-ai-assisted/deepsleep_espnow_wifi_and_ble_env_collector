@@ -193,7 +193,7 @@ a{color:var(--acc)}
   <span class="mut">Ctrl+Enter asks, Enter makes a new line</span>
  </div>
  <div class="mut" id="aistatus"></div>
- <progress id="ai-progress" max="1" hidden aria-label="AI model download"></progress>
+ <progress id="ai-progress" max="1" hidden aria-label="AI model loading"></progress>
  <div class="mut" id="webmcp-status"></div>
  <div id="answer"></div>
  <!-- transparency: every SQL query the model asked for, post-validation, with row counts -->
@@ -1460,8 +1460,16 @@ async function warmAI(signal){
    setStatus("aistatus",
     aiDiagnostics("availability() returned 'unavailable'"),false,true);showCanned(true);
    return null;}
+  // Local polyfill progress also fires while reading saved weights. It does
+  // not establish network transfer or meaningful overall download progress.
+  const localLoading=promptBackend.local;
+  if(localLoading){
+   $("ai-progress").hidden=false;
+   $("ai-progress").removeAttribute("value");
+   chip("chip-ai","ai: loading",false);
+  }
   // pre-warm per do's & don'ts: create early with system prompt
-  setStatus("aistatus",avail==="available"?
+  setStatus("aistatus",localLoading?"loading local model...":avail==="available"?
    "loading model into memory...":"downloading on-device model...",true);
   // clear the stamp with the session: if create() is stopped or fails, leaving
   // a destroyed session behind with a current stamp makes every later ask()
@@ -1475,13 +1483,13 @@ async function warmAI(signal){
    expectedOutputs:[{type:"text",languages:["en"]}],
    signal,                       // stop button: abandons the download/load
    monitor(m){m.addEventListener("downloadprogress",e=>{
-    const fraction=EnvPromptBackend.progress(e);
+    const fraction=localLoading?null:EnvPromptBackend.progress(e);
     $("ai-progress").hidden=false;
     if(fraction===null)$("ai-progress").removeAttribute("value");
     else $("ai-progress").value=fraction;
     setStatus("aistatus",
-     fraction===null?"downloading model...":"downloading model: "+Math.round(fraction*100)+"%",true);
-    chip("chip-ai","ai: downloading",false);});},
+     localLoading?"loading local model...":fraction===null?"downloading model...":"downloading model: "+Math.round(fraction*100)+"%",true);
+    chip("chip-ai",localLoading?"ai: loading":"ai: downloading",false);});},
   });
   aiStamp=dataVersion;
   chip("chip-ai","ai: ready",true);
