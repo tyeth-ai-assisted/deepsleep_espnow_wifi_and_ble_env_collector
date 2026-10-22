@@ -135,7 +135,7 @@ def _https_get(pool, url, sink):
 
 
 def renew(pool, root="/certs"):
-    """Download ssl.combined + ssl.key to `root` (flash). Keeps leaf+intermediate only.
+    """Download ssl.combined + ssl.key to `root` (flash). Preserves the complete supplied chain.
     Returns True on success. Never raises."""
     try:
         try:
@@ -149,7 +149,11 @@ def renew(pool, root="/certs"):
             return False
         combined = b"".join(parts).decode()
         certs = combined.split("-----END CERTIFICATE-----")
-        chain = "".join(c + "-----END CERTIFICATE-----\n" for c in certs[:2] if "BEGIN CERTIFICATE" in c)
+        # A cross-signed root is an intermediate in the served chain; truncating
+        # to two certificates breaks the current Let's Encrypt YR/YE hierarchy.
+        chain = "".join(c[c.index("-----BEGIN CERTIFICATE-----"):] +
+                        "-----END CERTIFICATE-----\n" for c in certs
+                        if "-----BEGIN CERTIFICATE-----" in c)
         parts = []
         st = _https_get(pool, RENEW_URL_BASE + "ssl.key", parts.append)
         if st != 200:

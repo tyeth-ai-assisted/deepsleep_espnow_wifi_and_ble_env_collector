@@ -1868,10 +1868,10 @@ async function fetchCertFile(name){
   // timeout, abort -- is a real answer from the server and not worth proxying.
   if(!(e instanceof TypeError))throw e;
   return await fetchViaCors(url);}}
-function pemChain(text,n=2){ // keep leaf + intermediate (the root is in every browser)
+function pemChain(text){ // preserve cross-signs: current chains can need >2 certificates
  const certs=((text||"").replace(/\r\n/g,"\n")
    .match(/-----BEGIN CERTIFICATE-----[\s\S]*?-----END CERTIFICATE-----/g))||[];
- return certs.slice(0,n).join("\n")+"\n";}
+ return certs.join("\n")+"\n";}
 // Check what came back before pushing it. A CORS proxy or a captive portal will
 // happily return an HTML error page with status 200, and the hub would write that
 // over its working certificate.
