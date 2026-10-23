@@ -172,3 +172,22 @@ hashes and per-CPU loss counters](picow-xhci-nonreproduction-2026-10-23.json)
 preserve every round. CP #42 remains an unresolved rollout blocker. The next
 useful capture must contain an actual stall before transfer timing can choose
 between host scheduling and device-side response hypotheses.
+
+## Host trace with active Python workloads
+
+A separate control on the unchanged `9e153` Pico W combines the xHCI capture
+with eight-second Python workloads. The open-console sleeping control and six
+closed-console rounds (three busy, three sleeping) all read the same 4 KiB in
+31.4–52.3 ms. The planned console reopen is three seconds after close, and no
+host marker is inserted between close and the disk read. Python completes all
+seven loops; maximum iteration gaps are below 20 ms. Trace loss and overrun
+counters remain zero.
+
+This is another non-reproduction, including while Python runs outside the
+REPL prompt. It neither overturns the earlier busy/sleep stalls nor identifies
+a fix. No firmware or device-filesystem writes occurred; bindings and the
+private trace instance were restored, and the bridge was untouched. The
+[sanitized workload measurements](picow-xhci-workload-control-2026-10-23.json)
+retain all seven rounds. Further repetitions of this passing setup alone
+cannot resolve CP #42; a changed reproduction condition or an actual failing
+trace is needed.

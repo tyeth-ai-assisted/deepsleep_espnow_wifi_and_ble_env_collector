@@ -463,5 +463,10 @@ were reported; original bindings and private trace instances were restored.
 This establishes capture readiness, not a fix or root cause. See [the retained
 non-reproduction evidence](picow-console-storage-stall-2026-10-23.md#host-controller-trace-capture-stall-not-reproduced).
 
+A separate xHCI control with active Python workloads also passes seven exact
+reads, including six closed-console attempts (three busy, three sleeping), in
+31.4–52.3 ms with zero trace drops. This is retained as negative evidence, not
+a fix; see [the workload control](picow-console-storage-stall-2026-10-23.md#host-trace-with-active-python-workloads).
+
 The goal remains active. The final CP #15 comment has not been posted; it must
 carry the remaining limitations rather than claim every issue is resolved.
