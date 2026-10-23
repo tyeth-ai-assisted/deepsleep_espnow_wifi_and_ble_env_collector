@@ -122,3 +122,24 @@ remains blocked by [fork issue #42](https://github.com/tyeth/circuitpython/issue
 [the temporary instrumentation and decoder](../tools/repro_picow_usb_snapshot/README.md)
 make this result reviewable. Six decoder controls and eight flash-transaction
 fault controls passed. Raw flash images and USB captures remain private.
+
+## Host HID binding control
+
+The older production `9e153` image also reproduces the console-close stall
+with the host HID driver unbound. CDC and MSC stay bound throughout this
+comparison. Closed-console reads before unbinding take 3.128, 0.034 and 3.068
+seconds; with HID unbound they take 3.068, 0.058 and 3.140 seconds. Three after
+rebinding are fast (0.031/0.035/0.060 seconds). Open controls before and after
+take 0.032/0.061 seconds. All eleven reads have the same hash; Python keeps
+progressing with maximum iteration gaps below 18 ms.
+
+A bound host HID driver is therefore not required for this reproduction.
+Three attempts per phase do not estimate failure rates, and the final fast
+rounds do not establish that rebinding fixes this intermittent problem. Device
+HID endpoint configuration, hub behavior and host-controller behavior were not
+independently removed by this comparison. Root cause remains open.
+
+No firmware or filesystem writes were made. Original bindings were restored
+while the console remained open, and the S31 was untouched. The
+[sanitized timing record](picow-console-hid-control-2026-10-23.json) retains
+all reproductions and non-reproductions.
