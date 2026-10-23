@@ -1,4 +1,4 @@
-# Issue investigation coverage — updated 23 October 2026, 16:40 UTC
+# Issue investigation coverage — updated 23 October 2026, 17:20 UTC
 
 **No: the work is not fully investigated or physically verified.** This ledger
 reconciles the original `bugs_issues_and_todos.md` with the CP #15 escalation
@@ -27,7 +27,7 @@ fails MSC and the Pico console with Metro CDC in either import order, while
 Metro survives. Both initial and post-load single-Pico MSC/CDC controls now
 pass, separating this load-dependent failure from the reconnect defect.
 Production code, ports/imports/defaults and three radio checks are restored;
-no bridge reboot occurs. Live channel exhaustion remains uninstrumented.
+no bridge reboot occurs. A later UART capture proves channel exhaustion in both mixed cases; turning off the unused C6 makes the same workload pass in both orders with zero exhaustion messages. See [the instrumented capacity control](s31-channel-exhaustion-2026-10-23.md). The headroom job remains failed: other leaf devices reappeared during C6 power-on, and its cleanup/runtime checks failed after full firmware restoration. A separate no-flash recovery restored the original topology and passed all three radio checks; the bridge did not reboot.
 See [the preserved mixed failure and restoration](s31-mixed-usbfix-2026-10-23.md).
 The same-configuration source defect is already tracked as
 [Zephyr #121843](https://github.com/zephyrproject-rtos/zephyr/issues/121843).
@@ -294,8 +294,7 @@ rollout and follow-up reports.
 - Bridge interface-claim cleanup is implemented and installed; 24 source cases
   and five sequential Pico composite imports passed. A fresh reversed-order control
   now shows either board works first and fails second; the first stays responsive.
-  Both expose seven non-control endpoints. Source allocation and the minimum
-  channel budget strongly support exhaustion, but no live counter/log was captured.
+  Both expose seven non-control endpoints. The earlier source budget was inferential. A later matched CDC/MSC test captures explicit HCD channel-exhaustion logs and passes after the unused third leaf is turned off; exact live channel counts remain unmeasured.
   A new physical control prevents MSC/HID probing before attachment and still
   reproduces the second-console failure in both orders: client admission alone
   is insufficient. Per-interface candidate bec1d71 in draft bridge PR #25 now

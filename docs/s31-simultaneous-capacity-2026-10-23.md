@@ -180,3 +180,5 @@ reset. See [the separate minimal reproduction and limits](s31-msc-reimport-2026-
 A later comparison using the actual Pico 2 USB-fixed build separates the remaining
 mixed-load failure from the reconnect defect: both single-device controls pass,
 but mixed CDC/MSC still fails in either order. See [the new failure and recovery evidence](s31-mixed-usbfix-2026-10-23.md).
+
+Subsequent [UART evidence and a one-fewer-leaf control](s31-channel-exhaustion-2026-10-23.md) now establish channel exhaustion for the matched mixed workload. The earlier uninstrumented results above retain their original scope.
