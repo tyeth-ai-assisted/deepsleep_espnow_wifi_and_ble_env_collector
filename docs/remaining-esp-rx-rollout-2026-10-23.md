@@ -55,3 +55,24 @@ with force enabled. The user confirms the board was moved or removed. Stop
 retrying the old location: the new S3 build is available, while installation
 and physical qualification await reconnection. Its last recorded image remains
 `cb530`; it must not be listed as already running the receive fix.
+
+## C5 console discriminator: continuous handle passes
+
+The unchanged C5 answers a ROM identity/8 MiB flash probe, but its runtime
+console remains silent after the CLI watchdog reset and after a separate port
+off/on control. A single RTS reset with UART capture then shows the original
+`cb530` CircuitPython boot and response to interruption. Closing that serial
+handle and opening the usual raw REPL client still times out.
+
+Keeping the same serial handle open across the otherwise matched RTS reset,
+five-second boot capture and raw REPL entry passes board, firmware and MAC
+verification. Both initial boot captures are exactly 2,850 bytes with the same
+hash. This identifies a usable verification path and a close/reopen boundary
+for further investigation; it does not identify the responsible firmware,
+driver, line-control or client behavior. The watchdog timeout alone is not
+evidence that the firmware does not boot.
+
+All failed controls remain retained. No C5 firmware writes occurred; imports
+and original port-off state were restored after every control, and the bridge
+was not restarted. The next rollout should retain one handle across the proven
+reset/runtime check. The prepared UART candidate is still not installed.

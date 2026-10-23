@@ -477,5 +477,11 @@ console investigated before deployment; the user confirms Feather S3 was
 moved/removed, so its physical update awaits reconnection. Neither build
 success nor older soaks imply these deployments. See [the rollout evidence](remaining-esp-rx-rollout-2026-10-23.md).
 
+C5 runtime is now verified on unchanged `cb530` through a continuous UART
+handle across RTS reset. The otherwise matched close/reopen control times
+out despite identical captured boot bytes. No firmware writes occurred;
+this provides a verification path for its pending update, not an established
+root cause or firmware fix. See the C5 console discriminator in the rollout report.
+
 The goal remains active. The final CP #15 comment has not been posted; it must
 carry the remaining limitations rather than claim every issue is resolved.

@@ -139,6 +139,18 @@
     "long_soak_on_this_image": false,
     "transaction_safety_tests": 11
   },
-  "c5": "update_pending_runtime_console_investigation",
+  "c5": {
+    "status": "original_runtime_verified_with_continuous_serial_handle_update_pending",
+    "installed_revision": "cb5301b6fb",
+    "candidate_revision": "e46718f34b",
+    "firmware_writes": false,
+    "rts_reset_then_close_reopen": "raw_REPL_timeout",
+    "rts_reset_keep_handle_open": "runtime_identity_pass",
+    "boot_capture_bytes": 2850,
+    "both_boot_capture_sha256": "488db6929547cb7c0192685a11bad6ae7922a47c5bbe06348e89e385d64a0fa6",
+    "root_cause_established": false,
+    "port_and_imports_restored": true,
+    "bridge_not_restarted": true
+  },
   "feather_s3": "update_pending_reconnection_user_confirmed_moved_or_removed"
 }
