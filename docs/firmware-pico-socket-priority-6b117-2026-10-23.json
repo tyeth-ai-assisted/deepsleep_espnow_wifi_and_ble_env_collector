@@ -17,7 +17,9 @@
       "main_thread_priority": 0,
       "timeslice_ms": 20,
       "diagnostic_overrides": false,
-      "production_image_physically_installed": false
+      "production_image_physically_installed": true,
+      "runtime_identity_verified": true,
+      "physical_qualification": "pico2-production-ap-qualification-2026-10-23.json"
     },
     {
       "board": "raspberrypi_rpi_pico_w_zephyr",

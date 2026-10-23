@@ -1,4 +1,4 @@
-# Issue investigation coverage — 22 October 2026, 23:35 UTC
+# Issue investigation coverage — updated 23 October 2026, 00:40 UTC
 
 **No: the work is not fully investigated or physically verified.** This ledger
 reconciles the original `bugs_issues_and_todos.md` with the CP #15 escalation
@@ -13,7 +13,7 @@ same binary, Pico-side sleeps let a lease arrive; changing only the service
 priority from 15 to the interpreter's 0 also passes with no sleeps. A 15-second
 busy-loop control acquires a lease in 4.467 seconds while Python continues
 computing. The shared configuration fix is committed as `6b117bdce5`.
-See the [controlled reproduction, provenance and limits](pico2-dhcp-scheduling-2026-10-23.md).
+The production Pico 2 image now passes channel 1/6/11, DHCP, ping, matching station MAC/IP, departure and AP stop/restart. Cleanup passed; Pico W production rollout remains open. See the [controlled reproduction, provenance and limits](pico2-dhcp-scheduling-2026-10-23.md) and [production hardware evidence](pico2-production-ap-qualification-2026-10-23.json).
 
 USB stack measurements are now available for the limited CDC/AP workload:
 248–256 of 2048 bytes used. A physical 512-byte comparison and concurrent
@@ -26,7 +26,7 @@ The historical ESP sleep-memory reload defect is already fixed upstream by
 official alpha.2 and deployed `cb5301b6fb`; no duplicate patch is needed.
 This is source reconciliation, not a new physical sentinel test.
 
-## Update: Pico 2 AP DHCP failure isolated; dual S31 console failure preserved
+## Earlier finding, superseded for DHCP by the production result above
 
 On Pico 2 W at `7d4ef1aac7`, a direct-UART Feather ESP32 V2 station at
 `cb5301b6fb-dirty` sees channel 1 and associates. Six AP station-table samples
@@ -35,10 +35,10 @@ at the 25-second host deadline; after interruption it reports associated with
 address `0.0.0.0`. A static-address reconnect succeeds and pings the AP in
 15 ms. Explicitly stopping/restarting the station DHCP client also fails to
 complete the combined connect/ping command within 30 seconds. Thus the
-association and basic IP path work; the DHCP exchange remains faulty.
+association and basic IP path worked; this baseline had a faulty DHCP exchange.
 
 The ESP timeout symptom matches existing upstream [CircuitPython #7557](https://github.com/adafruit/circuitpython/issues/7557).
-It is separate from the unresolved DHCP exchange failure. Do not close the
+It is separate from the DHCP scheduling failure subsequently fixed above. Do not close the
 softAP tracker or call the diagnostic job's successful completion an AP pass.
 The first combined test also failed station cleanup; a subsequent bounded
 Ctrl-C recovery restored it. Both later tests confirmed station/AP cleanup.
@@ -50,10 +50,7 @@ claims every interface on first data traffic; unbinding host-side unused
 drivers does not release those bridge claims. This supports investigating
 channel pressure, but does not establish the failure's root cause.
 
-A Pico diagnostic image now builds with DHCP debug logs, initialized-stack
-measurement and a 2048-byte USB thread stack. It is **not flashed**, and no
-512/2048 stack comparison has run. Channels 6/11 and station departure remain
-unverified. See [sanitized evidence](pico2-ap-dhcp-investigation-2026-10-22.json).
+The diagnostic image was subsequently flashed and measured, then replaced by the production fix. Channels 6/11 and station departure now pass. No physical 512/2048 stack comparison has run. See [sanitized evidence](pico2-ap-dhcp-investigation-2026-10-22.json).
 
 Minimal paired reproduction (use disposable bench credentials): start a Pico
 AP on channel 1; on an ESP station call `start_station()`, `stop_dhcp()`,
@@ -125,6 +122,18 @@ candidate. The script extracts exact functions rather than reimplementing
 their control flow. See [native evidence](pico-btbus-reproduction-2026-10-22.json)
 and [hardware evidence](s3-targeted-issue-checks-2026-10-22.json).
 
+## Update: ESP-NOW corruption reproduced with exact source
+
+The three linked upstream ESP-NOW trackers (#9816, #7903, #9380) remain open.
+Actual callback/read/ring-buffer source deterministically reproduces an invalid
+buffer when the reader runs after header publication but before the packet is
+complete. The source blobs match current upstream main. Exact-capacity controls
+pass: the packet size already includes the MAC. Eight application fault-injection
+checks pass for AP-safe reset, non-AP rebuild/failure handling, peer rotation,
+unconfirmed node delivery, explicit broadcast peer and channel-switch ordering.
+These are source and wrapper tests, not a physical frequency measurement or a
+driver fix. See [the reproduction and limits](espnow-targeted-investigation-2026-10-23.md).
+
 ## Original firmware reports
 
 Numbers refer to headings in the original bug document, not GitHub IDs.
@@ -156,7 +165,7 @@ Numbers refer to headings in the original bug document, not GitHub IDs.
 | History RAM rows, relabel, interrupted job, read-only drive | Existing host suite freshly passes. Large-file flash timing plus simultaneous HTTP/ESP-NOW and real interruption remain. |
 | Node autoconnect; collector in station mode; channel agility | Historical AP-channel 6/11 bench success. Autoconnect and router-channel variants still need targeted tests. |
 | Outage stash, hub time correction, real sensor discovery | Confirmation protocol host tests and simulated-sensor overnight delivery pass. Fresh collector-outage replay and real-sensor test remain. Unsynced duplicates remain a documented design limit. |
-| ESP-NOW buffer corruption / peer limits / broadcast / channel mismatch | Historical guards documented for upstream #9816/#7903/#9380 and peer limits. Fault-injected current guard tests and current upstream status reconciliation remain; unused PHY-rate feature is not an application blocker. |
+| ESP-NOW buffer corruption / peer limits / broadcast / channel mismatch | All three upstream trackers remain open. Actual-source packet interleaving reproduces #9816; eight current application guard checks pass, including AP-safe recovery, peer limits, explicit broadcast and channel order. Physical latest-image traffic/failure incidence and a safe driver fix remain open; unused PHY-rate feature is not an application blocker. |
 | Battery watermark | Requires a controlled battery/unplug event; not verified by USB port commands alone. |
 | Calibration | Historical hub dry-run only; node window/result end-to-end still unverified. Do not perform an actual sensor FRC just to test transport. |
 | AI model download progress and revisit cache | Implemented/tested portal paths. Android emulator retained model through page, Chrome and emulator restarts; offline inference did not download weights. Physical phone memory/performance remains unknown. Emulator lacks supported AICore; JS fallback is separate. |
@@ -178,7 +187,7 @@ rollout and follow-up reports.
 | HAL Pico #6 startup assertions | Newly executed native failure injection now passes candidate / fails old source. Hardware injection still unrun. |
 | HAL Pico #3 HOST_CTRL cache | Newly reproduced cache/hardware divergence under injected lost write. Production cache policy and physical incidence unresolved. |
 | Zephyr #6 USB stack | Instrumented hardware measurements now show 248–256/2048 bytes in limited CDC/AP work; physical 512 comparison and MSC stress remain outstanding. |
-| Zephyr #8 softAP | Channel 1 association/static ping pass. DHCP starvation reproduced; equal-priority candidate passes idle and busy Python controls. Production-image follow-up, other channels and station departure remain open. |
+| Zephyr #8 softAP | Channel 1 association/static ping pass. DHCP starvation reproduced; equal-priority candidate passes idle and busy Python controls. Production Pico 2 channel 1/6/11, DHCP/ping and station departure now pass. Pico W production follow-up remains open. |
 | Zephyr #9 legacy timeout | Source still omits timeout in legacy HCI path; CircuitPython host deadline works around it. Direct low-level timed-radio reproduction outstanding. |
 | HAL Infineon #2 coexistence assets | Asset selection audited; current Pico W two-hour and Pico 2 W thirty-minute concurrent-radio runs passed. This does not prove every traffic pattern. |
 | CP #25 warm reset | Earlier 45% failure claim retracted after 45/45 successes; original trigger unresolved. |
@@ -199,7 +208,7 @@ rollout and follow-up reports.
   firmware writes occurred. Do not attribute this to S31 definitively.
 - Feather S3 is updated and has the targeted tests above. Metro S3, other
   build-only variants, C6/load variants of BLE, physical displays/RTC/sensors
-  and the instrumented Pico tests remain explicit gaps. Three completed
+  and full Pico USB stress remain explicit gaps. Three completed
   overnight runs and later targeted follow-ups retain their actual revisions;
   a newer image is not retrospectively covered by an older soak.
 

@@ -40,7 +40,8 @@
     "commit": "6b117bdce576abf927554a4946b8610149150aa0",
     "change": "Default NET_SOCKETS_SERVICE_THREAD_PRIO to MAIN_THREAD_PRIORITY when NETWORKING is enabled",
     "hardware_image_note": "Physical comparison used the same priority value as a configuration override on clean 7d4 source; do not relabel it as a 6b117 production-image test",
-    "production_builds": "Both Pico variants passed; manifest firmware-pico-socket-priority-6b117-2026-10-23.json"
+    "production_builds": "Both Pico variants passed; manifest firmware-pico-socket-priority-6b117-2026-10-23.json",
+    "physical_qualification": "pico2-production-ap-qualification-2026-10-23.json"
   },
   "cleanup": "All four recorded diagnostic runs stopped the AP and station, restored DHCP client state, detached USB imports and restored original port state",
   "stack_observations": {
@@ -53,7 +54,7 @@
   },
   "diagnostic_correction": "The first instrumented image requested DHCP debug level 4 but global LOG_MAX_LEVEL=2 suppressed it. Corrected baseline raised the ceiling to 4; compiled debug strings and runtime messages were verified.",
   "limits": [
-    "Channel 6/11 and station departure not yet qualified",
+    "Pico W production-image physical follow-up remains open; Pico 2 channels 1/6/11 and departure passed separately",
     "No C6 radio-memory or sustained coexistence claim",
     "ESP connect timeout while DHCP is unavailable remains separate upstream issue #7557",
     "USB stack-default change not justified by this measurement alone"
