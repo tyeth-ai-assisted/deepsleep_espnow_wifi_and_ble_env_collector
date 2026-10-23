@@ -60,3 +60,10 @@ count is now one throughout the sequence. On a separate fresh boot use
 
 This is a diagnostic comparison, not a production release. Both candidate
 controls pass; normal automatic workflows and Pico 2 still need qualification.
+
+
+Production integration and bounded normal startup on Pico W are now covered
+by [the follow-up qualification](../../docs/pico-normal-ble-ready-guard-2026-10-23.md). Pico 2 candidate
+qualification stopped at original-firmware preflight without a firmware write.
+Pico 2 normal/forced-error checks, natural faults and workflow client transfers
+remain open.

@@ -65,3 +65,9 @@ Production HAL integration, normal automatic BLE workflows, Pico 2 retry
 qualification and natural hardware-fault recovery remain open. The separate
 Pico console-close USB defect is not addressed by this guard. Both original
 failed runs and private recovery captures are preserved.
+
+
+Follow-up: the guard is now in HAL #8 and CP #32, with [normal production-build
+startup checks on Pico W](pico-normal-ble-ready-guard-2026-10-23.md). Pico 2 qualification stopped at original
+firmware preflight, before any write. Its candidate and natural hardware faults
+remain unqualified.
