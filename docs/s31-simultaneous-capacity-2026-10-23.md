@@ -1,6 +1,8 @@
 # S31 simultaneous composite-device investigation — 23 October 2026
 
-**The second imported console fails in either order; the first remains usable.**
+**Update at 04:38 UTC: the installed per-interface candidate passes both consoles in both import orders.** The identical selective-interface baseline failed its second console in both orders. This is a custom commit-to-commit comparison, not the standard release/CI-artifact matrix. See the candidate result below; broader class/capacity coverage remains open.
+
+**Baseline result: the second imported console fails in either order; the first remains usable.**
 This is a completed diagnostic, not a successful simultaneous-device qualification.
 No firmware was written. Original port states and imports were restored, and
 the bridge uptime increased throughout: no bridge reboot occurred.
@@ -133,7 +135,35 @@ A fresh full ESP32-S31 build passed with clean ESP-IDF
 SHA-256 `8a540fc8296b973072584c0bd59de509be8ffa0d0d5275540796804e52c87bd6`.
 See [build provenance and artifact hashes](firmware-s31-demand-bec1d71-2026-10-23.json).
 
-**The candidate is not installed or physically qualified.** The bridge still
-runs `7497541`. Next is a guarded application-only update and the identical
-selective-interface comparison, followed by other USB-class and throughput
-checks. Do not close the capacity issue from the native tests or build alone.
+At 03:40 UTC this candidate was not yet installed. The following update supersedes that deployment status.
+
+## Installed candidate comparison — 04:38 UTC
+
+The guarded update from `7497541` to `bec1d71` completed successfully. A fresh
+16 MiB backup was read and verified in 1 MiB chunks. Only the 1 MiB factory
+application at `0x10000` was written; the entire resulting flash was verified,
+including unchanged bootloader, partition table, NVS and other storage. The
+candidate API returned after the intentional update reset. Private recovery
+images remain retained. Fifteen host fault/bounds tests cover plan rejection,
+partial writes, verification failures and rollback failure handling.
+See [update evidence and hashes](s31-demand-update-2026-10-23.json).
+
+The exact same selective-interface helper and descriptor hashes were used:
+
+| Import order | Baseline 7497541 | Candidate bec1d71 |
+|---|---|---|
+| Feather S3 alone | Both probes pass | Both probes pass |
+| Pico 2 W, then Feather S3 | Second console fails twice; first passes | Both probes on both consoles pass |
+| Feather S3, then Pico 2 W | Second console fails twice; first passes | Both probes on both consoles pass |
+
+Both CDC interfaces bound to `cdc_acm`; MSC/HID stayed unauthorized and unbound
+from before probing. Imports, power state and authorization defaults were restored.
+Bridge uptime increased from 61 to 88 seconds: no reset during the comparison.
+The comparison itself opened no diagnostic UART and wrote no firmware.
+See [candidate results](s31-selective-interface-candidate-2026-10-23.json) and
+[the failed baseline](s31-selective-interface-baseline-2026-10-23.json).
+
+This verifies two simultaneous CDC consoles under selective admission. It does
+not establish general full-composite capacity, MSC/HID behavior, sustained
+throughput, or controller scheduling. Keep the capacity tracker open for those
+limits; there is still no direct live channel-counter measurement.

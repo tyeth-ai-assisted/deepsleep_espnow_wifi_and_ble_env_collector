@@ -68,7 +68,9 @@
     "historical_cleanup_failed_assertions": 0,
     "capacity_comparison": "Actual all-interface baseline fails to admit the second device; actual per-interface candidate admits two CDC devices. Both use modeled 16 total / 8 baseline channels; not a physical candidate result."
   },
-  "installed": false,
-  "hardware_qualified": false,
-  "build_scope": "custom integration commit, fresh full ESP32-S31 build"
+  "installed": true,
+  "hardware_qualified": true,
+  "build_scope": "custom integration commit, fresh full ESP32-S31 build",
+  "hardware_qualification_scope": "Two CDC consoles with MSC/HID unauthorized before driver probing; same physical devices, descriptors, test and orders as the failed baseline.",
+  "hardware_evidence": "s31-selective-interface-candidate-2026-10-23.json"
 }

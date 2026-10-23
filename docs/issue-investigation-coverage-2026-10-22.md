@@ -1,4 +1,4 @@
-# Issue investigation coverage — updated 23 October 2026, 03:40 UTC
+# Issue investigation coverage — updated 23 October 2026, 04:46 UTC
 
 **No: the work is not fully investigated or physically verified.** This ledger
 reconciles the original `bugs_issues_and_todos.md` with the CP #15 escalation
@@ -163,7 +163,8 @@ Numbers refer to headings in the original bug document, not GitHub IDs.
 | Raw-REPL write then hard-reset filesystem corruption; S3 MSC write crashes | Historical evidence and safe deployment workarounds retained. | Disposable backed-up filesystem with explicit flush/soft reload controls and concurrent-radio variants. Avoid corrupting the live application store to obtain evidence. |
 | sleep_memory after soft reload | Upstream #11274 fixes reload clearing; merge ancestry verified in alpha.2 and deployed cb530. True deep-sleep confirmations also passed in the app run. | Optional fresh physical sentinel regression; no duplicate source patch needed. |
 | Windows empty GATT table / Service Changed | Still a report; cache mechanism unconfirmed. | Same device address, deliberate service-table change, cached versus uncached Windows discovery and Service Changed observation. |
-| jd79667 logging/defaults; mpremote new-file ENOENT | Historical library/tool reports, not investigated in this refresh. | Pin installed/upstream versions and produce minimal library/tool reproductions before filing duplicates. |
+| JD79667 logging/defaults | Exact upstream/frozen driver constructor reproduces hex output in four host controls; print-removal controls are silent. Inherited 40/180 defaults and explicit timing pass-through verified in source/host execution. | Actual panel timing and stray AttributeError still unverified; minimal patch retained, not deployed. See [library/tool evidence](library-tool-investigation-2026-10-23.md). |
+| mpremote new-file ENOENT | Actual-board baseline reproduces existing MicroPython #17752: error conversion aborts existence check, while direct create/overwrite work. Parser fix passes new-file/overwrite/readback/cleanup; first candidate's line-ending failure retained. Fork draft PR #1 carries host regressions. | Stock CLI connection path and matching MicroPython hardware suite remain unrun; human review/upstream submission pending. See [comparison](library-tool-investigation-2026-10-23.md). |
 
 ## Application TODOs and known limits
 
@@ -216,9 +217,12 @@ rollout and follow-up reports.
   A new physical control prevents MSC/HID probing before attachment and still
   reproduces the second-console failure in both orders: client admission alone
   is insufficient. Per-interface candidate bec1d71 in draft bridge PR #25 now
-  passes 17 actual-source native groups and a fresh full S31 build, but remains
-  uninstalled and physically unqualified. Authorization defaults/ports/imports
-  were restored without reboot; no extra soak substituted for this control.
+  passes 17 actual-source native groups and a fresh full S31 build. It is now
+  installed after fresh full backup, app-only update and whole-flash verification.
+  The identical selective-interface comparison passes both consoles in both
+  orders; descriptors and admission states match the failed baseline. Defaults,
+  ports and imports were restored with no reset during the comparison. Broader
+  MSC/HID/throughput and capacity scheduling remain open.
   The independent diagnostic UART recovered from USB control timeouts after hub
   recovery, but a subsequent open/read check coincided with an unexpected bridge
   reboot. Final network inspection found original inventory, no imports or active
