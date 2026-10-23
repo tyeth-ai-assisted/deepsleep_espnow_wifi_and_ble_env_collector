@@ -508,5 +508,12 @@
     "Device connection max_packet_length was 253; Bleak MTU 23 was a fallback warning, not proof of negotiated MTU 23",
     "ESP-NOW send acceptance is not delivery; mixed-peer default-send recipients were not captured",
     "USB-load dependence is observed, but endpoint pressure and earlier path/power discrepancy have no established root cause"
-  ]
+  ],
+  "subsequent_bridge_settings": {
+    "restore_port_power": false,
+    "enforce_per_port_switching": false,
+    "enum_timeout_ms": 0,
+    "note": "Read after the failed power-on observation; return of other ports to on is not established as a restoration bug"
+  },
+  "bridge_investigation": "https://github.com/tyeth-ai-assisted/esp-usbip-bridge/issues/26"
 }

@@ -45,6 +45,11 @@ read the C6 without issuing a reset: uptime 653.249 →
 199.090 seconds, so **MCU uptime reset** during the interval.
 The original power job remains failed; this is not a clean power-cycle pass.
 Neither result establishes the cause of the earlier path/power discrepancy.
+A subsequent settings read showed `restore_port_power=false`,
+`enforce_per_port_switching=false` and `enum_timeout_ms=0`. Other ports
+returning on after hub re-enumeration may therefore follow the configured
+policy; it is not established as a restoration bug. Parent-hub disappearance
+is tracked separately in [bridge issue 26](https://github.com/tyeth-ai-assisted/esp-usbip-bridge/issues/26).
 
 With the larger USB inventory present, both REPL and a no-reset ROM probe
 received no serial data. After other leaf ports were individually switched
