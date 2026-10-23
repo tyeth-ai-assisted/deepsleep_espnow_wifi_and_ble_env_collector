@@ -1,10 +1,21 @@
-# Issue investigation coverage — updated 23 October 2026, 11:03 UTC
+# Issue investigation coverage — updated 23 October 2026, 12:50 UTC
 
 **No: the work is not fully investigated or physically verified.** This ledger
 reconciles the original `bugs_issues_and_todos.md` with the CP #15 escalation
 index. More soak time is now lower priority than these specific gaps. A source
 fix, a native fault-injection test and a physical-board test are separate kinds
 of evidence. Historical notes below are not new reproductions.
+
+## C6 follow-up: bare-board checks completed
+
+The C6 is now installed at `ea06dcb44e`. Five MCU-reset startup orderings,
+connected GATT transfer/disconnect/reconnect, BLE restart, absent-SD SPI-lock
+checks, AP/DHCP and five exact HTTP responses pass. Concurrent-radio ESP-NOW
+delivered 93/100 exact round trips with seven send failures and no corrupt
+payloads. Default `send(..., None)` with only a broadcast peer reproduces
+`0x3069`; an explicit peer succeeds. The board is bare: display, RTC and SCD41
+checks remain unavailable. Low negotiated MTU 23 is not established.
+See [C6 results and preserved failures](c6-targeted-qualification-2026-10-23.md).
 
 ## Update on 23 October: DHCP scheduling failure reproduced and candidate passes
 
@@ -141,7 +152,7 @@ complete. The source blobs match current upstream main. Exact-capacity controls
 pass: the packet size already includes the MAC. Eight application fault-injection
 checks pass for AP-safe reset, non-AP rebuild/failure handling, peer rotation,
 unconfirmed node delivery, explicit broadcast peer and channel-switch ordering.
-The follow-up `ea06dcb44e` packet synchronization fix passes ten native groups, including 20,000 concurrent packets with exact delivery/drop accounting, and fresh ESP32/C6 builds. It is now installed on Feather ESP32 V2: physical baseline fails on channels 1/6/11, candidate passes the identical traffic/integrity test with an S3 sender; see [the physical comparison](espnow-physical-comparison-2026-10-23.md). C6 remains build-only. See [the candidate evidence](espnow-rx-synchronization-2026-10-23.md). See [the reproduction and limits](espnow-targeted-investigation-2026-10-23.md).
+The follow-up `ea06dcb44e` packet synchronization fix passes ten native groups, including 20,000 concurrent packets with exact delivery/drop accounting, and fresh ESP32/C6 builds. It is now installed on Feather ESP32 V2: physical baseline fails on channels 1/6/11, candidate passes the identical traffic/integrity test with an S3 sender; see [the physical comparison](espnow-physical-comparison-2026-10-23.md). C6 is now physically checked: five MCU-reset orderings, connected GATT and bounded concurrent traffic; see the C6 follow-up above. See [the candidate evidence](espnow-rx-synchronization-2026-10-23.md). See [the reproduction and limits](espnow-targeted-investigation-2026-10-23.md).
 
 ## Original firmware reports
 
@@ -149,13 +160,13 @@ Numbers refer to headings in the original bug document, not GitHub IDs.
 
 | Report | Current evidence / disposition | Remaining targeted check |
 |---|---|---|
-| 0, 1, 5, 6, 10: C6 AP/DHCP/import/BLE/ESP-NOW memory failures | Later August notes identify IDF heap starvation and the reserve workaround, correcting earlier coexistence-only diagnoses. Reserve and frozen libraries are carried. C5 application/HTTPS overnight results are useful but are not a C6 reproduction. | Current C6, heavy imports and controlled heap pressure; both radio initialization orders; actual station DHCP and ESP-NOW sends. Capture error/backtrace if allocation fails. |
+| 0, 1, 5, 6, 10: C6 AP/DHCP/import/BLE/ESP-NOW memory failures | Later August notes identify IDF heap starvation and the reserve workaround, correcting earlier coexistence-only diagnoses. Reserve and frozen libraries are carried. C5 application/HTTPS overnight results are useful but are not a C6 reproduction. | Five C6 MCU-reset orderings with heavy imports and actual DHCP/HTTP/ESP-NOW now checked; controlled allocation failures and original display/sensor load remain. |
 | 2: Wi-Fi/socket creation leaves shared SPI locked | Historical staged observation; no fresh proof of corruption. | Probe lock ownership around AP, UDP/socket and display setup on the original shared-bus wiring. Distinguish bus ownership from a corrupted flag. |
-| 3: failed SD init leaves SPI locked | Current constructor unlocks after normal `init_card` error returns. Five physical S3 absent-card cases now pass. | C6/shared display setup and exceptional SPI/configure failures. Do not close the broader report from S3 alone. |
+| 3: failed SD init leaves SPI locked | Current constructor unlocks after normal `init_card` error returns. Five physical S3 absent-card cases now pass. | Five C6 absent-card cases also pass; shared display setup and exceptional SPI/configure failures remain. Do not close the broader report from S3 alone. |
 | 4: e-paper splash refresh / misleading errors | Workaround assigns a real root group; display behaviour has not been freshly measured. | Instrument timer, busy and bus ownership separately; reproduce splash versus explicit group on the actual panel. |
 | 7: BLE-mode memory starvation | Historical application fix gates HTTP imports; recorded resolved on the earlier bench. | Current constrained C6 boot and GATT connection with the intended display configuration. Silent low-memory GATT failure remains a separate diagnostic concern. |
-| 8: dropped BLE notifications | Upstream alpha.2 contains retry fixes; S3 unpaced 10,240-byte transfer passes exactly. | C6, verified low negotiated MTU and sustained radio/display load. |
-| 9: PacketBuffer blocks after disconnect | Actual S3 mid-burst disconnect returns in 2.20 seconds; reconnect has no stale bytes and transfers 1,024 fresh bytes exactly. | C6 and sustained radio/display load; broader timing/race coverage. |
+| 8: dropped BLE notifications | Upstream alpha.2 contains retry fixes; S3 unpaced 10,240-byte transfer passes exactly. | C6 10,240-byte exact transfer now passes; verified low negotiated MTU and sustained radio/display load remain. |
+| 9: PacketBuffer blocks after disconnect | Actual S3 mid-burst disconnect returns in 2.20 seconds; reconnect has no stale bytes and transfers 1,024 fresh bytes exactly. | C6 mid-burst disconnect returns in 2.252 s and reconnect transfers 1,024 exact bytes; sustained radio/display load and broader timing/race coverage remain. |
 | 11: S3 adapter disable hard-fault / cannot re-enable | Five basic cycles plus post-connected-NUS teardown with Wi-Fi/ESP-NOW resident pass on current Feather S3. | Sustained concurrent traffic and the original application/sensor configuration; no crash reproduced in this targeted check. |
 | Large code.py prevents Wi-Fi initialization | Historical MPY shim and current frozen libraries address memory placement. Eleven variants build; current app has completed deep-sleep/report cycles. | Board-specific cold-boot qualification, especially C6 with the real sensor/display load; no claim that compilation removes all memory limits. |
 | Raw-REPL write then hard-reset filesystem corruption; S3 MSC write crashes | Historical evidence and safe deployment workarounds retained. | Disposable backed-up filesystem with explicit flush/soft reload controls and concurrent-radio variants. Avoid corrupting the live application store to obtain evidence. |
@@ -175,7 +186,7 @@ Numbers refer to headings in the original bug document, not GitHub IDs.
 | History RAM rows, relabel, interrupted job, read-only drive | Existing host suite freshly passes. Large-file flash timing plus simultaneous HTTP/ESP-NOW and real interruption remain. |
 | Node autoconnect; collector in station mode; channel agility | Historical AP-channel 6/11 bench success. Autoconnect and router-channel variants still need targeted tests. |
 | Outage stash, hub time correction, real sensor discovery | Confirmation protocol host tests and simulated-sensor overnight delivery pass. Fresh collector-outage replay and real-sensor test remain. Unsynced duplicates remain a documented design limit. |
-| ESP-NOW buffer corruption / peer limits / broadcast / channel mismatch | All three upstream trackers remain open. Actual-source packet interleaving reproduces #9816; eight current application guard checks pass, including AP-safe recovery, peer limits, explicit broadcast and channel order. Packet synchronization candidate ea06 passes native checks and ESP32/C6 builds; physical ESP32/S3 baseline/candidate comparison now passes (old image reproduces invalid-buffer); short BLE scan coexistence also passes integrity (996/1000 received, 13 ads); broadcast gaps persist with 2 ms pacing; multi-sender/C6/sustained-load remain open; unused PHY-rate feature is not an application blocker. |
+| ESP-NOW buffer corruption / peer limits / broadcast / channel mismatch | All three upstream trackers remain open. Actual-source packet interleaving reproduces #9816; eight current application guard checks pass, including AP-safe recovery, peer limits, explicit broadcast and channel order. Packet synchronization candidate ea06 passes native checks and ESP32/C6 builds; physical ESP32/S3 baseline/candidate comparison now passes (old image reproduces invalid-buffer); short BLE scan coexistence also passes integrity (996/1000 received, 13 ads); broadcast gaps persist with 2 ms pacing; C6 bounded traffic now measured at 93/100 exact echoes with seven sender failures; multi-sender and sustained-load remain open; unused PHY-rate feature is not an application blocker. |
 | Battery watermark | Requires a controlled battery/unplug event; not verified by USB port commands alone. |
 | Calibration | Historical hub dry-run only; node window/result end-to-end still unverified. Do not perform an actual sensor FRC just to test transport. |
 | AI model download progress and revisit cache | Implemented/tested portal paths. Android emulator retained model through page, Chrome and emulator restarts; offline inference did not download weights. Physical phone memory/performance remains unknown. Emulator lacks supported AICore; JS fallback is separate. |
@@ -209,8 +220,8 @@ rollout and follow-up reports.
 
 - Fresh sequential inspection of all eight previously off S31 leaf ports
   found no C6 identity and restored original power states with no bridge reset.
-  The user will connect the C6/JD79667/RTC/SCD41 rig; its targeted regressions
-  await that hardware. The configured sensor strand names SCD30, not SCD41,
+  A bare C6 was subsequently connected and tested (see follow-up above);
+  the user confirmed no JD79667/RTC/SCD41 rig is attached. The configured sensor strand names SCD30, not SCD41,
   and the mux returned no usable live status/topology response. Configuration
   alone does not establish physical peripheral presence. Matched current
   Pico 2 512/2048-byte USB-stack diagnostics subsequently passed the bounded

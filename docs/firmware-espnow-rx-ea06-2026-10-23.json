@@ -50,7 +50,7 @@
     },
     {
       "board": "adafruit_feather_esp32c6_4mbflash_nopsram",
-      "installed": false,
+      "installed": true,
       "files": [
         {
           "name": "firmware.bin",
@@ -83,7 +83,8 @@
           "sha256": "93fd2f69be9ec60b7a5dddaf524e8818737b99742f3b0da5ca4ca8d1e08c190c"
         }
       ],
-      "embedded_version": "11.0.0-alpha.2-16-gea06dcb44e-dirty"
+      "embedded_version": "11.0.0-alpha.2-16-gea06dcb44e-dirty",
+      "physical_qualification": "c6-targeted-qualification-2026-10-23.json"
     }
   ]
 }
