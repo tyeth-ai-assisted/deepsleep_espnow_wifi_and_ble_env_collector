@@ -1,4 +1,4 @@
-# Issue investigation coverage — updated 23 October 2026, 18:43 UTC
+# Issue investigation coverage — updated 23 October 2026, 18:56 UTC
 
 **No: the work is not fully investigated or physically verified.** This ledger
 reconciles the original `bugs_issues_and_todos.md` with the CP #15 escalation
@@ -177,7 +177,7 @@ The exact PR 2 adapter at `6ca2f2d` now passes a real C6 cycle, continuing
 polling through an on-but-disabled port, absent parent hub, then returned
 off state before accepting on/enabled/present. Independent runtime uptime
 was 7.21 seconds; imports were detached. This is standalone candidate
-qualification, not live-service deployment. See [trace and limits](controller-c6-physical-2026-10-23.md).
+qualification. The exact adapter has since been deployed after 61 isolated live-base tests, Ruff/mypy, six cutover controls and restart/readiness verification. See [physical trace](controller-c6-physical-2026-10-23.md) and [deployment evidence](controller-power-deployment-2026-10-23.md).
 
 ## C6 follow-up: bare-board checks completed
 
@@ -441,7 +441,7 @@ rollout and follow-up reports.
   soaks. Reset cause remains unverified; the failed no-reset check is retained.
   See [the capacity investigation](s31-simultaneous-capacity-2026-10-23.md).
 - Controller power/disappearance checks have 61 passing tests and a draft fix,
-  but are not deployed. Capacity scheduling and stale imports remain open.
+  and are now deployed with the exact physically tested adapter; live-base tests and guarded restart/readiness checks pass. Capacity scheduling and stale imports remain open. See [deployment evidence](controller-power-deployment-2026-10-23.md).
 - Metro S3 now runs ea06 after private file recovery, fresh full backup,
   bounded partition/firmware migration and whole-chip verification. Runtime
   identity and three overlapping Wi-Fi/BLE scan cycles pass. Extended storage

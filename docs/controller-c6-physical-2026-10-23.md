@@ -43,3 +43,10 @@ controller-service deployment. Hub status alone is not a rail measurement;
 the independent low-uptime observation supports the MCU restart in this run.
 
 [Sanitized timings and exact adapter hash](controller-c6-physical-2026-10-23.json).
+
+## Subsequent service deployment
+
+The exact tested adapter was later installed in the controller service after
+61 isolated live-base tests and guarded restart verification. See
+[deployment evidence and limits](controller-power-deployment-2026-10-23.md).
+The physical trace above remains the earlier standalone measurement.
