@@ -1,4 +1,4 @@
-# Issue investigation coverage — updated 23 October 2026, 06:31 UTC
+# Issue investigation coverage — updated 23 October 2026, 06:46 UTC
 
 **No: the work is not fully investigated or physically verified.** This ledger
 reconciles the original `bugs_issues_and_todos.md` with the CP #15 escalation
@@ -242,10 +242,14 @@ rollout and follow-up reports.
   See [the capacity investigation](s31-simultaneous-capacity-2026-10-23.md).
 - Controller power/disappearance checks have 61 passing tests and a draft fix,
   but are not deployed. Capacity scheduling and stale imports remain open.
-- Metro S3 full backup failed twice with a 4095-byte frame where 4096 was
-  expected, at two baud settings. A strict 512-byte/window-one reader verified
-  a 64 KiB prefix. Root cause and full backup remain unresolved; no Metro
-  firmware writes occurred. Do not attribute this to S31 definitively.
+- Metro S3 full backup is now verified: strict 512-byte/window-one reads plus
+  independent device verification cover all 16 MiB. Earlier 4095-byte failures
+  remain preserved; packet size and bridge revision both changed, so root cause
+  is not isolated. The current ea06 Metro build passes but is not installed:
+  its application exceeds the old 2 MiB slot, requiring the new partition
+  layout. Saved storage fails normal FAT checks, including a signature-only
+  repair on a separate copy; file recovery/mapping and migration remain open.
+  No Metro flash writes occurred. See [backup and migration evidence](metro-backup-and-migration-investigation-2026-10-23.md).
 - Feather S3 is updated and has the targeted tests above. Metro S3, other
   build-only variants, C6/load variants of BLE, physical displays/RTC/sensors
   and full Pico USB stress remain explicit gaps. Three completed
