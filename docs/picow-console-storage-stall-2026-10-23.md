@@ -75,3 +75,50 @@ Root cause and production rollout remain open in
 The [sanitized measurements](picow-console-followup-2026-10-23.json) retain every
 comparison, including non-reproductions. USB thread/queue and controller-state
 instrumentation is still needed before selecting a source fix.
+
+## Passive USB and thread snapshots
+
+A temporary diagnostic build on CircuitPython `6839890534556b06b8b3d7c491e36fd2005b2483`
+and Zephyr `c6200e80ea6973b092da3c30c672901cc1951fc2` captures controller registers,
+endpoint state and Zephyr thread waits into RAM. It makes no USB requests and
+prints the captured data only after the console reopens. Each round contains
+20 snapshots approximately 300 ms apart; each snapshot is 816 bytes and contains
+17 threads. The temporary source edits were removed and original source hashes
+verified after building.
+
+Five open/closed/closed/closed/open rounds read the same 4 KiB disk data in
+0.031, 0.061, **3.126**, **3.067**, and 0.060 seconds. Reopening was scheduled
+three seconds after closing. Both long stalls therefore occurred with the
+instrumentation installed; the fast closed round preserves the intermittence.
+
+At the sampled points, including both long stalls:
+
+- The UDC mutex has no owner and depth zero. Driver event, new-transfer,
+  finished-transfer, buffer-status, interrupt-status and abort bits are zero.
+- UDC, USBD and MSC threads wait on their normal event/message queues. The
+  exact diagnostic ELF resolves those wait-queue addresses.
+- The USB SOF frame counter advances during the stall. The MSC OUT endpoint
+  has an available receive buffer, is not halted, and has no received bytes in
+  its queued buffer. The separate HID OUT buffer is not a second MSC buffer.
+- Actual runtime priorities are UDC/USBD **-8**, MSC **-1**, and Python main
+  **14**. The configured UDC value 8 is passed through `K_PRIO_COOP`; it must
+  not be read as preemptive priority 8 or used to infer starvation by main.
+
+These samples do not show a held UDC mutex, stranded completion event, stopped
+frame clock or whole-interpreter freeze. They do not establish which side of
+the USB link is responsible. Sampling can miss short transitions, and host
+USBmon completion timing cannot reveal electrical packets or DATA0/DATA1 state.
+Host-controller/hub behavior versus device endpoint protocol remains the next
+discriminator; no erratum or source fix is claimed.
+
+The original `9e153` code was restored, the complete expected 2 MiB image was
+verified, and three Wi-Fi/BLE scan cycles passed (76/64, 75/73, 80/70 results).
+The full restored image is not bit-identical to the pretest backup because
+runtime version metadata changed. Console bindings were restored and the S31
+was untouched. Both production Picos remain on the previous firmware; rollout
+remains blocked by [fork issue #42](https://github.com/tyeth/circuitpython/issues/42).
+
+[Sanitized grouped measurements](picow-usb-passive-snapshot-2026-10-23.json) and
+[the temporary instrumentation and decoder](../tools/repro_picow_usb_snapshot/README.md)
+make this result reviewable. Six decoder controls and eight flash-transaction
+fault controls passed. Raw flash images and USB captures remain private.
