@@ -211,3 +211,29 @@ See [sanitized sizes, hashes, timing populations and all large requests](pico2-m
 Full logs, raw captures and disk contents remain private. Smaller agents indexed
 the complete saved logs against explicit success/failure markers; the primary
 agent reviewed the flagged timing and capture-boundary evidence.
+
+
+## Direct Pico W timing control
+
+The directly attached Pico W on the same original `9e153ad624` revision reads
+its entire 520,704-byte disk using 4 KiB / 64 KiB / 4 KiB requests in
+1.117140 / 1.018847 / 1.119596 seconds. All three outputs match, with SHA-256
+`18d471d9170495a7fce4958d1b7103f73231a51533bdc365a4f8fb7957736977`,
+and each following CDC check passes. This adds command timings to the earlier
+successful direct-board geometry/backup checks.
+
+The target's seven 65,536-byte READ(10) commands complete in 0.116170–0.119606
+seconds with status zero and no residue; its final partial large read requests
+57,856 bytes and completes in 0.105618 seconds. All 298 captured target MSC
+commands have successful status wrappers. The whole-bus capture has 1,853
+packets, zero kernel drops, zero truncation and no pending URBs. Its 17 target
+error completions are retained as `-2`; they are not missing or failed MSC
+status wrappers. No 10–14-second READ(10) pause occurs in this control.
+
+The serial console remains open in raw REPL throughout the disk reads. This
+does not contradict the intermittent closed-console Pico W issue #42.
+Pico W differs from Pico 2 in MCU, transport and disk geometry, so the comparison
+does not isolate S31 as the cause. A same-device direct-Pico-2 comparison or
+bridge-side segment admission/completion timings are still needed. Bindings
+remain unchanged, S31 remains untouched, and no firmware or filesystem writes
+are made. [Sanitized direct-board timing evidence](picow-direct-msc-size-timing-2026-10-23.json).

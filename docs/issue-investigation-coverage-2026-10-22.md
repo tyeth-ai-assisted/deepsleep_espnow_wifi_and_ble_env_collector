@@ -1,4 +1,4 @@
-# Issue investigation coverage — updated 23 October 2026, 23:12 UTC
+# Issue investigation coverage — updated 23 October 2026, 23:19 UTC
 
 ## Pico 2 long-read comparison: independent failure remains
 
@@ -36,6 +36,13 @@ quiet/active-console/quiet prefix control takes 24.311/56.260/56.210 seconds;
 PASS with clean capture/port/import restoration; prior full-disk 64 KiB failures
 remain failures. No writes or latest-candidate 4 KiB full-disk qualification are
 claimed. [Reproduction, capture boundary review and limits](pico2-msc-long-read-comparison-2026-10-23.md#transfer-size-and-console-activity-controls).
+
+The direct Pico W open-console timing control reads its entire 520,704-byte
+disk in 1.117/1.019/1.120 seconds using 4 KiB/64 KiB/4 KiB requests, with exact
+content equality. Seven 64 KiB READ(10) commands complete in 116–120 ms; all
+298 target MSC commands have successful status wrappers. This different-board
+comparison does not isolate the bridge or disprove the closed-console issue.
+[Direct-board timings and scope](pico2-msc-long-read-comparison-2026-10-23.md#direct-pico-w-timing-control).
 
 ## Pico USB production rollout: console-close storage blocker
 
