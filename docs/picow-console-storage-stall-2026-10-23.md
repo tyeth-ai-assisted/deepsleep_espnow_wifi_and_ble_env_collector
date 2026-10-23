@@ -191,3 +191,21 @@ private trace instance were restored, and the bridge was untouched. The
 retain all seven rounds. Further repetitions of this passing setup alone
 cannot resolve CP #42; a changed reproduction condition or an actual failing
 trace is needed.
+
+## MCU reset and fresh USB enumeration control
+
+A subsequent control changes the startup history: `microcontroller.reset()`
+restarts the unchanged `9e153` Pico W, and the host observes a new USB device
+number with the same identity. Target uptime changes from 5,529.012 seconds to
+8.364 seconds. This is an MCU reset, not a power-removal test.
+
+The same xHCI-captured workload then completes seven exact 4 KiB reads,
+including six closed-console rounds, in 32.146–41.485 ms. Python progresses,
+the scheduled reopen remains three seconds after close, and all trace loss
+counters are zero. Firmware and filesystem were not written; host bindings
+and the private trace instance were restored and the bridge was untouched.
+
+This changed condition still does not reproduce the earlier stalls. It does
+not prove a reset repairs them, remove the rollout blocker, or identify the
+responsible host/device component. [Exact measurements](picow-xhci-reset-control-2026-10-23.json)
+retain the failed-to-reproduce result alongside earlier actual failures.

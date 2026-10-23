@@ -1,4 +1,4 @@
-# Issue investigation coverage — updated 23 October 2026, 18:56 UTC
+# Issue investigation coverage — updated 23 October 2026, 22:16 UTC
 
 **No: the work is not fully investigated or physically verified.** This ledger
 reconciles the original `bugs_issues_and_todos.md` with the CP #15 escalation
@@ -206,7 +206,12 @@ The historical ESP sleep-memory reload defect is already fixed upstream by
 [CP #11274](https://github.com/adafruit/circuitpython/pull/11274), merge
 `2a15ee1978b9c2fe10a77dcc26433cf1c658c766`. Ancestry was verified in both
 official alpha.2 and deployed `cb5301b6fb`; no duplicate patch is needed.
-This is source reconciliation, not a new physical sentinel test.
+A C5 `e467` physical control now verifies three VM reloads while the chip
+reset reason remains POWER_ON: all 4,096 sleep-memory bytes survive each
+reload, VM globals clear, and original memory is restored. The job still
+fails its final combined cleanup assertion; separate read-only checks then
+confirm original port/inventory/import state. This does not qualify fake/true
+deep sleep or battery retention. See [the scoped test and minimal reproduction](c5-sleep-memory-reload-2026-10-23.md).
 
 ## Pico W production follow-up and newly verified API gap
 
@@ -480,6 +485,11 @@ import and network states were restored. The preceding C5 matched console
 control identifies a usable continuous-handle path, not an established root
 cause. Feather S3 was moved/removed and its update awaits reconnection.
 See [the rollout evidence](remaining-esp-rx-rollout-2026-10-23.md).
+
+A further MCU-reset/fresh-enumeration Pico control also fails to reproduce
+CP #42: seven exact reads (six closed-console) finish in 32.146–41.485 ms
+with zero trace drops. This is negative evidence, not a fix or rollout
+qualification; [the reset control](picow-console-storage-stall-2026-10-23.md#mcu-reset-and-fresh-usb-enumeration-control) records its scope.
 
 The goal remains active. The final CP #15 comment has not been posted; it must
 carry the remaining limitations rather than claim every issue is resolved.
