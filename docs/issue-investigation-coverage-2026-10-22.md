@@ -1,9 +1,9 @@
-# Issue investigation coverage — updated 23 October 2026, 22:56 UTC
+# Issue investigation coverage — updated 23 October 2026, 23:12 UTC
 
 ## Pico 2 long-read comparison: independent failure remains
 
 Both original `9e153ad624` and latest normal `0d545efdcf74` pass 4 KiB and 64 KiB
-reads with CDC checks but fail the full-disk read through S31. USBmon records
+reads with CDC checks but fail the full-disk 64 KiB-request read through S31. USBmon records
 successful 64 KiB READ(10) completions delayed by about 10, 14 and 14 seconds
 on each revision, with zero capture drops. The candidate's paired USB fixes
 therefore do not resolve this workload. Original code was restored with whole
@@ -28,6 +28,15 @@ decoder confirms these timings. This does not yet distinguish request delivery,
 bridge admission/completion queuing, or device USB processing. The full-read job
 remains failed and all cleanup passes. [Timing and decoder boundaries](pico2-msc-long-read-comparison-2026-10-23.md#simultaneous-network-and-usb-timing).
 
+A new original-firmware size control reads the entire 2,617,856-byte disk twice
+using 4 KiB requests in 6.881/6.478 seconds with exact content equality, surrounding
+a 256 KiB prefix read using 64 KiB requests that takes 24.307 seconds. A separate
+quiet/active-console/quiet prefix control takes 24.311/56.260/56.210 seconds;
+20 print probes complete but do not remove the delay. These diagnostic jobs
+PASS with clean capture/port/import restoration; prior full-disk 64 KiB failures
+remain failures. No writes or latest-candidate 4 KiB full-disk qualification are
+claimed. [Reproduction, capture boundary review and limits](pico2-msc-long-read-comparison-2026-10-23.md#transfer-size-and-console-activity-controls).
+
 ## Pico USB production rollout: console-close storage blocker
 
 The actual `6839890534` Pico W rollout fails its initial capacity read before
@@ -37,7 +46,8 @@ with no missing MSC status wrappers or reported capture drops. The first
 automatic restore stalls on host storage unbind; a separate CDC ROM recovery
 restores original firmware, full expected image, three radios and bindings.
 The traced run also restores successfully. Both production Picos remain `9e153ad624`;
-Pico 2 rollout has not been attempted.
+The later temporary latest-build Pico 2 comparison above also fails its
+full-disk 64 KiB read and restores original code; permanent rollout remains blocked.
 
 Matched no-flash controls on the older build show 31 ms reads with the console
 open or DTR off, but 2.068/4.066 seconds when a closed console is reopened after

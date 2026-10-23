@@ -1,7 +1,9 @@
 # Pico 2 full-disk read delays on both firmware revisions
 
-The Pico 2 W independently fails a bounded full-disk MSC read through the S31
-USB/IP bridge on both original `9e153ad624` and latest normal `0d545efdcf74`.
+The Pico 2 W independently fails a bounded full-disk MSC read using 64 KiB
+requests through the S31 USB/IP bridge on both original `9e153ad624` and latest
+normal `0d545efdcf74`. New original-firmware controls below complete two entire
+disk reads using 4 KiB requests with identical contents.
 The latest image includes Zephyr `c6200e80` (paired USB reconfiguration and CDC
 rearming fixes) and HAL Pico `de12fc2a` (Bluetooth ready-state retry guard).
 Those changes do not resolve this workload. This does not establish that the
@@ -89,8 +91,9 @@ capture cleanup uses the corrected privileged PID read and completes normally.
 
 There is no storage fix, permanent candidate rollout, direct-Pico-2-USB test,
 or common-cause claim for Pico W #42. The simultaneous network/USB capture below narrows the delay to before the
-first reply arrives. Controlled transfer-size/CDC-activity comparisons and
-bridge-side segment/completion timestamps remain useful next discriminators.
+first reply arrives. Transfer-size and CDC-activity controls below now narrow
+the behavior further. Bridge-side segment/completion timestamps and a direct
+USB comparison remain useful next discriminators.
 See [structured evidence](pico2-msc-long-read-comparison-2026-10-23.json).
 
 ## Simultaneous network and USB timing
@@ -136,3 +139,75 @@ fails. The stderr is preserved; it does not supersede those per-stage results.
 
 See [timing evidence](pico2-msc-network-timing-2026-10-23.json) and
 [decoder with arrival-order controls](../tools/repro_usbip_timing/README.md).
+
+
+## Transfer-size and console-activity controls
+
+Two further read-only tests on original `9e153ad624` preserve the same topology,
+open raw-REPL console and normal interface bindings. No firmware or filesystem
+writes are made. Both controller jobs finish PASS: their bounded diagnostic
+steps complete, but the long-read slowdown remains unresolved.
+
+| Sequential size-control step | Bytes read | Elapsed | Result |
+|---|---:|---:|---|
+| Entire disk, `bs=4096` | 2,617,856 | 6.881316 s | Complete |
+| Prefix, `bs=65536 count=4` | 262,144 | 24.307075 s | Exact matching prefix |
+| Entire disk again, `bs=4096` | 2,617,856 | 6.477851 s | Exact match to first entire disk |
+
+Both entire disk images have SHA-256
+`8554756db54eb98a74be479d97aa3ae162e20475cb8927f23e4a781b36479535`.
+CDC checks pass after every step. Across the network capture, all 1,320 data-IN
+requests of 4 KiB complete with matching lengths and first-reply delays of
+5.204–6.430 ms. The four 64 KiB requests have first-reply delays of
+0.069872, 0.072969, 10.038891 and 14.024299 seconds. Their full reply delivery
+after the first byte takes 9.206–10.540 ms. The 4 KiB success covers every disk
+byte; it is not a single-sector or cached-file check (`iflag=direct` is used).
+It does not qualify the latest candidate's entire-disk 4 KiB path, writes,
+unattended storage use or permanent deployment.
+
+The next test reads the same 256 KiB prefix three times using four 64 KiB
+requests per step. Quiet / active-console / quiet durations are 24.310519,
+56.259576 and 56.210091 seconds, with identical output each time. The active
+step completes 20 raw-REPL `print("CDC_ACTIVITY")` commands without errors.
+The driver waits 200 ms after each completed command before starting another;
+the observed commands themselves take 1.803170–2.863758 seconds. This is **not**
+a successful 5 Hz heartbeat. The reported active-step elapsed time includes
+joining that activity thread before the final CDC check.
+
+All four 64 KiB requests in the active step and all four in the following quiet
+step wait about 14.02 seconds for their first reply. Periodic console activity
+does not remove the slowdown in this control. The first quiet step's two fast
+requests are followed by the familiar 10/14-second delays; since the last quiet
+step stays slow too, this sequence does not establish that console activity
+causes or worsens the delay. The affected component and any relationship to
+direct Pico W #42 remain unproven.
+
+All captured MSC commands receive status wrappers: 1,377 in the size control
+and 34 in the console control. Both captures report zero kernel drops and
+USBmon zero truncation. The size capture also contains one successful status
+wrapper 2.102 ms after capture begins whose command is not captured; it is not
+counted as an extra completed test command. Its one pending USBmon URB belongs
+to the virtual hub's interrupt endpoint, and its 16 pending network requests
+are CDC IN receives. All its error completions occur after the last disk read,
+during console close/detach. These boundary records are retained rather than
+misreported as failed storage reads or packet loss.
+
+Both tests stop their owned captures, detach imports and restore the original
+Pico port state without restarting S31. Neither logs HCD channel exhaustion.
+Original failed full-disk 64 KiB tests remain failures; these successful
+diagnostics do not replace them.
+
+To reproduce the size comparison after the identity, ownership and REPL checks
+above, capture USBmon and the complete USB/IP session, then save stdout from
+three bounded `dd if=/dev/<verified-disk> iflag=direct status=none` invocations:
+`bs=4096`, `bs=65536 count=4`, and `bs=4096`. Use a 60-second timeout with
+five-second kill grace, retain partial output on failure, compare full lengths
+and bytes, and check CDC after each. For the activity comparison, use three
+`bs=65536 count=4` invocations, driving bounded raw-REPL print commands only
+during the middle invocation and retaining every command's start/end/output.
+Do not label the 256 KiB prefix test a full-disk pass.
+
+See [sanitized sizes, hashes, timing populations and all large requests](pico2-msc-size-cdc-controls-2026-10-23.json).
+Full logs, raw captures and disk contents remain private. Smaller agents indexed
+the complete saved logs against explicit success/failure markers; the primary
+agent reviewed the flagged timing and capture-boundary evidence.
