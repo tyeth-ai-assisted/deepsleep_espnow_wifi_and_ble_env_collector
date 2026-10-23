@@ -1,4 +1,4 @@
-# Issue investigation coverage — updated 23 October 2026, 00:40 UTC
+# Issue investigation coverage — updated 23 October 2026, 01:02 UTC
 
 **No: the work is not fully investigated or physically verified.** This ledger
 reconciles the original `bugs_issues_and_todos.md` with the CP #15 escalation
@@ -13,7 +13,7 @@ same binary, Pico-side sleeps let a lease arrive; changing only the service
 priority from 15 to the interpreter's 0 also passes with no sleeps. A 15-second
 busy-loop control acquires a lease in 4.467 seconds while Python continues
 computing. The shared configuration fix is committed as `6b117bdce5`.
-The production Pico 2 image now passes channel 1/6/11, DHCP, ping, matching station MAC/IP, departure and AP stop/restart. Cleanup passed; Pico W production rollout remains open. See the [controlled reproduction, provenance and limits](pico2-dhcp-scheduling-2026-10-23.md) and [production hardware evidence](pico2-production-ap-qualification-2026-10-23.json).
+The production Pico 2 image now passes channel 1/6/11, DHCP, ping, matching station MAC/IP, departure and AP stop/restart. Cleanup passed. Pico W production rollout and the same AP checks now also pass, including BLE scans with a station associated. See the [controlled reproduction, provenance and limits](pico2-dhcp-scheduling-2026-10-23.md) and [production hardware evidence](pico2-production-ap-qualification-2026-10-23.json).
 
 USB stack measurements are now available for the limited CDC/AP workload:
 248–256 of 2048 bytes used. A physical 512-byte comparison and concurrent
@@ -25,6 +25,18 @@ The historical ESP sleep-memory reload defect is already fixed upstream by
 `2a15ee1978b9c2fe10a77dcc26433cf1c658c766`. Ancestry was verified in both
 official alpha.2 and deployed `cb5301b6fb`; no duplicate patch is needed.
 This is source reconciliation, not a new physical sentinel test.
+
+## Pico W production follow-up and newly verified API gap
+
+Pico W production `6b117` now passes actual channel 1/6/11, DHCP, ping, matching
+station MAC/IP, departure and AP stop/restart. Concurrent BLE scan and extended
+request rejection controls also pass. Fresh full backup/readback and preserved
+BLE identity passed. See [the report](picow-production-qualification-2026-10-23.md).
+
+Separately, the earlier image remained connected after `stop_station()`: the
+function is a no-op in both current integration and upstream source.
+[CP fork #40](https://github.com/tyeth/circuitpython/issues/40) tracks the minimal
+reproduction; implementation and restart/AP-active tests remain open.
 
 ## Earlier finding, superseded for DHCP by the production result above
 
@@ -187,7 +199,7 @@ rollout and follow-up reports.
 | HAL Pico #6 startup assertions | Newly executed native failure injection now passes candidate / fails old source. Hardware injection still unrun. |
 | HAL Pico #3 HOST_CTRL cache | Newly reproduced cache/hardware divergence under injected lost write. Production cache policy and physical incidence unresolved. |
 | Zephyr #6 USB stack | Instrumented hardware measurements now show 248–256/2048 bytes in limited CDC/AP work; physical 512 comparison and MSC stress remain outstanding. |
-| Zephyr #8 softAP | Channel 1 association/static ping pass. DHCP starvation reproduced; equal-priority candidate passes idle and busy Python controls. Production Pico 2 channel 1/6/11, DHCP/ping and station departure now pass. Pico W production follow-up remains open. |
+| Zephyr #8 softAP | Channel 1 association/static ping pass. DHCP starvation reproduced; equal-priority candidate passes idle and busy Python controls. Production Pico 2 channel 1/6/11, DHCP/ping and station departure now pass. Pico W production follow-up also passes, including concurrent BLE scan with an associated station. Station start/stop API stubs remain separate issue #40. |
 | Zephyr #9 legacy timeout | Source still omits timeout in legacy HCI path; CircuitPython host deadline works around it. Direct low-level timed-radio reproduction outstanding. |
 | HAL Infineon #2 coexistence assets | Asset selection audited; current Pico W two-hour and Pico 2 W thirty-minute concurrent-radio runs passed. This does not prove every traffic pattern. |
 | CP #25 warm reset | Earlier 45% failure claim retracted after 45/45 successes; original trigger unresolved. |

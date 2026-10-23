@@ -47,7 +47,7 @@ runtime messages were checked.
 ## Limits and stack measurements
 
 This establishes the scheduling failure and a working priority change for
-the tested Pico 2 AP workload. The production `6b117bdce5` Pico 2 image now passes channels 1, 6 and 11: actual scanned channel, DHCP lease, ping, matching station MAC/IP, station departure, and AP stop/restart. Cleanup passed. See the [production hardware evidence](pico2-production-ap-qualification-2026-10-23.json). Pico W production-image physical follow-up remains open. Both Pico W and Pico 2 W production builds now
+the tested Pico 2 AP workload. The production `6b117bdce5` Pico 2 image now passes channels 1, 6 and 11: actual scanned channel, DHCP lease, ping, matching station MAC/IP, station departure, and AP stop/restart. Cleanup passed. See the [production hardware evidence](pico2-production-ap-qualification-2026-10-23.json). Pico W now also passes production channel 1/6/11 and station departure, with ordinary BLE scans while the AP serves a station. See the [Pico W result](picow-production-qualification-2026-10-23.md). Both Pico W and Pico 2 W production builds now
 pass at `6b117bdce5` without diagnostic overrides; their resolved socket-service
 priority is 0. See the [production artifact manifest](firmware-pico-socket-priority-6b117-2026-10-23.json).
 
