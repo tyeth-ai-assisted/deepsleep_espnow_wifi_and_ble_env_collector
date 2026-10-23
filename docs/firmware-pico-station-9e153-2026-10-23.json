@@ -11,7 +11,8 @@
       "bytes": 1209020,
       "sha256": "75c0057c17f080d76390bf0fd72b45de0ed89d3245239d40502e0060cf983632",
       "config_sha256": "00d9fa6b110f29e22ef59824cee0debc2821df86e65b3a489b129152077618b0",
-      "production_image_physically_installed": false
+      "production_image_physically_installed": true,
+      "physical_qualification": "pico2-station-tls-2026-10-23.json"
     },
     {
       "board": "raspberrypi_rpi_pico_w_zephyr",

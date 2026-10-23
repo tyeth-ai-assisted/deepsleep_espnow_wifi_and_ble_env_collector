@@ -1,4 +1,4 @@
-# Issue investigation coverage — updated 23 October 2026, 07:57 UTC
+# Issue investigation coverage — updated 23 October 2026, 09:54 UTC
 
 **No: the work is not fully investigated or physically verified.** This ledger
 reconciles the original `bugs_issues_and_todos.md` with the CP #15 escalation
@@ -34,9 +34,9 @@ request rejection controls also pass. Fresh full backup/readback and preserved
 BLE identity passed. See [the report](picow-production-qualification-2026-10-23.md).
 
 Separately, the earlier image remained connected after `stop_station()`: the
-function is a no-op in both current integration and upstream source.
+function was a no-op in the preceding integration and audited upstream source.
 [CP fork #40](https://github.com/tyeth/circuitpython/issues/40) tracks the minimal
-reproduction. The fix at `9e153ad624` now passes 46 native checks and physical Pico W connect/stop/reconnect, disabled-start and AP-preservation tests, including cleanup. Pico 2 builds but its rollout remains open. See [the station lifecycle evidence](picow-station-lifecycle-2026-10-23.md).
+reproduction. The fix at `9e153ad624` now passes 46 native checks and physical Pico W connect/stop/reconnect, disabled-start and AP-preservation tests, including cleanup. Pico 2 now also passes these lifecycle checks at the same revision after full-flash/runtime verification; bounded trusted TLS with BLE and three certificate-rejection controls pass. Certificate date validity is deliberately unchecked. See [Pico 2 evidence and preserved fixture failures](pico2-station-tls-2026-10-23.md). See [the station lifecycle evidence](picow-station-lifecycle-2026-10-23.md).
 
 ## Earlier finding, superseded for DHCP by the production result above
 
@@ -199,7 +199,7 @@ rollout and follow-up reports.
 | HAL Pico #6 startup assertions | Newly executed native failure injection now passes candidate / fails old source. Hardware injection still unrun. |
 | HAL Pico #3 HOST_CTRL cache | Newly reproduced cache/hardware divergence under injected lost write. Production cache policy and physical incidence unresolved. |
 | Zephyr #6 USB stack | Instrumented hardware measurements now show 248–256/2048 bytes in limited CDC/AP work; A short direct Pico W 9e153 CDC/MSC read comparison now passes 270 serial checks and 90 uncached 4 KiB reads; physical 512 comparison, MSC writes and sustained stress remain outstanding. |
-| Zephyr #8 softAP | Channel 1 association/static ping pass. DHCP starvation reproduced; equal-priority candidate passes idle and busy Python controls. Production Pico 2 channel 1/6/11, DHCP/ping and station departure now pass. Pico W production follow-up also passes, including concurrent BLE scan with an associated station. Station lifecycle #40 is now fixed and verified on Pico W at 9e153; Pico 2 rollout remains open. |
+| Zephyr #8 softAP | Channel 1 association/static ping pass. DHCP starvation reproduced; equal-priority candidate passes idle and busy Python controls. Production Pico 2 channel 1/6/11, DHCP/ping and station departure now pass. Pico W production follow-up also passes, including concurrent BLE scan with an associated station. Station lifecycle #40 is now fixed and verified on both Pico W and Pico 2 at 9e153. Pico 2 bounded TLS/BLE and hostname/default-bundle/unrelated-CA controls also pass; certificate dates remain unchecked. |
 | Zephyr #9 legacy timeout | Source still omits timeout in legacy HCI path; CircuitPython host deadline works around it. Direct low-level timed-radio reproduction outstanding. |
 | HAL Infineon #2 coexistence assets | Asset selection audited; current Pico W two-hour and Pico 2 W thirty-minute concurrent-radio runs passed. This does not prove every traffic pattern. |
 | CP #25 warm reset | Earlier 45% failure claim retracted after 45/45 successes; original trigger unresolved. |

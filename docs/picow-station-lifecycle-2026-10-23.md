@@ -46,3 +46,9 @@ Those failed runs were not relabelled as successful.
 See [sanitized results and evidence hashes](picow-station-lifecycle-2026-10-23.json).
 This does not claim physical driver-failure injection, full USB/MSC stress,
 Pico 2 runtime qualification at this revision, or another long soak.
+
+## Later Pico 2 follow-up
+
+Pico 2 was subsequently installed and verified at `9e153ad624`; station lifecycle
+and bounded TLS/BLE controls passed. The earlier rollout status above is historical.
+See [Pico 2 evidence and limits](pico2-station-tls-2026-10-23.md).
