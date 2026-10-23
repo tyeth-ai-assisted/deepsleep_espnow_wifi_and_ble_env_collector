@@ -24,9 +24,12 @@ These are send-submission controls, not proof that every peer received data.
 
 CircuitPython's binding documents `None` as all registered peers and passes
 NULL to IDF unchanged. The [IDF send documentation](https://docs.espressif.com/projects/esp-idf/en/v5.2/esp32/api-reference/network/esp_now.html)
-also describes all registered peers. The discrepancy is reproduced through
-CircuitPython on the pinned IDF; a standalone IDF reproduction and upstream
-disposition remain pending. Continue using an explicit broadcast peer.
+also describes all registered peers. A subsequent [standalone C-only IDF
+probe](c6-espnow-idf-contract-2026-10-23.md) reproduces the same behavior in
+three complete rounds. MicroPython already documents the broadcast exclusion;
+the ESP integration now corrects CircuitPython's documentation. This is not
+evidence of a new CircuitPython radio regression. Continue using an explicit
+broadcast peer; an IDF documentation clarification remains upstreamable.
 
 ## Power and transport qualification
 

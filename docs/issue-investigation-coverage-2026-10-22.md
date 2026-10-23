@@ -1,10 +1,20 @@
-# Issue investigation coverage — updated 23 October 2026, 13:02 UTC
+# Issue investigation coverage — updated 23 October 2026, 13:37 UTC
 
 **No: the work is not fully investigated or physically verified.** This ledger
 reconciles the original `bugs_issues_and_todos.md` with the CP #15 escalation
 index. More soak time is now lower priority than these specific gaps. A source
 fix, a native fault-injection test and a physical-board test are separate kinds
 of evidence. Historical notes below are not new reproductions.
+
+## ESP-NOW default-peer discrepancy: isolated below CircuitPython
+
+The standalone C6 IDF probe captures all 30 submission results across three
+rounds: broadcast-only NULL fails six times with 0x3069; explicit broadcast,
+unicast-only and mixed-list calls are accepted. MicroPython documents this
+exclusion; the ESP integration corrects the CircuitPython API documentation.
+This closes the standalone-reproduction gap, not the mixed-list delivery or
+multi-sender qualification gaps. Full flash restoration and `ea06dcb44e`
+runtime verification passed. [Minimal C app and evidence](c6-espnow-idf-contract-2026-10-23.md).
 
 ## Controller candidate: physical power-cycle verification
 
