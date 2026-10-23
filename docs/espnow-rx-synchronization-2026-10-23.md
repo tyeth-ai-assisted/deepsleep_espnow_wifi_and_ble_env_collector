@@ -44,9 +44,7 @@ in the [artifact manifest](firmware-espnow-rx-ea06-2026-10-23.json). The frozen
 MPU6050 dependency's actual revision is recorded separately. This is not a
 claim of a clean dependency checkout.
 
-Neither new image is installed. Physical baseline/candidate receive load,
-real radio coexistence and latency, and all other board variants remain
-unverified at this commit. Callback teardown lifetime is unchanged; this fix
+The Feather ESP32 V2 image is now installed and the physical baseline/candidate comparison passes: the old image reproduces invalid-buffer on channels 1/6/11, while the candidate passes the identical payload/accounting test. See [the physical report](espnow-physical-comparison-2026-10-23.md). C6 is not installed; real radio coexistence, latency and other variants remain unverified. Callback teardown lifetime is unchanged; this fix
 does not add a general corrupt-buffer recovery API or implement the separate
 channel/broadcast feature requests. Existing failed hardware evidence and
 older soak attribution remain unchanged.

@@ -44,7 +44,9 @@
     "stderr": "",
     "scope": "Actual packet/ring-buffer source with pthread critical sections, deterministic scheduling and concurrent integrity tests; not physical incidence data"
   },
-  "physical_tested": false,
-  "installed": false,
-  "build_manifest": "firmware-espnow-rx-ea06-2026-10-23.json"
+  "physical_tested": true,
+  "installed": true,
+  "build_manifest": "firmware-espnow-rx-ea06-2026-10-23.json",
+  "physical_scope": "Feather ESP32 V2 receiver only; C6 remains build-only",
+  "physical_evidence": "espnow-physical-comparison-2026-10-23.json"
 }

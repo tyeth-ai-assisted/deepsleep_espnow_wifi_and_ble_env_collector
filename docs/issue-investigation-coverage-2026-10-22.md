@@ -1,4 +1,4 @@
-# Issue investigation coverage — updated 23 October 2026, 01:33 UTC
+# Issue investigation coverage — updated 23 October 2026, 02:15 UTC
 
 **No: the work is not fully investigated or physically verified.** This ledger
 reconciles the original `bugs_issues_and_todos.md` with the CP #15 escalation
@@ -143,7 +143,7 @@ complete. The source blobs match current upstream main. Exact-capacity controls
 pass: the packet size already includes the MAC. Eight application fault-injection
 checks pass for AP-safe reset, non-AP rebuild/failure handling, peer rotation,
 unconfirmed node delivery, explicit broadcast peer and channel-switch ordering.
-The follow-up `ea06dcb44e` packet synchronization fix passes ten native groups, including 20,000 concurrent packets with exact delivery/drop accounting, and fresh ESP32/C6 builds. It is not installed or physically qualified. See [the candidate evidence](espnow-rx-synchronization-2026-10-23.md). See [the reproduction and limits](espnow-targeted-investigation-2026-10-23.md).
+The follow-up `ea06dcb44e` packet synchronization fix passes ten native groups, including 20,000 concurrent packets with exact delivery/drop accounting, and fresh ESP32/C6 builds. It is now installed on Feather ESP32 V2: physical baseline fails on channels 1/6/11, candidate passes the identical traffic/integrity test with an S3 sender; see [the physical comparison](espnow-physical-comparison-2026-10-23.md). C6 remains build-only. See [the candidate evidence](espnow-rx-synchronization-2026-10-23.md). See [the reproduction and limits](espnow-targeted-investigation-2026-10-23.md).
 
 ## Original firmware reports
 
@@ -176,7 +176,7 @@ Numbers refer to headings in the original bug document, not GitHub IDs.
 | History RAM rows, relabel, interrupted job, read-only drive | Existing host suite freshly passes. Large-file flash timing plus simultaneous HTTP/ESP-NOW and real interruption remain. |
 | Node autoconnect; collector in station mode; channel agility | Historical AP-channel 6/11 bench success. Autoconnect and router-channel variants still need targeted tests. |
 | Outage stash, hub time correction, real sensor discovery | Confirmation protocol host tests and simulated-sensor overnight delivery pass. Fresh collector-outage replay and real-sensor test remain. Unsynced duplicates remain a documented design limit. |
-| ESP-NOW buffer corruption / peer limits / broadcast / channel mismatch | All three upstream trackers remain open. Actual-source packet interleaving reproduces #9816; eight current application guard checks pass, including AP-safe recovery, peer limits, explicit broadcast and channel order. Packet synchronization candidate ea06 passes native checks and ESP32/C6 builds; physical latest-image traffic/failure incidence remains open; unused PHY-rate feature is not an application blocker. |
+| ESP-NOW buffer corruption / peer limits / broadcast / channel mismatch | All three upstream trackers remain open. Actual-source packet interleaving reproduces #9816; eight current application guard checks pass, including AP-safe recovery, peer limits, explicit broadcast and channel order. Packet synchronization candidate ea06 passes native checks and ESP32/C6 builds; physical ESP32/S3 baseline/candidate comparison now passes (old image reproduces invalid-buffer); short BLE scan coexistence also passes integrity (996/1000 received, 13 ads); broadcast gaps persist with 2 ms pacing; multi-sender/C6/sustained-load remain open; unused PHY-rate feature is not an application blocker. |
 | Battery watermark | Requires a controlled battery/unplug event; not verified by USB port commands alone. |
 | Calibration | Historical hub dry-run only; node window/result end-to-end still unverified. Do not perform an actual sensor FRC just to test transport. |
 | AI model download progress and revisit cache | Implemented/tested portal paths. Android emulator retained model through page, Chrome and emulator restarts; offline inference did not download weights. Physical phone memory/performance remains unknown. Emulator lacks supported AICore; JS fallback is separate. |

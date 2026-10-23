@@ -12,7 +12,7 @@
   "artifacts": [
     {
       "board": "adafruit_feather_esp32_v2",
-      "installed": false,
+      "installed": true,
       "files": [
         {
           "name": "firmware.bin",
@@ -45,7 +45,8 @@
           "sha256": "c36252e6c92684feea475f127dd6a609926d740fea948293e4b25ce644c2bfd2"
         }
       ],
-      "embedded_version": "11.0.0-alpha.2-16-gea06dcb44e-dirty"
+      "embedded_version": "11.0.0-alpha.2-16-gea06dcb44e-dirty",
+      "physical_qualification": "espnow-physical-comparison-2026-10-23.json"
     },
     {
       "board": "adafruit_feather_esp32c6_4mbflash_nopsram",
