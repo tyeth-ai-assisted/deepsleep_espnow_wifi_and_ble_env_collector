@@ -1,4 +1,4 @@
-# Issue investigation coverage — updated 23 October 2026, 04:46 UTC
+# Issue investigation coverage — updated 23 October 2026, 04:52 UTC
 
 **No: the work is not fully investigated or physically verified.** This ledger
 reconciles the original `bugs_issues_and_todos.md` with the CP #15 escalation
@@ -208,6 +208,13 @@ rollout and follow-up reports.
 | ESP-IDF DHCP debug-format PR #19074 | Previously checked open/unmerged; final state must be refreshed before the concluding CP #15 comment. |
 
 ## Bench transport and board coverage
+
+- New direct Pico W USB recurrence: the final inventory failed with the Pico
+  absent after descriptor/address timeouts and failed re-enumeration. Guarded
+  hub recovery restored USB, and Pico W 9e153 / Feather ea06 runtime checks
+  passed; S31 bec1d71 stayed healthy. Cause and CDC-versus-MSC behavior remain
+  unresolved. Preserve this failure independently of the successful S31
+  two-console comparison. See [the failure and recovery evidence](picow-idle-usb-recurrence-2026-10-23.md).
 
 - Bridge interface-claim cleanup is implemented and installed; 24 source cases
   and five sequential Pico composite imports passed. A fresh reversed-order control
