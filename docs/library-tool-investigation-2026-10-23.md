@@ -28,11 +28,26 @@ See [structured physical evidence](mpremote-new-file-comparison-2026-10-23.json)
 and [fork draft PR #1](https://github.com/tyeth-ai-assisted/circuitpython/pull/1)
 at `9a9f267b3a2d6af31e2b4045ab8a89bb712c9f4a`.
 
-The physical harness executes the pinned real functions through a custom raw-REPL
-adapter. It does not qualify the stock CLI connection/reset path or the full
-matching-firmware MicroPython hardware suite. GitHub reused the existing
-CircuitPython fork network; the draft uses an isolated MicroPython baseline
-branch. Human review remains pending before upstream submission.
+The initial physical harness executed pinned real functions through a custom
+raw-REPL adapter. A separate full CLI comparison now passes at 06:31 UTC using
+`python -B -m mpremote connect <device> resume ...` and the unmodified stock
+`SerialTransport` on the same Feather. Baseline new-file copy exits 1 with the
+reported errno traceback and leaves the destination absent. The candidate exits
+0 for new-file copy, overwrite, both remote-to-local readbacks and cleanup; the
+two distinct payloads match byte-for-byte. Explicit sync and final absence
+checks pass. Board uptime advances from 5947.024 to 5950.568 seconds. No soft
+reset or firmware write was requested; this does not qualify every serial-line
+reset behavior or the matching-firmware MicroPython hardware suite.
+
+The first CLI attempt stopped before device access because `platformdirs` was
+missing. That failure is preserved; version 4.5.1 was then installed in an
+isolated target directory without changing the existing environment. The full
+package is pinned to the same upstream/candidate sources; only `transport.py`
+differs between the two CLI variants. See [CLI evidence](mpremote-cli-comparison-2026-10-23.json).
+
+GitHub reused the existing CircuitPython fork network; the draft uses an
+isolated MicroPython baseline branch. Human review remains pending before
+upstream submission.
 
 Minimal reproduction: on a writable CircuitPython board, copy a small local file
 to a unique missing destination. Compare with a destination created directly via
