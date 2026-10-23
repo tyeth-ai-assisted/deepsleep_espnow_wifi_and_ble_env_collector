@@ -176,3 +176,7 @@ remains usable. Mixed-console cases also fail MSC and lose the Pico console;
 those results cannot be attributed solely to simultaneous channel pressure.
 Imports, port power and authorization defaults were restored without a bridge
 reset. See [the separate minimal reproduction and limits](s31-msc-reimport-2026-10-23.md).
+
+A later comparison using the actual Pico 2 USB-fixed build separates the remaining
+mixed-load failure from the reconnect defect: both single-device controls pass,
+but mixed CDC/MSC still fails in either order. See [the new failure and recovery evidence](s31-mixed-usbfix-2026-10-23.md).

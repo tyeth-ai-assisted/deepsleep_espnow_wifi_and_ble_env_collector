@@ -74,3 +74,7 @@ See [structured evidence](s31-msc-reimport-2026-10-23.json),
 [earlier capacity investigation](s31-simultaneous-capacity-2026-10-23.md),
 [bridge capacity #20](https://github.com/tyeth-ai-assisted/esp-usbip-bridge/issues/20)
 and [earlier MSC halt/toggle #13](https://github.com/tyeth-ai-assisted/esp-usbip-bridge/issues/13).
+
+A later comparison using the actual Pico 2 USB-fixed build separates the remaining
+mixed-load failure from the reconnect defect: both single-device controls pass,
+but mixed CDC/MSC still fails in either order. See [the new failure and recovery evidence](s31-mixed-usbfix-2026-10-23.md).

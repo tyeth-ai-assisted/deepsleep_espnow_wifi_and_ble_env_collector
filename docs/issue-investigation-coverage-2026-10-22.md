@@ -1,4 +1,4 @@
-# Issue investigation coverage — updated 23 October 2026, 15:54 UTC
+# Issue investigation coverage — updated 23 October 2026, 16:40 UTC
 
 **No: the work is not fully investigated or physically verified.** This ledger
 reconciles the original `bugs_issues_and_todos.md` with the CP #15 escalation
@@ -22,6 +22,13 @@ reproduces failure on the second baseline configuration selection, while the
 actual `6839890534` build passes four selections, eight whole-disk comparisons,
 CDC and three radio cycles. Original firmware and bindings are restored; see
 [the direct comparison and restoration limits](picow-usb-reconfiguration-2026-10-23.md).
+A subsequent mixed comparison on the actual Pico 2 `6839890534` build still
+fails MSC and the Pico console with Metro CDC in either import order, while
+Metro survives. Both initial and post-load single-Pico MSC/CDC controls now
+pass, separating this load-dependent failure from the reconnect defect.
+Production code, ports/imports/defaults and three radio checks are restored;
+no bridge reboot occurs. Live channel exhaustion remains uninstrumented.
+See [the preserved mixed failure and restoration](s31-mixed-usbfix-2026-10-23.md).
 The same-configuration source defect is already tracked as
 [Zephyr #121843](https://github.com/zephyrproject-rtos/zephyr/issues/121843).
 See [the controlled evidence, candidate and limits](usb-reconfiguration-2026-10-23.md).

@@ -37,7 +37,7 @@
   },
   "builds_passed": true,
   "actual_checkouts_verified_clean": true,
-  "deployment": "Pico W build temporarily tested and original 9e153ad624 restored; both production boards retain 9e153ad624",
-  "hardware_qualification": "Pico W actual 683989 build passes four direct reconfigurations and radios; Pico 2 temporary diagnostic of identical USB source pair passes four USB/IP imports",
+  "deployment": "Both builds temporarily tested and original 9e153ad624 restored on both production boards",
+  "hardware_qualification": "Pico W actual build passes four direct reconfigurations and radios; Pico 2 actual build passes initial/final single MSC+CDC controls but fails mixed CDC/MSC in both orders; earlier identical-source diagnostic passes four single USB/IP imports",
   "latest_official_release_checked": "11.0.0-alpha.2 on 2026-10-23"
 }
