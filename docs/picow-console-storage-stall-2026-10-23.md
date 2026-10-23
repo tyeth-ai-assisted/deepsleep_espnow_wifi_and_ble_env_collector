@@ -38,3 +38,40 @@ The first automatic restore was blocked before writing by a timed-out `usb-stora
 Do not infer a flash/storage data-corruption defect from this delay. Root cause and whether the owner is CircuitPython, Zephyr UDC/class code, or host interaction remain open. The existing Zephyr SET_CONFIGURATION and cancelled-OUT reports (#121843 and #122768) and CircuitPython #11531 are related USB work, but equivalence to this trigger is not established. See [fork integration PR #32](https://github.com/tyeth/circuitpython/pull/32) for the existing USB fixes; this report is an additional rollout blocker.
 
 Raw flash backups, kernel logs and the 25,864,944-byte USBmon capture remain private. The adjacent JSON retains sanitized timing and hash evidence. Four native decoder controls cover command/status pairing, missing status, negative USB completion and failed SCSI status. The unchanged flash transaction modules pass eight fault controls per Pico variant. No priority or USB source change is made in response to this finding.
+
+## Follow-up: runtime power, control endpoint and interpreter progress
+
+Further no-flash controls on the older firmware narrow the fault:
+
+- The Pico and both parent hubs already have runtime power policy on. Reapplying
+  and restoring it still gives three closed-console reads around 3.074 seconds,
+  alongside fast non-reproductions. Supported sampled ancestors remain active
+  with zero suspended time, including immediately before reopening during stalls.
+  Linux runtime autosuspend does not explain these reproductions.
+- Device GET_STATUS succeeds with the console open. In two closed-console
+  reproductions it times out (ETIMEDOUT) while disk reads wait 4.066 seconds for
+  reopening. A third attempt passes both operations. The fault therefore affects
+  control traffic as well as storage. Direct interface line-state requests return
+  Linux EBUSY because the CDC driver owns the interface; those are inconclusive.
+- Python continues executing during the USB stall. Of three closed-console busy
+  runs, two disk reads wait 3.133/3.067 seconds, while maximum gaps between Python
+  iterations are only 8.06/7.81 milliseconds. A sleeping-loop reproduction waits
+  3.068 seconds with a maximum iteration gap of 15.87 milliseconds. This evidence
+  does not support a whole-MCU freeze or a fault limited to the REPL prompt.
+- Leaving the console closed also led to kernel USB reset/descriptor timeouts,
+  followed by a host-initiated port power cycle and same-device re-enumeration.
+  Two later probes stopped at missing-device guards; another hit an enumeration
+  race before its first test. These failed attempts remain preserved.
+
+All successful reads retain the same 4 KiB hash; completed comparisons restore
+host bindings and power settings and leave the S31 unchanged. The initial PM
+fixture failed before changes when an ancestor sysfs attribute returned EIO;
+the corrected fixture records unsupported attributes. A first strict control
+fixture records the GET_STATUS timeout as a failed job, with cleanup passing.
+The completed diagnostic means evidence collection passed, not that USB is fixed.
+
+Root cause and production rollout remain open in
+[CircuitPython fork #42](https://github.com/tyeth/circuitpython/issues/42).
+The [sanitized measurements](picow-console-followup-2026-10-23.json) retain every
+comparison, including non-reproductions. USB thread/queue and controller-state
+instrumentation is still needed before selecting a source fix.
