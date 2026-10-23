@@ -468,5 +468,14 @@ reads, including six closed-console attempts (three busy, three sleeping), in
 31.4–52.3 ms with zero trace drops. This is retained as negative evidence, not
 a fix; see [the workload control](picow-console-storage-stall-2026-10-23.md#host-trace-with-active-python-workloads).
 
+The remaining ESP rollout audit now confirms C61 upgraded from `cb530` to
+`e467` with its UART console retained, a fresh 8 MiB backup, application-only
+write and whole expected-image verification. Its immediate post-watchdog
+console check failed; separate power-on runtime and three radio cycles passed.
+The initial failed job remains preserved. C5 still needs its silent runtime
+console investigated before deployment; the user confirms Feather S3 was
+moved/removed, so its physical update awaits reconnection. Neither build
+success nor older soaks imply these deployments. See [the rollout evidence](remaining-esp-rx-rollout-2026-10-23.md).
+
 The goal remains active. The final CP #15 comment has not been posted; it must
 carry the remaining limitations rather than claim every issue is resolved.
