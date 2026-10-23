@@ -37,7 +37,8 @@
   },
   "builds_passed": true,
   "actual_checkouts_verified_clean": true,
-  "deployment": "Both builds temporarily tested and original 9e153ad624 restored on both production boards",
+  "deployment": "Pico W production attempt failed initial storage; original 9e153ad624 restored and verified. Pico 2 rollout not attempted; both production boards remain 9e153ad624.",
   "hardware_qualification": "Pico W actual build passes four direct reconfigurations and radios; Pico 2 actual build passes initial/final single MSC+CDC controls but fails mixed CDC/MSC in both orders; earlier identical-source diagnostic passes four single USB/IP imports",
-  "latest_official_release_checked": "11.0.0-alpha.2 on 2026-10-23"
+  "latest_official_release_checked": "11.0.0-alpha.2 on 2026-10-23",
+  "rollout_blocker": "https://github.com/tyeth/circuitpython/issues/42"
 }

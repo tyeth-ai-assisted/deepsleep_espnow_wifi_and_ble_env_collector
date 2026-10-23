@@ -1,10 +1,31 @@
-# Issue investigation coverage — updated 23 October 2026, 17:20 UTC
+# Issue investigation coverage — updated 23 October 2026, 17:48 UTC
 
 **No: the work is not fully investigated or physically verified.** This ledger
 reconciles the original `bugs_issues_and_todos.md` with the CP #15 escalation
 index. More soak time is now lower priority than these specific gaps. A source
 fix, a native fault-injection test and a physical-board test are separate kinds
 of evidence. Historical notes below are not new reproductions.
+
+## Pico USB production rollout: console-close storage blocker
+
+The actual `6839890534` Pico W rollout fails its initial capacity read before
+the repeated-configuration tests. A second temporary run reproduces it with
+USBmon: a TEST UNIT READY completes after 10.126 seconds as the console reopens,
+with no missing MSC status wrappers or reported capture drops. The first
+automatic restore stalls on host storage unbind; a separate CDC ROM recovery
+restores original firmware, full expected image, three radios and bindings.
+The traced run also restores successfully. Both production Picos remain `9e153ad624`;
+Pico 2 rollout has not been attempted.
+
+Matched no-flash controls on the older build show 31 ms reads with the console
+open or DTR off, but 2.068/4.066 seconds when a closed console is reopened after
+2/4 seconds. One closed-port attempt with a one-second reopen does not stall;
+the trigger is intermittent. Sleep/busy/sleep reads stay 31/32/60 ms, so no
+thread-priority fix is justified by these controls. Root cause remains open in
+[fork #42](https://github.com/tyeth/circuitpython/issues/42). See
+[minimal steps, failed rollout and recovery](picow-console-storage-stall-2026-10-23.md).
+Earlier bounded USB-fix passes retain their scope; they do not prove production
+reliability with the console closed.
 
 ## USB/IP reconnect: endpoint reconfiguration isolated
 

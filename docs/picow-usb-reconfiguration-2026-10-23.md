@@ -69,3 +69,5 @@ checks total. Existing upstream reports remain
 This bounded comparison does not establish the cause of the earlier idle
 failure, long-duration reliability, mounted-file writes, or full S31 composite
 capacity. The new firmware was temporary; production rollout remains pending.
+
+A later production attempt reveals an additional intermittent console-close storage stall on both old and candidate builds. [Failure, matched controls and recovery](picow-console-storage-stall-2026-10-23.md). The earlier pass above does not establish reliable closed-console operation.
