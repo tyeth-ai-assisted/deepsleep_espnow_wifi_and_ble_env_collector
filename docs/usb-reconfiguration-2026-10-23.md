@@ -59,9 +59,8 @@ The physical candidate completes descriptor requests, SET_CONFIGURATION(1),
 line coding and control-line-state requests, but the first raw-REPL write
 times out. No MSC command is sent. Its capture has 62 commands, including
 successful control requests and pending transfers subsequently unlinked.
-This is a failed candidate, not a successful MSC fix. The source change is
-not committed into the integration or left in the build checkout. CDC
-cancellation/rearming is a next discriminator, not an established root cause.
+This is a failed candidate, not a successful MSC fix. At this stage the configuration-only change was rejected. The combined
+candidate below subsequently incorporates it with CDC cancellation rearming.
 
 ## Combined candidate: cancellation rearm closes the bounded failure
 
@@ -133,4 +132,6 @@ configuration-only candidate failed qualification. The combined candidate passes
 
 Both production variants build at the new CP/Zephyr pins with clean actual
 checkouts verified before and after. Embedded binaries identify CP `6839890534`.
-See [the build manifest](firmware-pico-usb-683989-2026-10-23.json). These builds are not installed.
+The actual Pico W build subsequently passes a direct-host baseline/candidate
+comparison and is restored afterward. See [the direct Pico W result](picow-usb-reconfiguration-2026-10-23.md)
+and [build manifest](firmware-pico-usb-683989-2026-10-23.json). Production rollout remains pending.

@@ -17,7 +17,11 @@ MSC; it is rejected from rollout and production is restored exactly. A second
 combined candidate adds cancelled-OUT CDC rearming and passes all four ordinary
 imports with correct first-INQUIRY exchanges and exact disk reads; production
 is again restored. The fixes are carried by Zephyr `c6200e80` and CP pin
-`6839890534`, with production rollout and Pico W hardware checks still pending.
+`6839890534`, with production rollout still pending. A later direct Pico W comparison now
+reproduces failure on the second baseline configuration selection, while the
+actual `6839890534` build passes four selections, eight whole-disk comparisons,
+CDC and three radio cycles. Original firmware and bindings are restored; see
+[the direct comparison and restoration limits](picow-usb-reconfiguration-2026-10-23.md).
 The same-configuration source defect is already tracked as
 [Zephyr #121843](https://github.com/zephyrproject-rtos/zephyr/issues/121843).
 See [the controlled evidence, candidate and limits](usb-reconfiguration-2026-10-23.md).

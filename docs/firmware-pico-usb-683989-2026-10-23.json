@@ -37,7 +37,7 @@
   },
   "builds_passed": true,
   "actual_checkouts_verified_clean": true,
-  "deployment": "not installed; both production devices retain 9e153ad624",
-  "hardware_qualification": "Pico 2 temporary diagnostic of identical USB source pair; no Pico W hardware qualification of new pin",
+  "deployment": "Pico W build temporarily tested and original 9e153ad624 restored; both production boards retain 9e153ad624",
+  "hardware_qualification": "Pico W actual 683989 build passes four direct reconfigurations and radios; Pico 2 temporary diagnostic of identical USB source pair passes four USB/IP imports",
   "latest_official_release_checked": "11.0.0-alpha.2 on 2026-10-23"
 }
