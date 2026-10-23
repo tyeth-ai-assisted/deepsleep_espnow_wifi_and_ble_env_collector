@@ -39,7 +39,8 @@
   "production_fix": {
     "commit": "6b117bdce576abf927554a4946b8610149150aa0",
     "change": "Default NET_SOCKETS_SERVICE_THREAD_PRIO to MAIN_THREAD_PRIORITY when NETWORKING is enabled",
-    "hardware_image_note": "Physical comparison used the same priority value as a configuration override on clean 7d4 source; do not relabel it as a 6b117 production-image test"
+    "hardware_image_note": "Physical comparison used the same priority value as a configuration override on clean 7d4 source; do not relabel it as a 6b117 production-image test",
+    "production_builds": "Both Pico variants passed; manifest firmware-pico-socket-priority-6b117-2026-10-23.json"
   },
   "cleanup": "All four recorded diagnostic runs stopped the AP and station, restored DHCP client state, detached USB imports and restored original port state",
   "stack_observations": {

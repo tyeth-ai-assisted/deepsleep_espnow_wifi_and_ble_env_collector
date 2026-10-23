@@ -47,8 +47,10 @@ runtime messages were checked.
 ## Limits and stack measurements
 
 This establishes the scheduling failure and a working priority change for
-the tested Pico 2 AP workload. Other AP channels, station departure, Pico W
-physical follow-up and production builds still need their own results.
+the tested Pico 2 AP workload. Other AP channels, station departure and production-image physical follow-up
+still need their own results. Both Pico W and Pico 2 W production builds now
+pass at `6b117bdce5` without diagnostic overrides; their resolved socket-service
+priority is 0. See the [production artifact manifest](firmware-pico-socket-priority-6b117-2026-10-23.json).
 
 The instrumented USB driver thread used 248–256 bytes of its 2048-byte stack
 during these CDC/AP tests. The socket-service thread used 2184 of 2400 bytes
