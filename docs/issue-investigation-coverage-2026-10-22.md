@@ -1,4 +1,4 @@
-# Issue investigation coverage — updated 23 October 2026, 09:54 UTC
+# Issue investigation coverage — updated 23 October 2026, 10:12 UTC
 
 **No: the work is not fully investigated or physically verified.** This ledger
 reconciles the original `bugs_issues_and_todos.md` with the CP #15 escalation
@@ -208,6 +208,15 @@ rollout and follow-up reports.
 | ESP-IDF DHCP debug-format PR #19074 | Previously checked open/unmerged; final state must be refreshed before the concluding CP #15 comment. |
 
 ## Bench transport and board coverage
+
+- Fresh sequential inspection of all eight previously off S31 leaf ports
+  found no C6 identity and restored original power states with no bridge reset.
+  The user will connect the C6/JD79667/RTC/SCD41 rig; its targeted regressions
+  await that hardware. The configured sensor strand names SCD30, not SCD41,
+  and the mux returned no usable live status/topology response. Configuration
+  alone does not establish physical peripheral presence. Matched current
+  Pico 2 512/2048-byte USB-stack diagnostic builds are ready but not installed.
+  See [availability evidence and precise limits](farm-hardware-availability-2026-10-23.md).
 
 - New direct Pico W USB recurrence: the final inventory failed with the Pico
   absent after descriptor/address timeouts and failed re-enumeration. Guarded
