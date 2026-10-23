@@ -1,4 +1,4 @@
-# Issue investigation coverage — updated 23 October 2026, 04:52 UTC
+# Issue investigation coverage — updated 23 October 2026, 05:33 UTC
 
 **No: the work is not fully investigated or physically verified.** This ledger
 reconciles the original `bugs_issues_and_todos.md` with the CP #15 escalation
@@ -198,7 +198,7 @@ rollout and follow-up reports.
 | Zephyr #3 settings geometry, #10 p256-m; shared-bus window/power/wake/RX locks | Reproduced and fixed/worked around with exact-source controls; earlier physical stall cause remains unproved. |
 | HAL Pico #6 startup assertions | Newly executed native failure injection now passes candidate / fails old source. Hardware injection still unrun. |
 | HAL Pico #3 HOST_CTRL cache | Newly reproduced cache/hardware divergence under injected lost write. Production cache policy and physical incidence unresolved. |
-| Zephyr #6 USB stack | Instrumented hardware measurements now show 248–256/2048 bytes in limited CDC/AP work; physical 512 comparison and MSC stress remain outstanding. |
+| Zephyr #6 USB stack | Instrumented hardware measurements now show 248–256/2048 bytes in limited CDC/AP work; A short direct Pico W 9e153 CDC/MSC read comparison now passes 270 serial checks and 90 uncached 4 KiB reads; physical 512 comparison, MSC writes and sustained stress remain outstanding. |
 | Zephyr #8 softAP | Channel 1 association/static ping pass. DHCP starvation reproduced; equal-priority candidate passes idle and busy Python controls. Production Pico 2 channel 1/6/11, DHCP/ping and station departure now pass. Pico W production follow-up also passes, including concurrent BLE scan with an associated station. Station lifecycle #40 is now fixed and verified on Pico W at 9e153; Pico 2 rollout remains open. |
 | Zephyr #9 legacy timeout | Source still omits timeout in legacy HCI path; CircuitPython host deadline works around it. Direct low-level timed-radio reproduction outstanding. |
 | HAL Infineon #2 coexistence assets | Asset selection audited; current Pico W two-hour and Pico 2 W thirty-minute concurrent-radio runs passed. This does not prove every traffic pattern. |
@@ -213,7 +213,12 @@ rollout and follow-up reports.
   absent after descriptor/address timeouts and failed re-enumeration. Guarded
   hub recovery restored USB, and Pico W 9e153 / Feather ea06 runtime checks
   passed; S31 bec1d71 stayed healthy. Cause and CDC-versus-MSC behavior remain
-  unresolved. Preserve this failure independently of the successful S31
+  unresolved. A short CDC-only / CDC-plus-MSC-read / CDC-only control now
+  passes 270 serial checks and 90 uncached reads, with original bindings
+  restored and no USB errors captured. A later power snapshot has the Pico
+  and external hubs forced active, with zero runtime suspend time. Neither
+  result establishes the cause of the earlier failure. See [the class comparison](picow-usb-class-comparison-2026-10-23.md).
+  Preserve this failure independently of the successful S31
   two-console comparison. See [the failure and recovery evidence](picow-idle-usb-recurrence-2026-10-23.md).
 
 - Bridge interface-claim cleanup is implemented and installed; 24 source cases
