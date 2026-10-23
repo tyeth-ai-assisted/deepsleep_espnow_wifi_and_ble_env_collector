@@ -143,3 +143,32 @@ No firmware or filesystem writes were made. Original bindings were restored
 while the console remained open, and the S31 was untouched. The
 [sanitized timing record](picow-console-hid-control-2026-10-23.json) retains
 all reproductions and non-reproductions.
+
+## Host-controller trace capture: stall not reproduced
+
+On the unchanged `9e153` Pico W, three bounded xHCI capture runs completed 25
+read-only 4 KiB reads, including eight closed-console reads. All completed in
+30.2-34.3 ms with matching data. The private trace instances recorded URB
+enqueue/giveback, transfer-ring entries, endpoint doorbells and completion
+events with zero reported drops or overruns. Inspection confirms actual Pico
+MSC traffic; the open control includes the queued 4 KiB IN transfer, its
+doorbell and successful completion. These are successful-transfer traces,
+not captures of the earlier stall.
+
+The first two runs included a host marker between console close and the read.
+The second was intended to remove it, but a line-ending mismatch retained the
+marker; it is recorded as another marker-present run. The third actually
+removed that marker and still did not reproduce the stall. Finally, the
+original uninstrumented script also passed seven reads (two closed-console
+attempts with reopen scheduled after one/four seconds), in 30.2-59.0 ms.
+Thus this series does not establish that tracing or the extra marker prevents
+the fault. It does not invalidate the earlier failed controls or identify a
+host, hub or device root cause.
+
+No firmware or device-filesystem writes occurred. All bindings were restored,
+the bridge was untouched, and a subsequent read-only check confirmed no private
+trace instances remained. Raw host traces stay private; [sanitized timings,
+hashes and per-CPU loss counters](picow-xhci-nonreproduction-2026-10-23.json)
+preserve every round. CP #42 remains an unresolved rollout blocker. The next
+useful capture must contain an actual stall before transfer timing can choose
+between host scheduling and device-side response hypotheses.

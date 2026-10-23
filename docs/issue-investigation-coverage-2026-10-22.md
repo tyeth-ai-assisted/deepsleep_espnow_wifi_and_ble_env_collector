@@ -457,5 +457,11 @@ rollout and follow-up reports.
   overnight runs and later targeted follow-ups retain their actual revisions;
   a newer image is not retrospectively covered by an older soak.
 
+A later host xHCI capture series did not reproduce CP #42: 25 traced and seven
+untraced reads pass, including ten closed-console reads. Zero capture losses
+were reported; original bindings and private trace instances were restored.
+This establishes capture readiness, not a fix or root cause. See [the retained
+non-reproduction evidence](picow-console-storage-stall-2026-10-23.md#host-controller-trace-capture-stall-not-reproduced).
+
 The goal remains active. The final CP #15 comment has not been posted; it must
 carry the remaining limitations rather than claim every issue is resolved.
