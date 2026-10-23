@@ -22,6 +22,8 @@ count stays zero and host readiness remains false. These are software return
 injections after real successful hardware operations, not spontaneous hardware
 faults. The fourth import produces no completion snapshot and USB disappears.
 
+Follow-up: [the unfaulted control, isolated ready failure and ready-firmware guard](picow-bt-retry-ready-guard-2026-10-23.md) now distinguish these paths. The failures below remain preserved.
+
 ## Fatal location recovered without resetting the board
 
 An independent SWD capture saves RAM, flash and core 0 registers before reset.

@@ -40,3 +40,23 @@ The diagnostic patch was reapplied to copies of all three exact original files;
 all resulting source hashes match the physically tested build. An unfaulted
 control with the same workflow-disabled configuration and separate single-fault
 retries remain necessary before attributing the timeout to retry cleanup.
+
+
+## Ready-firmware guard comparison
+
+The [follow-up](../../docs/picow-bt-retry-ready-guard-2026-10-23.md) compares
+unfaulted startup, one failed ready operation followed by retry, and the full
+three-failure sequence. The original diagnostic starts normally without faults
+but still halts after a single ready-stage forced error and retry.
+
+For the candidate, first apply the original `diagnostic.patch` above, then run
+`python ready_guard.py /path/to/circuitpython/ports/zephyr-cp/modules/hal/rpi_pico/src/rp2_common/pico_cyw43_driver/cybt_shared_bus/cybt_shared_bus.c`.
+The transformer refuses any input except the exact instrumented HAL source
+and verifies the exact physically tested output hash. Binding and workflow
+configuration stay unchanged. Build and install with the same backup/recovery
+precautions, then use `probe_ready_guard.py`. The expected firmware-download
+count is now one throughout the sequence. On a separate fresh boot use
+`probe_unfaulted.py` to exercise first startup without any injection.
+
+This is a diagnostic comparison, not a production release. Both candidate
+controls pass; normal automatic workflows and Pico 2 still need qualification.
