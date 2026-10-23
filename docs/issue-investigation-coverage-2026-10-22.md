@@ -1,4 +1,4 @@
-# Issue investigation coverage — updated 23 October 2026, 02:15 UTC
+# Issue investigation coverage — updated 23 October 2026, 02:35 UTC
 
 **No: the work is not fully investigated or physically verified.** This ledger
 reconciles the original `bugs_issues_and_todos.md` with the CP #15 escalation
@@ -209,8 +209,13 @@ rollout and follow-up reports.
 ## Bench transport and board coverage
 
 - Bridge interface-claim cleanup is implemented and installed; 24 source cases
-  and five sequential Pico composite imports passed. A simultaneous two-console test now fails before AP start. Its root cause,
-  full endpoint capacity and injected hardware failure recovery remain unresolved.
+  and five sequential Pico composite imports passed. A fresh reversed-order control
+  now shows either board works first and fails second; the first stays responsive.
+  Both expose seven non-control endpoints. Source allocation and the minimum
+  channel budget strongly support exhaustion, but no live counter/log was captured.
+  Per-interface claiming plus Linux probe admission remain to implement/test.
+  The independent bridge diagnostic UART currently fails with USB control timeouts.
+  See [the capacity investigation](s31-simultaneous-capacity-2026-10-23.md).
 - Controller power/disappearance checks have 61 passing tests and a draft fix,
   but are not deployed. Capacity scheduling and stale imports remain open.
 - Metro S3 full backup failed twice with a 4095-byte frame where 4096 was
