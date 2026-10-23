@@ -6,6 +6,26 @@ index. More soak time is now lower priority than these specific gaps. A source
 fix, a native fault-injection test and a physical-board test are separate kinds
 of evidence. Historical notes below are not new reproductions.
 
+## Update on 23 October: DHCP scheduling failure reproduced and candidate passes
+
+The earlier DHCP failure is now narrowed to socket-service starvation. On the
+same binary, Pico-side sleeps let a lease arrive; changing only the service
+priority from 15 to the interpreter's 0 also passes with no sleeps. A 15-second
+busy-loop control acquires a lease in 4.467 seconds while Python continues
+computing. The shared configuration fix is committed as `6b117bdce5`.
+See the [controlled reproduction, provenance and limits](pico2-dhcp-scheduling-2026-10-23.md).
+
+USB stack measurements are now available for the limited CDC/AP workload:
+248–256 of 2048 bytes used. A physical 512-byte comparison and concurrent
+MSC stress remain open. The separately measured DHCP socket-service stack
+reached 2184 of 2400 bytes with debug logging.
+
+The historical ESP sleep-memory reload defect is already fixed upstream by
+[CP #11274](https://github.com/adafruit/circuitpython/pull/11274), merge
+`2a15ee1978b9c2fe10a77dcc26433cf1c658c766`. Ancestry was verified in both
+official alpha.2 and deployed `cb5301b6fb`; no duplicate patch is needed.
+This is source reconciliation, not a new physical sentinel test.
+
 ## Update: Pico 2 AP DHCP failure isolated; dual S31 console failure preserved
 
 On Pico 2 W at `7d4ef1aac7`, a direct-UART Feather ESP32 V2 station at
@@ -121,7 +141,7 @@ Numbers refer to headings in the original bug document, not GitHub IDs.
 | 11: S3 adapter disable hard-fault / cannot re-enable | Five basic cycles plus post-connected-NUS teardown with Wi-Fi/ESP-NOW resident pass on current Feather S3. | Sustained concurrent traffic and the original application/sensor configuration; no crash reproduced in this targeted check. |
 | Large code.py prevents Wi-Fi initialization | Historical MPY shim and current frozen libraries address memory placement. Eleven variants build; current app has completed deep-sleep/report cycles. | Board-specific cold-boot qualification, especially C6 with the real sensor/display load; no claim that compilation removes all memory limits. |
 | Raw-REPL write then hard-reset filesystem corruption; S3 MSC write crashes | Historical evidence and safe deployment workarounds retained. | Disposable backed-up filesystem with explicit flush/soft reload controls and concurrent-radio variants. Avoid corrupting the live application store to obtain evidence. |
-| sleep_memory after soft reload | Original document distinguishes reload from deep sleep. True deep-sleep confirmations passed in the application run. | Inspect the intended lifetime contract before treating reload clearing as a firmware defect; targeted sentinel check if needed. |
+| sleep_memory after soft reload | Upstream #11274 fixes reload clearing; merge ancestry verified in alpha.2 and deployed cb530. True deep-sleep confirmations also passed in the app run. | Optional fresh physical sentinel regression; no duplicate source patch needed. |
 | Windows empty GATT table / Service Changed | Still a report; cache mechanism unconfirmed. | Same device address, deliberate service-table change, cached versus uncached Windows discovery and Service Changed observation. |
 | jd79667 logging/defaults; mpremote new-file ENOENT | Historical library/tool reports, not investigated in this refresh. | Pin installed/upstream versions and produce minimal library/tool reproductions before filing duplicates. |
 
@@ -157,8 +177,8 @@ rollout and follow-up reports.
 | Zephyr #3 settings geometry, #10 p256-m; shared-bus window/power/wake/RX locks | Reproduced and fixed/worked around with exact-source controls; earlier physical stall cause remains unproved. |
 | HAL Pico #6 startup assertions | Newly executed native failure injection now passes candidate / fails old source. Hardware injection still unrun. |
 | HAL Pico #3 HOST_CTRL cache | Newly reproduced cache/hardware divergence under injected lost write. Production cache policy and physical incidence unresolved. |
-| Zephyr #6 USB stack | 2048-byte diagnostic image now built with initialized-stack measurement; not flashed. Physical 512/2048 comparison outstanding. |
-| Zephyr #8 softAP | Channel 1 association and static-IP ping pass; DHCP fails even with an explicit client restart. DHCP root cause, other channels and station departure remain open. |
+| Zephyr #6 USB stack | Instrumented hardware measurements now show 248–256/2048 bytes in limited CDC/AP work; physical 512 comparison and MSC stress remain outstanding. |
+| Zephyr #8 softAP | Channel 1 association/static ping pass. DHCP starvation reproduced; equal-priority candidate passes idle and busy Python controls. Production-image follow-up, other channels and station departure remain open. |
 | Zephyr #9 legacy timeout | Source still omits timeout in legacy HCI path; CircuitPython host deadline works around it. Direct low-level timed-radio reproduction outstanding. |
 | HAL Infineon #2 coexistence assets | Asset selection audited; current Pico W two-hour and Pico 2 W thirty-minute concurrent-radio runs passed. This does not prove every traffic pattern. |
 | CP #25 warm reset | Earlier 45% failure claim retracted after 45/45 successes; original trigger unresolved. |
