@@ -1,5 +1,7 @@
 # S31 MSC reimport failure — 23 October 2026
 
+**Follow-up:** [packet traces, matched endpoint controls and a temporary Zephyr candidate](usb-reconfiguration-2026-10-23.md) now narrow this failure; the baseline results below remain unchanged.
+
 **A Pico 2 MSC disk works on the first USB/IP import, but not the next three,
 even with no second imported console. CDC remains usable.** This failure is
 preserved separately from the earlier successful selective dual-CDC comparison.

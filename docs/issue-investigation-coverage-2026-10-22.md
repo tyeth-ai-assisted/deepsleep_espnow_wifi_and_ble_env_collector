@@ -1,10 +1,28 @@
-# Issue investigation coverage — updated 23 October 2026, 13:37 UTC
+# Issue investigation coverage — updated 23 October 2026, 15:54 UTC
 
 **No: the work is not fully investigated or physically verified.** This ledger
 reconciles the original `bugs_issues_and_todos.md` with the CP #15 escalation
 index. More soak time is now lower priority than these specific gaps. A source
 fix, a native fault-injection test and a physical-board test are separate kinds
 of evidence. Historical notes below are not new reproductions.
+
+## USB/IP reconnect: endpoint reconfiguration isolated
+
+The Pico 2 single-import MSC failure now has packet evidence and matched
+controls: CLEAR_FEATURE on both MSC endpoints passes 4/4, GET_STATUS with the
+same extra session passes only the first import, then CLEAR_FEATURE passes
+4/4 again. CDC survives all baseline/workaround cases. A one-function Zephyr
+reconfiguration candidate instead fails its first CDC raw-REPL write, before
+MSC; it is rejected from rollout and production is restored exactly. A second
+combined candidate adds cancelled-OUT CDC rearming and passes all four ordinary
+imports with correct first-INQUIRY exchanges and exact disk reads; production
+is again restored. The fixes are carried by Zephyr `c6200e80` and CP pin
+`6839890534`, with production rollout and Pico W hardware checks still pending.
+The same-configuration source defect is already tracked as
+[Zephyr #121843](https://github.com/zephyrproject-rtos/zephyr/issues/121843).
+See [the controlled evidence, candidate and limits](usb-reconfiguration-2026-10-23.md).
+No physical DATA0/DATA1 capture, production rollout, idle-failure closure or
+full composite capacity qualification is claimed.
 
 ## ESP-NOW default-peer discrepancy: isolated below CircuitPython
 
