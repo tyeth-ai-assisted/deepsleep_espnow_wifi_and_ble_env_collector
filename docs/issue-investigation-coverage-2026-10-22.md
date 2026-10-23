@@ -1,4 +1,4 @@
-# Issue investigation coverage — updated 23 October 2026, 10:42 UTC
+# Issue investigation coverage — updated 23 October 2026, 11:03 UTC
 
 **No: the work is not fully investigated or physically verified.** This ledger
 reconciles the original `bugs_issues_and_todos.md` with the CP #15 escalation
@@ -198,7 +198,7 @@ rollout and follow-up reports.
 | HAL Pico #3 HOST_CTRL cache | Newly reproduced cache/hardware divergence under injected lost write. Production cache policy and physical incidence unresolved. |
 | Zephyr #6 USB stack | Both current Pico 2 512/2048-byte USB-worker diagnostics pass the same short concurrent CDC, read-only MSC, Wi-Fi/BLE workload. The maximum measured use is 260 bytes; this does not reproduce a 512-byte shortage. Production firmware was restored exactly. MSC writes, idle re-enumeration and broader stress remain open. See [the comparison](pico2-usb-stack-comparison-2026-10-23.md). |
 | Zephyr #8 softAP | Channel 1 association/static ping pass. DHCP starvation reproduced; equal-priority candidate passes idle and busy Python controls. Production Pico 2 channel 1/6/11, DHCP/ping and station departure now pass. Pico W production follow-up also passes, including concurrent BLE scan with an associated station. Station lifecycle #40 is now fixed and verified on both Pico W and Pico 2 at 9e153. Pico 2 bounded TLS/BLE and hostname/default-bundle/unrelated-CA controls also pass; certificate dates remain unchecked. |
-| Zephyr #9 legacy timeout | Source still omits timeout in legacy HCI path; CircuitPython host deadline works around it. Direct low-level timed-radio reproduction outstanding. |
+| Zephyr #9 legacy timeout | Direct Zephyr hardware reproduction on Pico 2 now confirms two timeout=300 (3 s) requests keep delivering reports beyond 6 s with no callback; timeout=0 control and explicit-stop controls pass. Production restored exactly after a separate ROM-handshake recovery. Current upstream still omits the field, with other source differences disclosed. CircuitPython host deadline remains the workaround; no Zephyr fix yet. See [reproduction and limits](legacy-ble-scan-timeout-2026-10-23.md). |
 | HAL Infineon #2 coexistence assets | Asset selection audited; current Pico W two-hour and Pico 2 W thirty-minute concurrent-radio runs passed. This does not prove every traffic pattern. |
 | CP #25 warm reset | Earlier 45% failure claim retracted after 45/45 successes; original trigger unresolved. |
 | CP #29 Windows GATT cache | Unconfirmed mechanism; see targeted test above. |
