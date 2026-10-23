@@ -1,4 +1,19 @@
-# Issue investigation coverage — updated 23 October 2026, 22:16 UTC
+# Issue investigation coverage — updated 23 October 2026, 22:46 UTC
+
+## Pico 2 long-read comparison: independent failure remains
+
+Both original `9e153ad624` and latest normal `0d545efdcf74` pass 4 KiB and 64 KiB
+reads with CDC checks but fail the full-disk read through S31. USBmon records
+successful 64 KiB READ(10) completions delayed by about 10, 14 and 14 seconds
+on each revision, with zero capture drops. The candidate's paired USB fixes
+therefore do not resolve this workload. Original code was restored with whole
+expected-flash verification and three radio checks; imports and port state were
+restored without a bridge restart. Runtime data was retained, so restored flash
+is not identical to the pretest backup. No raw-sector write test was attempted.
+This is independent evidence for Pico 2; its cause is not established as the
+same as direct Pico W #42. Earlier UART-reset and capture-cleanup fixture
+failures remain preserved. [Comparison, minimal reproduction and exact limits](pico2-msc-long-read-comparison-2026-10-23.md).
+
 
 **No: the work is not fully investigated or physically verified.** This ledger
 reconciles the original `bugs_issues_and_todos.md` with the CP #15 escalation
