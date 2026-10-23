@@ -1,4 +1,4 @@
-# Issue investigation coverage — updated 23 October 2026, 06:46 UTC
+# Issue investigation coverage — updated 23 October 2026, 07:57 UTC
 
 **No: the work is not fully investigated or physically verified.** This ledger
 reconciles the original `bugs_issues_and_todos.md` with the CP #15 escalation
@@ -242,15 +242,15 @@ rollout and follow-up reports.
   See [the capacity investigation](s31-simultaneous-capacity-2026-10-23.md).
 - Controller power/disappearance checks have 61 passing tests and a draft fix,
   but are not deployed. Capacity scheduling and stale imports remain open.
-- Metro S3 full backup is now verified: strict 512-byte/window-one reads plus
-  independent device verification cover all 16 MiB. Earlier 4095-byte failures
-  remain preserved; packet size and bridge revision both changed, so root cause
-  is not isolated. The current ea06 Metro build passes but is not installed:
-  its application exceeds the old 2 MiB slot, requiring the new partition
-  layout. Saved storage fails normal FAT checks, including a signature-only
-  repair on a separate copy; file recovery/mapping and migration remain open.
-  No Metro flash writes occurred. See [backup and migration evidence](metro-backup-and-migration-investigation-2026-10-23.md).
-- Feather S3 is updated and has the targeted tests above. Metro S3, other
+- Metro S3 now runs ea06 after private file recovery, fresh full backup,
+  bounded partition/firmware migration and whole-chip verification. Runtime
+  identity and three overlapping Wi-Fi/BLE scan cycles pass. Extended storage
+  explains its 12,255,232-byte logical volume; offline `mdir` passes and the
+  read-only checker reports only a volume-label mismatch. Original malformed
+  Wipper FAT cause, boundary writes, TLS/connected-GATT and a current Metro soak
+  remain unverified. Earlier transport/boot-transition failures are preserved.
+  See [migration and runtime evidence](metro-ea06-migration-2026-10-23.md).
+- Feather S3 and Metro S3 are updated with the targeted tests above. Other
   build-only variants, C6/load variants of BLE, physical displays/RTC/sensors
   and full Pico USB stress remain explicit gaps. Three completed
   overnight runs and later targeted follow-ups retain their actual revisions;

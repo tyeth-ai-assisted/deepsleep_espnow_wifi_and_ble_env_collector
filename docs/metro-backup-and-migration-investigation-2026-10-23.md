@@ -21,7 +21,8 @@ esptool reads are now reliable.
 A fresh Metro build of integration commit `ea06dcb44e` passes using ESP-IDF
 `29d36039e564db6df505d0582b94b230a17e63f3`. The combined image is 2,172,544 bytes,
 SHA-256 `5f8fb1b435e4813ffde4ee4b4231bbf165177637e0bb50f0dd417c3d9aa94f20`.
-It has not been staged or installed. Existing unrelated checkout changes were
+It was not yet staged or installed at this checkpoint; the subsequent
+[migration and runtime verification](metro-ea06-migration-2026-10-23.md) now pass. Existing unrelated checkout changes were
 preserved. See [build provenance](firmware-metro-ea06-2026-10-23.json).
 
 The saved partition table passes its MD5 check. The existing application slots
@@ -57,8 +58,8 @@ PATH omitted the filesystem checker, then mtools was absent. Those attempts
 are retained. mtools 4.0.48-1 was downloaded and unpacked privately without a
 system installation; diagnostic logs and any private names remain local.
 
-Next work is to establish the original firmware's storage mapping and recover
-or account for existing files before finalizing the migration. Preserve the
+The subsequent [migration report](metro-ea06-migration-2026-10-23.md) records
+private file recovery, installation and runtime results. Preserve the
 complete original image and failed diagnostics. This result closes the full
 backup verification gap, not Metro firmware/runtime qualification or the
 broader filesystem-corruption reports.

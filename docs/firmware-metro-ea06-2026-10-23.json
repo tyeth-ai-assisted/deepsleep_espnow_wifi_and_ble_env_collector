@@ -3,7 +3,7 @@
   "source_commit": "ea06dcb44e3b953e3b750b28e2e60538d9904fa7",
   "idf_commit": "29d36039e564db6df505d0582b94b230a17e63f3",
   "build_status": "passed",
-  "installed": false,
+  "installed": true,
   "files": {
     "firmware.bin": {
       "bytes": 2172544,
@@ -20,5 +20,6 @@
   "new_slot_bytes": 3145728,
   "new_filesystem_offset": 7667712,
   "new_filesystem_bytes": 9109504,
-  "factory_uf2_offset": 4259840
+  "factory_uf2_offset": 4259840,
+  "installation_evidence": "metro-ea06-migration-2026-10-23.json"
 }
