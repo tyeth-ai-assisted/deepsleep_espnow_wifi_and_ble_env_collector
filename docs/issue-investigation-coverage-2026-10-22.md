@@ -1,4 +1,4 @@
-# Issue investigation coverage — updated 23 October 2026, 02:40 UTC
+# Issue investigation coverage — updated 23 October 2026, 03:40 UTC
 
 **No: the work is not fully investigated or physically verified.** This ledger
 reconciles the original `bugs_issues_and_todos.md` with the CP #15 escalation
@@ -213,7 +213,12 @@ rollout and follow-up reports.
   now shows either board works first and fails second; the first stays responsive.
   Both expose seven non-control endpoints. Source allocation and the minimum
   channel budget strongly support exhaustion, but no live counter/log was captured.
-  Per-interface claiming plus Linux probe admission remain to implement/test.
+  A new physical control prevents MSC/HID probing before attachment and still
+  reproduces the second-console failure in both orders: client admission alone
+  is insufficient. Per-interface candidate bec1d71 in draft bridge PR #25 now
+  passes 17 actual-source native groups and a fresh full S31 build, but remains
+  uninstalled and physically unqualified. Authorization defaults/ports/imports
+  were restored without reboot; no extra soak substituted for this control.
   The independent diagnostic UART recovered from USB control timeouts after hub
   recovery, but a subsequent open/read check coincided with an unexpected bridge
   reboot. Final network inspection found original inventory, no imports or active

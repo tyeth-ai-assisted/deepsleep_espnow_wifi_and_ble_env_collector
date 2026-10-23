@@ -95,3 +95,45 @@ no active soak units, and no leftover adapter-reset process. Thus USB transport
 was recovered and the bench left idle; unexpected reset behavior remains open.
 This later recovery reset does not change the earlier capacity experiment's
 verified uninterrupted uptime. No firmware was written in either operation.
+
+## Selective-interface baseline and candidate — 03:40 UTC
+
+The installed `7497541` bridge still fails the second console in either order
+when Linux MSC/HID interfaces are **never authorized or probed**. Only the two
+CDC interfaces were authorized, together before manual driver probing; both
+bound to `cdc_acm`, while MSC/HID remained unauthorized and unbound. The first
+console continued responding. The S3-alone control passed. Original VHCI
+authorization defaults, imports and port states were restored; no UART was
+opened, firmware written, or bridge reboot observed.
+
+This closes the specific question of whether client selection alone repairs the
+installed bridge: it does not. See [the captured admission states and results](s31-selective-interface-baseline-2026-10-23.json).
+The procedure follows the kernel's [interface authorization documentation](https://www.kernel.org/doc/html/latest/usb/authorization.html):
+set the empty virtual USB bus's default before attaching, authorize all interfaces
+needed by a multi-interface driver, then explicitly probe. Restore the defaults
+after detaching owned imports; do not change physical USB bus defaults.
+
+Draft [bridge PR #25](https://github.com/tyeth-ai-assisted/esp-usbip-bridge/pull/25),
+stacked on cleanup PR #24, implements per-interface demand at
+`bec1d71e1379e08e279327bdb222b3207456cebe`. It claims only the interface owning the
+requested endpoint, retains active claims when another claim fails, and resets
+toggles only on claimed endpoints. Sparse interface lookup and correct per-endpoint
+descriptor offsets are included. Alternate setting zero remains the supported mode.
+
+Seventeen actual-source native groups pass with address/undefined-behavior
+sanitizers, including constrained two-CDC capacity, allocation/release failures,
+retries, deferred cleanup, descriptor boundaries, sparse interfaces, packet sizing
+and standard-request toggle handling. The historical cleanup harness still passes
+24 cases on `7497541`. An actual-source bounded-host comparison shows the old
+all-interface behavior exhausting the budget where the candidate fits both CDC
+devices. The host allocation and descriptor parser are modeled in these tests.
+
+A fresh full ESP32-S31 build passed with clean ESP-IDF
+`ce2100de51a4d9a372f26578fd2ee763ca4b1279`; the application is 829,088 bytes,
+SHA-256 `8a540fc8296b973072584c0bd59de509be8ffa0d0d5275540796804e52c87bd6`.
+See [build provenance and artifact hashes](firmware-s31-demand-bec1d71-2026-10-23.json).
+
+**The candidate is not installed or physically qualified.** The bridge still
+runs `7497541`. Next is a guarded application-only update and the identical
+selective-interface comparison, followed by other USB-class and throughput
+checks. Do not close the capacity issue from the native tests or build alone.
