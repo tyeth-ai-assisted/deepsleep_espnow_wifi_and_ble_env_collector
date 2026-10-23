@@ -6,6 +6,42 @@ index. More soak time is now lower priority than these specific gaps. A source
 fix, a native fault-injection test and a physical-board test are separate kinds
 of evidence. Historical notes below are not new reproductions.
 
+## Update: Pico 2 AP DHCP failure isolated; dual S31 console failure preserved
+
+On Pico 2 W at `7d4ef1aac7`, a direct-UART Feather ESP32 V2 station at
+`cb5301b6fb-dirty` sees channel 1 and associates. Six AP station-table samples
+show the station but no lease. The station's `connect(timeout=10)` still waits
+at the 25-second host deadline; after interruption it reports associated with
+address `0.0.0.0`. A static-address reconnect succeeds and pings the AP in
+15 ms. Explicitly stopping/restarting the station DHCP client also fails to
+complete the combined connect/ping command within 30 seconds. Thus the
+association and basic IP path work; the DHCP exchange remains faulty.
+
+The ESP timeout symptom matches existing upstream [CircuitPython #7557](https://github.com/adafruit/circuitpython/issues/7557).
+It is separate from the unresolved DHCP exchange failure. Do not close the
+softAP tracker or call the diagnostic job's successful completion an AP pass.
+The first combined test also failed station cleanup; a subsequent bounded
+Ctrl-C recovery restored it. Both later tests confirmed station/AP cleanup.
+
+A separate attempt using two S31 composite-device imports failed before AP
+start: Pico console worked, but the S3 console did not respond. Both imports
+were detached and original port states restored. The installed bridge still
+claims every interface on first data traffic; unbinding host-side unused
+drivers does not release those bridge claims. This supports investigating
+channel pressure, but does not establish the failure's root cause.
+
+A Pico diagnostic image now builds with DHCP debug logs, initialized-stack
+measurement and a 2048-byte USB thread stack. It is **not flashed**, and no
+512/2048 stack comparison has run. Channels 6/11 and station departure remain
+unverified. See [sanitized evidence](pico2-ap-dhcp-investigation-2026-10-22.json).
+
+Minimal paired reproduction (use disposable bench credentials): start a Pico
+AP on channel 1; on an ESP station call `start_station()`, `stop_dhcp()`,
+`start_dhcp()`, then `connect(ssid, password, timeout=10)`. Independently sample
+the AP station table and enforce a host deadline with Ctrl-C recovery. Compare
+with a static station address in the same subnet and ping the AP. Stop the AP
+and station, then restore the station DHCP client. This does not require a soak.
+
 ## Update at 23:41 UTC: connected-session BLE passes on Feather S3
 
 A real BlueZ central received all 10,240 bytes from an unpaced Nordic UART
@@ -121,8 +157,8 @@ rollout and follow-up reports.
 | Zephyr #3 settings geometry, #10 p256-m; shared-bus window/power/wake/RX locks | Reproduced and fixed/worked around with exact-source controls; earlier physical stall cause remains unproved. |
 | HAL Pico #6 startup assertions | Newly executed native failure injection now passes candidate / fails old source. Hardware injection still unrun. |
 | HAL Pico #3 HOST_CTRL cache | Newly reproduced cache/hardware divergence under injected lost write. Production cache policy and physical incidence unresolved. |
-| Zephyr #6 USB stack | 2048-byte configuration built; instrumented Pico 2 W 512/2048 comparison outstanding. |
-| Zephyr #8 softAP | Source fix carried; actual station association, DHCP and deauthentication on current Pico 2 W outstanding. |
+| Zephyr #6 USB stack | 2048-byte diagnostic image now built with initialized-stack measurement; not flashed. Physical 512/2048 comparison outstanding. |
+| Zephyr #8 softAP | Channel 1 association and static-IP ping pass; DHCP fails even with an explicit client restart. DHCP root cause, other channels and station departure remain open. |
 | Zephyr #9 legacy timeout | Source still omits timeout in legacy HCI path; CircuitPython host deadline works around it. Direct low-level timed-radio reproduction outstanding. |
 | HAL Infineon #2 coexistence assets | Asset selection audited; current Pico W two-hour and Pico 2 W thirty-minute concurrent-radio runs passed. This does not prove every traffic pattern. |
 | CP #25 warm reset | Earlier 45% failure claim retracted after 45/45 successes; original trigger unresolved. |
@@ -133,8 +169,8 @@ rollout and follow-up reports.
 ## Bench transport and board coverage
 
 - Bridge interface-claim cleanup is implemented and installed; 24 source cases
-  and five sequential Pico composite imports passed. Simultaneous endpoint
-  capacity and injected hardware failure recovery remain unverified.
+  and five sequential Pico composite imports passed. A simultaneous two-console test now fails before AP start. Its root cause,
+  full endpoint capacity and injected hardware failure recovery remain unresolved.
 - Controller power/disappearance checks have 61 passing tests and a draft fix,
   but are not deployed. Capacity scheduling and stale imports remain open.
 - Metro S3 full backup failed twice with a 4095-byte frame where 4096 was
