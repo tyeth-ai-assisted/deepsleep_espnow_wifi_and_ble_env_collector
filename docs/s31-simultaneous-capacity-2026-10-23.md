@@ -68,11 +68,30 @@ enable-UART control-request timeouts and opening it returned EIO. A bounded,
 adapter-only USB reset also timed out; a later check found no leftover reset
 process and the bridge network API remained healthy with increasing uptime.
 This prevented passive bridge-log capture. The successful diagnostic above
-avoided that adapter. Its recovery remains open; it is not evidence that the
-bridge reset or that these two failures have the same cause. Failed attempts and
+avoided that adapter. At that point recovery remained open. Those adapter errors are not evidence that
+the simultaneous-import failure has the same cause. Failed attempts and
 private recovery records remain preserved.
 
 Structured evidence: [sanitized results](s31-simultaneous-capacity-2026-10-23.json).
 Existing trackers: [bridge capacity #20](https://github.com/tyeth-ai-assisted/esp-usbip-bridge/issues/20),
 [claim cleanup #23](https://github.com/tyeth-ai-assisted/esp-usbip-bridge/issues/23),
 [controller #1](https://github.com/tyeth-ai-assisted/sbc-mcu-dut-controller/issues/1).
+
+## Recovery follow-up at 02:40 UTC
+
+A bounded direct-hub off/on operation restored the expected USB identities.
+The next check successfully opened/read/closed the UART, and both directly
+attached Pico W (`9e153ad624`) and Feather ESP32 V2 (`ea06dcb44e`) passed expected
+firmware and disconnected Wi-Fi/AP/BLE assertions. However, that check then
+**failed** its final bridge-uptime assertion: the bridge had rebooted during
+the verification interval. Preserve this as a failed no-reset verification.
+The UART was configured with DTR/RTS false before open, but that does not prove
+the line transitions were harmless; reset cause and electrical behavior remain
+unverified. No further UART open was attempted.
+
+A subsequent read-only network check found the same bridge firmware, uptime
+62 seconds, exactly the original downstream Pico 2 inventory, no USB/IP imports,
+no active soak units, and no leftover adapter-reset process. Thus USB transport
+was recovered and the bench left idle; unexpected reset behavior remains open.
+This later recovery reset does not change the earlier capacity experiment's
+verified uninterrupted uptime. No firmware was written in either operation.

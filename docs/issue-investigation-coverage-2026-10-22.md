@@ -1,4 +1,4 @@
-# Issue investigation coverage — updated 23 October 2026, 02:35 UTC
+# Issue investigation coverage — updated 23 October 2026, 02:40 UTC
 
 **No: the work is not fully investigated or physically verified.** This ledger
 reconciles the original `bugs_issues_and_todos.md` with the CP #15 escalation
@@ -214,7 +214,10 @@ rollout and follow-up reports.
   Both expose seven non-control endpoints. Source allocation and the minimum
   channel budget strongly support exhaustion, but no live counter/log was captured.
   Per-interface claiming plus Linux probe admission remain to implement/test.
-  The independent bridge diagnostic UART currently fails with USB control timeouts.
+  The independent diagnostic UART recovered from USB control timeouts after hub
+  recovery, but a subsequent open/read check coincided with an unexpected bridge
+  reboot. Final network inspection found original inventory, no imports or active
+  soaks. Reset cause remains unverified; the failed no-reset check is retained.
   See [the capacity investigation](s31-simultaneous-capacity-2026-10-23.md).
 - Controller power/disappearance checks have 61 passing tests and a draft fix,
   but are not deployed. Capacity scheduling and stale imports remain open.

@@ -374,5 +374,20 @@
     "No live channel-counter or bridge UART capture. CP210x enable-UART control requests timed out independently before the test.",
     "No per-interface candidate implemented or flashed. Linux probing must be considered when limiting claims.",
     "Diagnostic job pass denotes completed investigation and cleanup, not a passing simultaneous-console test."
-  ]
+  ],
+  "later_recovery": {
+    "hub_recovery_job": "eeeffeec-5585-4428-a7fa-c1ea83b5df61",
+    "hub_usb_identities_restored": true,
+    "verification_job": "bd322f9a-2e27-497c-ac39-bf86869c941b",
+    "verification_passed": false,
+    "uart_open_read_passed_before_later_assertion": true,
+    "direct_board_versions_and_idle_radios_passed_before_later_assertion": true,
+    "failure": "Bridge uptime decreased during recovery verification; reset cause unverified",
+    "readonly_final_job": "cf4a4295-6b09-4dd2-adfd-f13c8cd7a861",
+    "final_bridge_uptime_s": 62,
+    "original_downstream_inventory_restored": true,
+    "active_soak_units": [],
+    "usbip_imports": [],
+    "reopened_uart_after_reset": false
+  }
 }
