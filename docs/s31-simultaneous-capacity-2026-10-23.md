@@ -167,3 +167,12 @@ This verifies two simultaneous CDC consoles under selective admission. It does
 not establish general full-composite capacity, MSC/HID behavior, sustained
 throughput, or controller scheduling. Keep the capacity tracker open for those
 limits; there is still no direct live channel-counter measurement.
+
+## Subsequent MSC investigation — 14:38 UTC
+
+The broader MSC check now has a preserved failure: a first Pico 2 read succeeds,
+but three subsequent single-device imports fail to enumerate MSC while CDC
+remains usable. Mixed-console cases also fail MSC and lose the Pico console;
+those results cannot be attributed solely to simultaneous channel pressure.
+Imports, port power and authorization defaults were restored without a bridge
+reset. See [the separate minimal reproduction and limits](s31-msc-reimport-2026-10-23.md).

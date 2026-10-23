@@ -44,7 +44,7 @@ busy-loop control acquires a lease in 4.467 seconds while Python continues
 computing. The shared configuration fix is committed as `6b117bdce5`.
 The production Pico 2 image now passes channel 1/6/11, DHCP, ping, matching station MAC/IP, departure and AP stop/restart. Cleanup passed. Pico W production rollout and the same AP checks now also pass, including BLE scans with a station associated. See the [controlled reproduction, provenance and limits](pico2-dhcp-scheduling-2026-10-23.md) and [production hardware evidence](pico2-production-ap-qualification-2026-10-23.json).
 
-Both current Pico 2 512/2048-byte USB-worker diagnostics pass the same short concurrent CDC, read-only MSC, Wi-Fi/BLE workload. The maximum measured use is 260 bytes; this does not reproduce a 512-byte shortage. Production firmware was restored exactly. MSC writes, idle re-enumeration and broader stress remain open. See [the comparison](pico2-usb-stack-comparison-2026-10-23.md). The separately measured DHCP socket-service stack
+Both current Pico 2 512/2048-byte USB-worker diagnostics pass the same short concurrent CDC, read-only MSC, Wi-Fi/BLE workload. The maximum measured use is 260 bytes; this does not reproduce a 512-byte shortage. Production firmware was restored exactly. Pico 2 MSC writes, idle re-enumeration and broader stress remain open. A separate direct Pico W 9e153 test now passes three bounded raw-sector MSC writes with CDC checks and exact whole-disk restoration; this does not qualify Pico 2 or the S31 path. See [the write control](picow-msc-write-2026-10-23.md) and [the comparison](pico2-usb-stack-comparison-2026-10-23.md). The separately measured DHCP socket-service stack
 reached 2184 of 2400 bytes with debug logging.
 
 The historical ESP sleep-memory reload defect is already fixed upstream by
@@ -225,7 +225,7 @@ rollout and follow-up reports.
 | Zephyr #3 settings geometry, #10 p256-m; shared-bus window/power/wake/RX locks | Reproduced and fixed/worked around with exact-source controls; earlier physical stall cause remains unproved. |
 | HAL Pico #6 startup assertions | Newly executed native failure injection now passes candidate / fails old source. Hardware injection still unrun. |
 | HAL Pico #3 HOST_CTRL cache | Newly reproduced cache/hardware divergence under injected lost write. Production cache policy and physical incidence unresolved. |
-| Zephyr #6 USB stack | Both current Pico 2 512/2048-byte USB-worker diagnostics pass the same short concurrent CDC, read-only MSC, Wi-Fi/BLE workload. The maximum measured use is 260 bytes; this does not reproduce a 512-byte shortage. Production firmware was restored exactly. MSC writes, idle re-enumeration and broader stress remain open. See [the comparison](pico2-usb-stack-comparison-2026-10-23.md). |
+| Zephyr #6 USB stack | Both current Pico 2 512/2048-byte USB-worker diagnostics pass the same short concurrent CDC, read-only MSC, Wi-Fi/BLE workload. The maximum measured use is 260 bytes; this does not reproduce a 512-byte shortage. Production firmware was restored exactly. Pico 2 MSC writes, idle re-enumeration and broader stress remain open. A separate direct Pico W 9e153 test now passes three bounded raw-sector MSC writes with CDC checks and exact whole-disk restoration; this does not qualify Pico 2 or the S31 path. See [the write control](picow-msc-write-2026-10-23.md) and [the comparison](pico2-usb-stack-comparison-2026-10-23.md). |
 | Zephyr #8 softAP | Channel 1 association/static ping pass. DHCP starvation reproduced; equal-priority candidate passes idle and busy Python controls. Production Pico 2 channel 1/6/11, DHCP/ping and station departure now pass. Pico W production follow-up also passes, including concurrent BLE scan with an associated station. Station lifecycle #40 is now fixed and verified on both Pico W and Pico 2 at 9e153. Pico 2 bounded TLS/BLE and hostname/default-bundle/unrelated-CA controls also pass; certificate dates remain unchecked. |
 | Zephyr #9 legacy timeout | Direct Zephyr hardware reproduction on Pico 2 now confirms two timeout=300 (3 s) requests keep delivering reports beyond 6 s with no callback; timeout=0 control and explicit-stop controls pass. Production restored exactly after a separate ROM-handshake recovery. Current upstream still omits the field, with other source differences disclosed. CircuitPython host deadline remains the workaround; no Zephyr fix yet. See [reproduction and limits](legacy-ble-scan-timeout-2026-10-23.md). |
 | HAL Infineon #2 coexistence assets | Asset selection audited; current Pico W two-hour and Pico 2 W thirty-minute concurrent-radio runs passed. This does not prove every traffic pattern. |
@@ -256,6 +256,9 @@ rollout and follow-up reports.
   restored and no USB errors captured. A later power snapshot has the Pico
   and external hubs forced active, with zero runtime suspend time. Neither
   result establishes the cause of the earlier failure. See [the class comparison](picow-usb-class-comparison-2026-10-23.md).
+  The later [bounded MSC write control](picow-msc-write-2026-10-23.md) passes
+  three 1,024-byte free-sector writes plus CDC checks, with exact restoration of
+  the whole 520,704-byte disk. No mounted-file or idle-recovery claim follows.
   Preserve this failure independently of the successful S31
   two-console comparison. See [the failure and recovery evidence](picow-idle-usb-recurrence-2026-10-23.md).
 
@@ -272,7 +275,12 @@ rollout and follow-up reports.
   The identical selective-interface comparison passes both consoles in both
   orders; descriptors and admission states match the failed baseline. Defaults,
   ports and imports were restored with no reset during the comparison. Broader
-  MSC/HID/throughput and capacity scheduling remain open.
+  MSC/HID/throughput and capacity scheduling remain open. A subsequent targeted MSC
+  investigation now fails: first Pico 2 import reads pass, but the next three
+  single imports do not enumerate MSC while CDC stays usable. Mixed-console
+  cases also fail MSC and lose the Pico console, with Metro surviving; those
+  cases are confounded by the sequential failure. Ports/imports/defaults restore
+  without bridge reboot. See [the reproducer](s31-msc-reimport-2026-10-23.md).
   The independent diagnostic UART recovered from USB control timeouts after hub
   recovery, but a subsequent open/read check coincided with an unexpected bridge
   reboot. Final network inspection found original inventory, no imports or active
