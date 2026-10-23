@@ -40,7 +40,7 @@
     },
     {
       "board": "espressif_esp32c5_devkitc_1_n8r8",
-      "installed": false,
+      "installed": true,
       "make_options": {
         "CIRCUITPY_ESP_USB_SERIAL_JTAG": 0
       },
@@ -140,17 +140,102 @@
     "transaction_safety_tests": 11
   },
   "c5": {
-    "status": "original_runtime_verified_with_continuous_serial_handle_update_pending",
-    "installed_revision": "cb5301b6fb",
-    "candidate_revision": "e46718f34b",
-    "firmware_writes": false,
-    "rts_reset_then_close_reopen": "raw_REPL_timeout",
-    "rts_reset_keep_handle_open": "runtime_identity_pass",
-    "boot_capture_bytes": 2850,
-    "both_boot_capture_sha256": "488db6929547cb7c0192685a11bad6ae7922a47c5bbe06348e89e385d64a0fa6",
-    "root_cause_established": false,
+    "new_image_sha256": "8f3134d5d5ecc2e428347f1670c182f0b1709366fff04a51f6a2cb1f19b36757",
+    "backup_bytes": 8388608,
+    "backup_sha256": "d76a98a0b3c8f59d33a9294293a0743a2dfb1c12325c334e84d45e6228b907a2",
+    "expected_sha256": "cc3339f002f9944d589906de0af623bbe9237644b60dc6c83663b4388582c1c4",
+    "preserved_prefix_sha256": "3ff2ff5fc3fbb9d98f78098e7fd08a67eef2011df1be819331e4c9fb174d96d0",
+    "preserved_suffix_sha256": "64d26918cdb7294dfc9a0304c288feea8e93c67a89a3ec5b768b0cdd18da811c",
+    "partition_table_unchanged": true,
+    "active_ota": "ota_0",
     "port_and_imports_restored": true,
-    "bridge_not_restarted": true
+    "bridge_not_restarted": true,
+    "status": "installed_runtime_portal_radio_verified_after_separate_poweron",
+    "previous_revision": "cb5301b6fb",
+    "installed_revision": "e46718f34b",
+    "initial_update_job_result": "fail",
+    "initial_failure": "raw REPL timeout after watchdog command and same-handle RTS probe",
+    "subsequent_portal_job_result": "pass",
+    "subsequent_radio_job_result": "pass",
+    "finished_utc": "2026-10-23T22:04:40.803752+00:00",
+    "radio_cycles": [
+      {
+        "wifi_networks": 2,
+        "ble_advertisements": 100
+      },
+      {
+        "wifi_networks": 2,
+        "ble_advertisements": 91
+      },
+      {
+        "wifi_networks": 2,
+        "ble_advertisements": 97
+      }
+    ],
+    "https": {
+      "status": "trusted_https_assets_and_api_verified",
+      "revision": "83526b03c034fee9452505069aded739b55d5dcb",
+      "assets": [
+        {
+          "name": "index.html",
+          "bytes": 105587,
+          "sha256": "8f0469d951695a2cc80f9cb1f7471e6113376ecaf814209400578eefc75bcbfb"
+        },
+        {
+          "name": "sw.js",
+          "bytes": 4365,
+          "sha256": "2b2f91f028dab44b55081359e947c186b031271204b3d2422e7287ba4cb6039f"
+        },
+        {
+          "name": "manifest.json",
+          "bytes": 468,
+          "sha256": "ade05f4d4b6b2b6e1a7caaf4668a66d8647f55853c88214c93a89c8f4a5cd483"
+        },
+        {
+          "name": "icon.svg",
+          "bytes": 491,
+          "sha256": "8ace37ee6f20990c1ace7464b18e7073ad1243b163c1817ae6c7b9fdff3da8ad"
+        },
+        {
+          "name": "ai_tools.js",
+          "bytes": 14054,
+          "sha256": "3923c26a9ae7bfc505012418d33fd69e7a1e3c039795e36a907c77a46a7aa2be"
+        },
+        {
+          "name": "webmcp.js",
+          "bytes": 2199,
+          "sha256": "4ce99170805fc96b529c106b25fd25ae5bb3e8fb845694d27ec935dbbf02d30d"
+        },
+        {
+          "name": "prompt_backend.js",
+          "bytes": 8429,
+          "sha256": "bbb3809bb7017a3a83e44f2a13fff57106d5142ab9897f81d683b4ce63fe99c0"
+        }
+      ],
+      "normal_system_ca_trust": true,
+      "hostname_checking": true,
+      "wrong_hostname_rejected": true,
+      "latest_entries": 6,
+      "latest_json_valid": true,
+      "tls_version": "TLSv1.2",
+      "leaf_der_sha256": "d1b8cc627565bc70b227803fdd99974fa97d36826af4e5703cb88ede40c5cc29"
+    },
+    "wifi_state_restored": true,
+    "long_soak_on_this_image": false,
+    "transaction_safety_tests": 11,
+    "preceding_console_control": {
+      "status": "original_runtime_verified_with_continuous_serial_handle_update_pending",
+      "installed_revision": "cb5301b6fb",
+      "candidate_revision": "e46718f34b",
+      "firmware_writes": false,
+      "rts_reset_then_close_reopen": "raw_REPL_timeout",
+      "rts_reset_keep_handle_open": "runtime_identity_pass",
+      "boot_capture_bytes": 2850,
+      "both_boot_capture_sha256": "488db6929547cb7c0192685a11bad6ae7922a47c5bbe06348e89e385d64a0fa6",
+      "root_cause_established": false,
+      "port_and_imports_restored": true,
+      "bridge_not_restarted": true
+    }
   },
   "feather_s3": "update_pending_reconnection_user_confirmed_moved_or_removed"
 }

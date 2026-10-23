@@ -42,13 +42,7 @@ These checks establish installation and bounded radio operation. They do not
 transfer the older eight-hour soak result to this image, qualify sustained
 multi-sender ESP-NOW traffic, or repeat the complete application/TLS workload.
 
-## C5 and Feather S3: remaining physical work
-
-C5's UART adapter and native USB identities enumerate, but the no-reset runtime
-probe received no raw REPL response. That failed probe restored port/import
-state and made no firmware writes. Sleep, reset state or another cause remains
-unresolved; a faulty firmware image is not established. Its selected UART
-build and eleven application-only transaction controls pass; deployment is pending.
+## Feather S3: physical update awaits reconnection
 
 Feather S3's old port reported power on but no connected USB device, including
 with force enabled. The user confirms the board was moved or removed. Stop
@@ -58,8 +52,8 @@ and physical qualification await reconnection. Its last recorded image remains
 
 ## C5 console discriminator: continuous handle passes
 
-The unchanged C5 answers a ROM identity/8 MiB flash probe, but its runtime
-console remains silent after the CLI watchdog reset and after a separate port
+Before the update below, the unchanged C5 answered a ROM identity/8 MiB flash
+probe, but its runtime console remained silent after the CLI watchdog reset and after a separate port
 off/on control. A single RTS reset with UART capture then shows the original
 `cb530` CircuitPython boot and response to interruption. Closing that serial
 handle and opening the usual raw REPL client still times out.
@@ -72,7 +66,35 @@ for further investigation; it does not identify the responsible firmware,
 driver, line-control or client behavior. The watchdog timeout alone is not
 evidence that the firmware does not boot.
 
-All failed controls remain retained. No C5 firmware writes occurred; imports
-and original port-off state were restored after every control, and the bridge
-was not restarted. The next rollout should retain one handle across the proven
-reset/runtime check. The prepared UART candidate is still not installed.
+All failed controls remain retained. Those console controls made no firmware
+writes; imports and original port-off state were restored after every control,
+and the bridge was not restarted.
+
+## C5: installed, portal and bounded radio checks passed
+
+The UART-console `e46718f34b` image is now installed. The transaction verified
+board, MAC and preceding firmware identity, took and verified a fresh 8 MiB
+backup, checked the exact old application and active OTA/partition layout,
+then wrote only the application. Whole expected-flash verification passed,
+including preservation of bootloader, OTA metadata, NVS and filesystem regions.
+Eleven actual-image transaction safety controls passed before deployment.
+
+The immediate raw REPL check still timed out after a successful watchdog-reset
+command and a same-handle RTS probe. That initial update job remains failed.
+A separate power-on with the continuous UART handle verified the new firmware
+and resumed the existing collector without changing application files. Its
+portal passed all seven exact asset hashes, normal system CA trust, hostname
+checking, expected certificate identity, `/api/cert`, valid `/api/latest`
+and wrong-hostname rejection. It served six latest entries over TLS 1.2.
+The portal revision remains `83526b03c034fee9452505069aded739b55d5dcb`.
+
+A further independent no-flash check passed three Wi-Fi/BLE scan cycles:
+2/100, 2/91, 2/97. All checks restored the original port-off state and imports;
+the portal test also restored the Pi's disconnected Wi-Fi state. The other
+device inventory remained intact and the bridge was not restarted.
+
+These results establish installation, bounded radio operation and trusted
+portal delivery on the new firmware. They do not establish the console-reset
+failure's root cause, repeat browser WebMCP/model inference, qualify sustained
+multi-sender ESP-NOW traffic or transfer the older eight-hour soak to this image.
+Private recovery files and failed evidence remain retained.
