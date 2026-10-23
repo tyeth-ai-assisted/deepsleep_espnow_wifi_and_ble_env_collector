@@ -62,7 +62,7 @@
         "diagnostic_hooks_present": false
       }
     },
-    "hardware_qualification": "Pico W bounded normal startup and three BLE reenable/Wi-Fi/BLE scan cycles; original code restored. Pico 2 candidate remains unflashed.",
+    "hardware_qualification": "bounded normal startup and three BLE reenable/Wi-Fi/BLE scan cycles pass on both Pico boards; original code restored",
     "production_devices": "retain 9e153ad624"
   },
   "picow": {
@@ -105,13 +105,43 @@
     "finished_utc": "2026-10-23T20:37:32.244134+00:00"
   },
   "pico2": {
-    "status": "original_firmware_preflight_failed",
-    "candidate_installed": false,
-    "firmware_writes": false,
-    "interpreter_check": "passed",
-    "wifi_check": "no completion",
-    "ports_and_imports_restored": true,
-    "bridge_not_restarted": true
+    "status": "passed_and_restored",
+    "candidate_sha256": "fe0c3194104c4a3fe119e745e7e330946ef96fbaa5908f13f9d7c724bd196de7",
+    "normal_radio_counts_wifi_ble": [
+      [
+        65,
+        68
+      ],
+      [
+        62,
+        77
+      ],
+      [
+        63,
+        78
+      ]
+    ],
+    "stable_ble_identity": true,
+    "restored_radio_counts_wifi_ble": [
+      [
+        66,
+        75
+      ],
+      [
+        69,
+        78
+      ],
+      [
+        60,
+        80
+      ]
+    ],
+    "original_code_restored": true,
+    "whole_expected_image_verified": true,
+    "whole_image_bit_identical_to_pretest": false,
+    "host_and_port_state_restored": true,
+    "bridge_not_restarted": true,
+    "finished_utc": "2026-10-23T20:56:25.798593+00:00"
   },
   "preserved_pico2_preflight_failure": {
     "stage": "original-firmware combined initialization command",
@@ -320,10 +350,27 @@
     }
   },
   "remaining": [
-    "Pico 2 normal startup qualification after resolving original-firmware preflight hangs",
     "Pico 2 forced-error retry qualification",
     "natural hardware-fault recovery",
     "USB console-close rollout blocker CP42",
-    "end-to-end BLE workflow client transfers"
-  ]
+    "end-to-end BLE workflow client transfers",
+    "intermittent original-firmware preflight stalls remain unexplained"
+  ],
+  "preserved_pico2_segmented_preflight_failure": {
+    "status": "original_firmware_preflight_failed",
+    "candidate_installed": false,
+    "firmware_writes": false,
+    "interpreter_check": "passed",
+    "wifi_check": "no completion",
+    "ports_and_imports_restored": true,
+    "bridge_not_restarted": true
+  },
+  "matched_original_helper_frame_control": {
+    "exact_original_commands": true,
+    "unchanged_repl_exec": true,
+    "all_three_commands_passed": true,
+    "all_final_prompts_observed": true,
+    "firmware_writes": false,
+    "client_framing_defect_proven": false
+  }
 }

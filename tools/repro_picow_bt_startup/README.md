@@ -65,5 +65,8 @@ controls pass; normal automatic workflows and Pico 2 still need qualification.
 Production integration and bounded normal startup on Pico W are now covered
 by [the follow-up qualification](../../docs/pico-normal-ble-ready-guard-2026-10-23.md). Pico 2 candidate
 qualification stopped at original-firmware preflight without a firmware write.
-Pico 2 normal/forced-error checks, natural faults and workflow client transfers
-remain open.
+That was the initial result; the subsequent recorded qualification passes normal
+startup on Pico 2 and restores original code, verifies the full expected image,
+and passes radio and port/import-state checks. Earlier preflight failures remain
+unexplained. Pico 2 forced-error checks, natural faults and workflow client
+transfers remain open. No client framing fix is claimed.

@@ -10,7 +10,7 @@ the manifest. Their exact ELFs contain the Bluetooth startup, file-transfer and
 serial workflow functions and no `envhub_bt_fault` diagnostic hooks. These are
 normal builds, unlike the earlier workflow-disabled fault-injection images.
 
-On physical Pico W, the candidate starts with the adapter enabled and
+On both physical Pico boards, the candidate starts with the adapter enabled and
 retains its original Bluetooth identity. Three disable/enable cycles then each
 complete Wi-Fi and BLE scans. Counts below are Wi-Fi/BLE observations, not
 throughput measurements or estimates of reliability.
@@ -18,7 +18,7 @@ throughput measurements or estimates of reliability.
 | Board | Candidate scan counts | After restoring original code |
 |---|---|---|
 | Pico W | 70/70, 59/72, 78/75 | 67/74, 71/73, 55/67 |
-| Pico 2 W | Candidate not installed; original-firmware preflight stalled | Original code untouched; imports/port state restored |
+| Pico 2 W | 65/68, 62/77, 63/78 | 66/75, 69/78, 60/80 |
 
 The exact production startup function passes 17/17 native UBSan controls; the
 preceding source passes 8/17. The controls cover initial and already-ready states,
@@ -46,26 +46,32 @@ attempt split and logged the preflight by stage: interpreter identification
 passed, then the Wi-Fi command stalled before the BLE stage. Again no backup
 or firmware write occurred. Both attempts restored imports and the off port
 state without a bridge restart. The cause remains unresolved; the candidate
-has not been tested on Pico 2, and the passing control is not a timing fix.
+was not tested in either failed attempt, and the passing control is not a timing fix.
 A further no-flash control printed markers before/after Wi-Fi import and each
 property read, then checked BLE; all passed. The control uses a raw-response
-recorder while qualification uses the existing Repl helper. Framing/timing and
-firmware behavior still need a matched comparison; these two passes do not
-erase either failed preflight.
+recorder while qualification uses the existing Repl helper. At that stage, framing/timing and firmware behavior remained unresolved;
+these two passes did not erase either failed preflight.
 
-A fresh full backup preceded the Pico W candidate installation. The transaction
+A further matched no-flash control used the exact qualification commands and
+unchanged Repl.exec, with a passive serial recorder. All three commands passed
+and their complete frames included the final raw prompt. No client framing bug
+is established. The same passive recorder was then retained in qualification;
+all original-firmware preflight checks passed, and Pico 2's normal candidate
+passed startup, stable identity and three radio reenable cycles.
+
+Fresh full backups preceded both actual candidate installations. Each transaction
 restored original `9e153ad624` code and padding, verified the complete expected
 flash image, and passed three subsequent Wi-Fi/BLE cycles. Restoration preserves
-runtime data; the complete image is not claimed bit-identical to its pretest
-backup. Pico W bindings were restored and the bridge was untouched. Sixteen
-flash-transaction controls (eight per board) passed; Pico 2's tested transaction
-has not reached its flash stage.
+runtime data; complete images are not claimed bit-identical to pretest backups.
+Pico W bindings and Pico 2 imports/off-port state were restored without a bridge
+restart. Sixteen flash-transaction controls (eight per board) passed.
 
-These results qualify bounded Pico W normal startup with automatic workflows
-compiled in. They do not qualify Pico 2's candidate, end-to-end workflow
-file/serial client transfers, forced-error retries on Pico 2, or natural
-hardware-fault recovery. The separate
-[console-close USB blocker](https://github.com/tyeth/circuitpython/issues/42)
+These results qualify bounded normal startup on both boards with automatic
+workflows compiled in. They do not test end-to-end workflow file/serial client
+transfers, forced-error retries on Pico 2, or natural hardware-fault recovery.
+The two original-firmware preflight failures remain unexplained and preserved;
+the later pass does not establish that passive recording fixed anything.
+The separate [console-close USB blocker](https://github.com/tyeth/circuitpython/issues/42)
 remains open; both production boards retain their original firmware. No new
 overnight soak is attributed to this candidate.
 
