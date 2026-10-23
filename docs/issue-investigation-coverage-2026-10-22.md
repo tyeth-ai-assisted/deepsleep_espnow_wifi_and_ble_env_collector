@@ -1,10 +1,18 @@
-# Issue investigation coverage — updated 23 October 2026, 12:50 UTC
+# Issue investigation coverage — updated 23 October 2026, 13:02 UTC
 
 **No: the work is not fully investigated or physically verified.** This ledger
 reconciles the original `bugs_issues_and_todos.md` with the CP #15 escalation
 index. More soak time is now lower priority than these specific gaps. A source
 fix, a native fault-injection test and a physical-board test are separate kinds
 of evidence. Historical notes below are not new reproductions.
+
+## Controller candidate: physical power-cycle verification
+
+The exact PR 2 adapter at `6ca2f2d` now passes a real C6 cycle, continuing
+polling through an on-but-disabled port, absent parent hub, then returned
+off state before accepting on/enabled/present. Independent runtime uptime
+was 7.21 seconds; imports were detached. This is standalone candidate
+qualification, not live-service deployment. See [trace and limits](controller-c6-physical-2026-10-23.md).
 
 ## C6 follow-up: bare-board checks completed
 

@@ -58,6 +58,11 @@ as a transport/resource investigation, not a CircuitPython radio regression.
 No endpoint-capacity root cause is claimed. Failed jobs and private evidence
 remain preserved; all completed test imports were detached.
 
+A subsequent [physical controller-candidate check](controller-c6-physical-2026-10-23.md)
+passed while explicitly tolerating the missing parent and on-but-disabled
+state. Independent C6 uptime was 7.21 seconds afterward. The controller
+service remains unchanged.
+
 ## Remaining limits
 
 No low-MTU-23 qualification: the device reported `max_packet_length=253`;
