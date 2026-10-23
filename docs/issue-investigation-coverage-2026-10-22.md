@@ -1,4 +1,4 @@
-# Issue investigation coverage — updated 23 October 2026, 22:46 UTC
+# Issue investigation coverage — updated 23 October 2026, 22:56 UTC
 
 ## Pico 2 long-read comparison: independent failure remains
 
@@ -20,6 +20,13 @@ reconciles the original `bugs_issues_and_todos.md` with the CP #15 escalation
 index. More soak time is now lower priority than these specific gaps. A source
 fix, a native fault-injection test and a physical-board test are separate kinds
 of evidence. Historical notes below are not new reproductions.
+
+A simultaneous USB/IP network/USBmon capture now places the long interval
+before the first reply arrives at the host: 10.037/14.024/14.024 seconds, followed
+by complete 64 KiB reply delivery in under 10 ms. A tested out-of-order-aware
+decoder confirms these timings. This does not yet distinguish request delivery,
+bridge admission/completion queuing, or device USB processing. The full-read job
+remains failed and all cleanup passes. [Timing and decoder boundaries](pico2-msc-long-read-comparison-2026-10-23.md#simultaneous-network-and-usb-timing).
 
 ## Pico USB production rollout: console-close storage blocker
 

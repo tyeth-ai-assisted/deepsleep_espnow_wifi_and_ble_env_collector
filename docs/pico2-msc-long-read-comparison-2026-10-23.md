@@ -88,7 +88,51 @@ capture cleanup uses the corrected privileged PID read and completes normally.
    bulk-IN completion and status-wrapper timestamps.
 
 There is no storage fix, permanent candidate rollout, direct-Pico-2-USB test,
-or common-cause claim for Pico W #42. A useful next discriminator is simultaneous
-USB/IP network and USBmon capture, or a controlled transfer-size/CDC-activity
-comparison, to locate the repeated delays without changing firmware speculatively.
+or common-cause claim for Pico W #42. The simultaneous network/USB capture below narrows the delay to before the
+first reply arrives. Controlled transfer-size/CDC-activity comparisons and
+bridge-side segment/completion timestamps remain useful next discriminators.
 See [structured evidence](pico2-msc-long-read-comparison-2026-10-23.json).
+
+## Simultaneous network and USB timing
+
+A further read-only original-firmware run reproduces the same full-disk failure:
+256 KiB retained after the 45-second deadline plus five-second kill grace.
+Small reads and their CDC checks pass. Both capture processes stop normally;
+imports and original port state are restored without a bridge restart.
+
+The network pcap contains one import session, with 53 data-IN requests of at
+least 4 KiB: 46 at 4 KiB, one at 8 KiB, five completed at 64 KiB and one pending
+64 KiB request. The three slow 64 KiB requests wait 10.037075, 14.023629 and
+14.023845 seconds from the captured request-header first byte to the captured
+reply-header first byte. Once that first reply byte arrives, all reply bytes
+arrive in 0.009708, 0.009651 and 0.008658 seconds respectively. USBmon independently
+records the corresponding bulk-IN completions at about 10.047/14.033/14.033 seconds.
+
+Thus slow delivery of the bulk reply after it begins arriving does not account
+for these long delays. The interval before the reply reaches the host remains
+unlocalized: outbound request delivery, bridge admission/USB work/completion
+queuing, device behavior and related interactions have not been separated.
+This is not a blanket exclusion of networking or a bridge/device root-cause claim.
+
+The completion decoder uses the latest of the earliest arrival times of every
+byte in the reply, so a late middle byte is handled correctly even if the final
+byte arrived earlier. Nine controls cover reassembly, malformed streams and
+arrival order. Corrected interval completion equals the original final-byte
+timestamp for all 52 completed replies in this capture; no timing changes result.
+The pending reply remains pending. A decode PASS does not turn the read job PASS.
+
+USBmon contains 146 packets with zero truncation. The network capture reports
+1,785 captured / 1,824 received by filter and zero kernel drops; these counters
+are retained distinctly, not treated as 39 missing payload packets. Strict TCP
+reassembly found no gaps or conflicting overlaps in the captured session.
+Both captures report zero kernel drops. Timings are host-interface observations,
+not the times at which a remote application consumed data.
+
+The candidate job's final stderr label says “Normal BLE qualification failed”
+because its reused wrapper raises that generic message for any earlier failure.
+The actual candidate output and assertions complete all three radio cycles and
+set `normal_ble_passed` before entering `qualify_msc`, whose full-read assertion
+fails. The stderr is preserved; it does not supersede those per-stage results.
+
+See [timing evidence](pico2-msc-network-timing-2026-10-23.json) and
+[decoder with arrival-order controls](../tools/repro_usbip_timing/README.md).
