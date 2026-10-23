@@ -1,4 +1,4 @@
-# Issue investigation coverage — updated 23 October 2026, 10:12 UTC
+# Issue investigation coverage — updated 23 October 2026, 10:42 UTC
 
 **No: the work is not fully investigated or physically verified.** This ledger
 reconciles the original `bugs_issues_and_todos.md` with the CP #15 escalation
@@ -15,9 +15,7 @@ busy-loop control acquires a lease in 4.467 seconds while Python continues
 computing. The shared configuration fix is committed as `6b117bdce5`.
 The production Pico 2 image now passes channel 1/6/11, DHCP, ping, matching station MAC/IP, departure and AP stop/restart. Cleanup passed. Pico W production rollout and the same AP checks now also pass, including BLE scans with a station associated. See the [controlled reproduction, provenance and limits](pico2-dhcp-scheduling-2026-10-23.md) and [production hardware evidence](pico2-production-ap-qualification-2026-10-23.json).
 
-USB stack measurements are now available for the limited CDC/AP workload:
-248–256 of 2048 bytes used. A physical 512-byte comparison and concurrent
-MSC stress remain open. The separately measured DHCP socket-service stack
+Both current Pico 2 512/2048-byte USB-worker diagnostics pass the same short concurrent CDC, read-only MSC, Wi-Fi/BLE workload. The maximum measured use is 260 bytes; this does not reproduce a 512-byte shortage. Production firmware was restored exactly. MSC writes, idle re-enumeration and broader stress remain open. See [the comparison](pico2-usb-stack-comparison-2026-10-23.md). The separately measured DHCP socket-service stack
 reached 2184 of 2400 bytes with debug logging.
 
 The historical ESP sleep-memory reload defect is already fixed upstream by
@@ -62,7 +60,7 @@ claims every interface on first data traffic; unbinding host-side unused
 drivers does not release those bridge claims. This supports investigating
 channel pressure, but does not establish the failure's root cause.
 
-The diagnostic image was subsequently flashed and measured, then replaced by the production fix. Channels 6/11 and station departure now pass. No physical 512/2048 stack comparison has run. See [sanitized evidence](pico2-ap-dhcp-investigation-2026-10-22.json).
+The diagnostic image was subsequently flashed and measured, then replaced by the production fix. Channels 6/11 and station departure now pass. The later current-revision 512/2048 comparison is reported above. See [sanitized evidence](pico2-ap-dhcp-investigation-2026-10-22.json).
 
 Minimal paired reproduction (use disposable bench credentials): start a Pico
 AP on channel 1; on an ESP station call `start_station()`, `stop_dhcp()`,
@@ -198,7 +196,7 @@ rollout and follow-up reports.
 | Zephyr #3 settings geometry, #10 p256-m; shared-bus window/power/wake/RX locks | Reproduced and fixed/worked around with exact-source controls; earlier physical stall cause remains unproved. |
 | HAL Pico #6 startup assertions | Newly executed native failure injection now passes candidate / fails old source. Hardware injection still unrun. |
 | HAL Pico #3 HOST_CTRL cache | Newly reproduced cache/hardware divergence under injected lost write. Production cache policy and physical incidence unresolved. |
-| Zephyr #6 USB stack | Instrumented hardware measurements now show 248–256/2048 bytes in limited CDC/AP work; A short direct Pico W 9e153 CDC/MSC read comparison now passes 270 serial checks and 90 uncached 4 KiB reads; physical 512 comparison, MSC writes and sustained stress remain outstanding. |
+| Zephyr #6 USB stack | Both current Pico 2 512/2048-byte USB-worker diagnostics pass the same short concurrent CDC, read-only MSC, Wi-Fi/BLE workload. The maximum measured use is 260 bytes; this does not reproduce a 512-byte shortage. Production firmware was restored exactly. MSC writes, idle re-enumeration and broader stress remain open. See [the comparison](pico2-usb-stack-comparison-2026-10-23.md). |
 | Zephyr #8 softAP | Channel 1 association/static ping pass. DHCP starvation reproduced; equal-priority candidate passes idle and busy Python controls. Production Pico 2 channel 1/6/11, DHCP/ping and station departure now pass. Pico W production follow-up also passes, including concurrent BLE scan with an associated station. Station lifecycle #40 is now fixed and verified on both Pico W and Pico 2 at 9e153. Pico 2 bounded TLS/BLE and hostname/default-bundle/unrelated-CA controls also pass; certificate dates remain unchecked. |
 | Zephyr #9 legacy timeout | Source still omits timeout in legacy HCI path; CircuitPython host deadline works around it. Direct low-level timed-radio reproduction outstanding. |
 | HAL Infineon #2 coexistence assets | Asset selection audited; current Pico W two-hour and Pico 2 W thirty-minute concurrent-radio runs passed. This does not prove every traffic pattern. |
@@ -215,7 +213,9 @@ rollout and follow-up reports.
   await that hardware. The configured sensor strand names SCD30, not SCD41,
   and the mux returned no usable live status/topology response. Configuration
   alone does not establish physical peripheral presence. Matched current
-  Pico 2 512/2048-byte USB-stack diagnostic builds are ready but not installed.
+  Pico 2 512/2048-byte USB-stack diagnostics subsequently passed the bounded
+  concurrent comparison; production firmware was restored. See
+  [the stack comparison](pico2-usb-stack-comparison-2026-10-23.md).
   See [availability evidence and precise limits](farm-hardware-availability-2026-10-23.md).
 
 - New direct Pico W USB recurrence: the final inventory failed with the Pico

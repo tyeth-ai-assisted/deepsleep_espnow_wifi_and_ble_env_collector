@@ -31,8 +31,9 @@ Separately, two matched Pico 2 USB-worker-stack diagnostics now build at
 `9e153ad624`: 512 and 2048 bytes, with stack initialization, sentinel and
 thread-analyzer instrumentation. The resolved Kconfig maps differ only in
 `CONFIG_UDC_RPI_PICO_STACK_SIZE`; all source/dependency pins were checked
-before and after. **Neither diagnostic is installed yet.** Production
-`9e153` remains installed. [Build hashes](firmware-pico2-stack-pair-2026-10-23.json)
-are preparation for the outstanding physical comparison, not a result of it.
+before and after. At this inventory checkpoint neither diagnostic had been installed. The
+[subsequent physical comparison](pico2-usb-stack-comparison-2026-10-23.md)
+passed both sizes and restored production exactly.
+[Build hashes](firmware-pico2-stack-pair-2026-10-23.json) retain their provenance.
 
 [Sanitized inventory and evidence hashes](farm-hardware-availability-2026-10-23.json).
