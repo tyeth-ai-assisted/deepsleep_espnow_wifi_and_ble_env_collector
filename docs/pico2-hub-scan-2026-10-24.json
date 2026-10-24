@@ -1,0 +1,654 @@
+{
+  "board": "raspberrypi_rpi_pico2_w_zephyr",
+  "application_base": "415710c80b3c02785b4a7860bab71d87a473897e",
+  "patch": "collector/net_blescan.py: prefixes=envadv.PREFIX",
+  "patched_source_sha256": "ad1b840b7bb03a0b9339382ea6b957f1842a092d5d88f14d191a87624e099541",
+  "candidate_pins": {
+    "circuitpython": "5f73172d46cd6c49f9b08570fe793bf1d12b7768",
+    "zephyr": "c6200e80ea6973b092da3c30c672901cc1951fc2",
+    "hal_infineon": "7f93dc60675126a63358ffa0780648d94fd2d634",
+    "hal_rpi_pico": "de12fc2a0f756d889cc13c129622ddb663025d29"
+  },
+  "host_regression": {
+    "baseline": {
+      "tests": 3,
+      "failures": 2,
+      "errors": 1
+    },
+    "fixed": {
+      "tests": 3,
+      "passed": 3
+    },
+    "envadv_checks_passed": 50
+  },
+  "application_attempts": [
+    {
+      "job": "8d400313-0674-44e3-a6b9-fd643359b4c0",
+      "result": "fail",
+      "scope": "Fixture used bytes(nvm) rather than bytes(nvm[:]); stopped before application writes.",
+      "record_sha256": "9d76e04e62db3aa78d6a6e6f6d2924b28d696d13bc99e834a3088dbafbbc7110",
+      "finished_utc": "2026-10-24T02:10:11.328231+00:00",
+      "original_backup_sha256": "7518d00ea8245bd8eb153d57baa277ea7b6da7da670cdc0e8952632631d7f917",
+      "original_backup_bytes": 4194304,
+      "restore": {
+        "status": "verified",
+        "before_sha256": "eb0f2a25436e0573db43bfbaabbd7d9ad61658cd15df82b3ef149dbb93e4717b",
+        "expected_sha256": "7518d00ea8245bd8eb153d57baa277ea7b6da7da670cdc0e8952632631d7f917",
+        "bytes": 4194304,
+        "whole_flash_verified": true
+      },
+      "production_restored": true,
+      "runtime_restored": true,
+      "imports_detached": true,
+      "original_port_state_restored": true,
+      "bridge_reset_observed": false,
+      "recovery_required": false,
+      "payload_verified": false,
+      "files_verified": 0,
+      "boot_bytes": null,
+      "boot_sha256": null
+    },
+    {
+      "job": "23dbd129-ea60-4b61-b767-37c656134803",
+      "result": "fail",
+      "scope": "Fixture assumed hashlib.sha256 existed; stopped after its first file write and before app boot.",
+      "record_sha256": "e04a6e008db19bb4bc8209df4b09db306290b26216a6b89edbeebf40c5bd128b",
+      "finished_utc": "2026-10-24T02:13:35.336140+00:00",
+      "original_backup_sha256": "7518d00ea8245bd8eb153d57baa277ea7b6da7da670cdc0e8952632631d7f917",
+      "original_backup_bytes": 4194304,
+      "restore": {
+        "status": "verified",
+        "before_sha256": "21b58c6a3b664c67eb3a144e11771b5a124d93a3bec386ab539ff7ca3ff92d58",
+        "expected_sha256": "7518d00ea8245bd8eb153d57baa277ea7b6da7da670cdc0e8952632631d7f917",
+        "bytes": 4194304,
+        "whole_flash_verified": true
+      },
+      "production_restored": true,
+      "runtime_restored": true,
+      "imports_detached": true,
+      "original_port_state_restored": true,
+      "bridge_reset_observed": false,
+      "recovery_required": false,
+      "payload_verified": false,
+      "files_verified": 0,
+      "boot_bytes": null,
+      "boot_sha256": null
+    },
+    {
+      "job": "22d99503-134f-478a-a682-f4a8ddba51cf",
+      "result": "fail",
+      "scope": "Fixture missed an early boot marker after USB reattachment; boot log independently reproduces positional scan argument TypeError.",
+      "record_sha256": "5853e615b0d4971bce97eb4ee7bfef5b3e2eb23eda8a11a863d02d8899b3079d",
+      "finished_utc": "2026-10-24T02:20:53.410665+00:00",
+      "original_backup_sha256": "7518d00ea8245bd8eb153d57baa277ea7b6da7da670cdc0e8952632631d7f917",
+      "original_backup_bytes": 4194304,
+      "restore": {
+        "status": "verified",
+        "before_sha256": "07903cbb999be4c6f73bf5fe3e13f45b49b2717f55ec14c16aa4c211833e4e9d",
+        "expected_sha256": "7518d00ea8245bd8eb153d57baa277ea7b6da7da670cdc0e8952632631d7f917",
+        "bytes": 4194304,
+        "whole_flash_verified": true
+      },
+      "production_restored": true,
+      "runtime_restored": true,
+      "imports_detached": true,
+      "original_port_state_restored": true,
+      "bridge_reset_observed": false,
+      "recovery_required": false,
+      "payload_verified": true,
+      "files_verified": 44,
+      "boot_bytes": 1060,
+      "boot_sha256": "a66098fc8acf1dce4734da9bb6b44115a77ac90410906fe6187fa533137e6c63"
+    },
+    {
+      "job": "3617aa1c-fcf9-49f1-94ab-6847075d136f",
+      "result": "fail",
+      "scope": "Keyword fix removes TypeError; full hub reports scan OSError22 and fails the boot check.",
+      "record_sha256": "b8bc9c400333e4a1bdb3da9c89635e954ef9ef013139c0a6e1aada9e97a8d88f",
+      "finished_utc": "2026-10-24T02:29:55.110646+00:00",
+      "original_backup_sha256": "7518d00ea8245bd8eb153d57baa277ea7b6da7da670cdc0e8952632631d7f917",
+      "original_backup_bytes": 4194304,
+      "restore": {
+        "status": "verified",
+        "before_sha256": "c7b8aba36f935835749d2c845ede08e5f25959e48e42a23acd313be6fbdb615e",
+        "expected_sha256": "7518d00ea8245bd8eb153d57baa277ea7b6da7da670cdc0e8952632631d7f917",
+        "bytes": 4194304,
+        "whole_flash_verified": true
+      },
+      "production_restored": true,
+      "runtime_restored": true,
+      "imports_detached": true,
+      "original_port_state_restored": true,
+      "bridge_reset_observed": false,
+      "recovery_required": false,
+      "payload_verified": true,
+      "files_verified": 44,
+      "boot_bytes": 1053,
+      "boot_sha256": "25c1a2037f7022afddf5505e30f326681d8151007123da46d3f1ba61be07fd17"
+    }
+  ],
+  "raw_scan_matrices": [
+    {
+      "job": "ddb76464-6c3d-4281-affc-004f00e19aff",
+      "revision": "9e153ad624",
+      "result": "pass",
+      "record_sha256": "106b7aa6e93f4e6815a180cfd91aaa5800172f7a1b2508680c55917bfe920449",
+      "cases": [
+        {
+          "result": "pass",
+          "window": 0.1,
+          "elapsed_s": 1.0320004,
+          "label": "no_adv",
+          "ap": false,
+          "prefix": false,
+          "count": 30,
+          "advertising": false
+        },
+        {
+          "result": "pass",
+          "window": 0.1,
+          "elapsed_s": 1.031998,
+          "label": "no_adv",
+          "ap": false,
+          "prefix": true,
+          "count": 0,
+          "advertising": false
+        },
+        {
+          "result": "pass",
+          "window": 0.05,
+          "elapsed_s": 1.028,
+          "label": "no_adv",
+          "ap": false,
+          "prefix": false,
+          "count": 10,
+          "advertising": false
+        },
+        {
+          "result": "pass",
+          "window": 0.05,
+          "elapsed_s": 1.031999,
+          "label": "no_adv",
+          "ap": false,
+          "prefix": true,
+          "count": 0,
+          "advertising": false
+        },
+        {
+          "result": "pass",
+          "window": 0.1,
+          "elapsed_s": 1.0220024,
+          "label": "nonconnectable",
+          "ap": false,
+          "prefix": false,
+          "count": 26,
+          "advertising": true
+        },
+        {
+          "result": "pass",
+          "window": 0.1,
+          "elapsed_s": 1.018001,
+          "label": "nonconnectable",
+          "ap": false,
+          "prefix": true,
+          "count": 0,
+          "advertising": true
+        },
+        {
+          "result": "pass",
+          "window": 0.05,
+          "elapsed_s": 1.0219984,
+          "label": "nonconnectable",
+          "ap": false,
+          "prefix": false,
+          "count": 21,
+          "advertising": true
+        },
+        {
+          "result": "pass",
+          "window": 0.05,
+          "elapsed_s": 1.0239976,
+          "label": "nonconnectable",
+          "ap": false,
+          "prefix": true,
+          "count": 0,
+          "advertising": true
+        },
+        {
+          "result": "pass",
+          "window": 0.1,
+          "elapsed_s": 1.021994,
+          "label": "connectable",
+          "ap": false,
+          "prefix": false,
+          "count": 28,
+          "advertising": true
+        },
+        {
+          "result": "pass",
+          "window": 0.1,
+          "elapsed_s": 1.0250036,
+          "label": "connectable",
+          "ap": false,
+          "prefix": true,
+          "count": 0,
+          "advertising": true
+        },
+        {
+          "result": "pass",
+          "window": 0.05,
+          "elapsed_s": 1.0209964,
+          "label": "connectable",
+          "ap": false,
+          "prefix": false,
+          "count": 16,
+          "advertising": true
+        },
+        {
+          "result": "pass",
+          "window": 0.05,
+          "elapsed_s": 1.019991,
+          "label": "connectable",
+          "ap": false,
+          "prefix": true,
+          "count": 0,
+          "advertising": true
+        },
+        {
+          "result": "pass",
+          "window": 0.1,
+          "elapsed_s": 1.0279964,
+          "label": "ap_connectable",
+          "ap": true,
+          "prefix": false,
+          "count": 26,
+          "advertising": true
+        },
+        {
+          "result": "pass",
+          "window": 0.1,
+          "elapsed_s": 1.0320036,
+          "label": "ap_connectable",
+          "ap": true,
+          "prefix": true,
+          "count": 0,
+          "advertising": true
+        },
+        {
+          "result": "pass",
+          "window": 0.05,
+          "elapsed_s": 1.0290016,
+          "label": "ap_connectable",
+          "ap": true,
+          "prefix": false,
+          "count": 18,
+          "advertising": true
+        },
+        {
+          "result": "pass",
+          "window": 0.05,
+          "elapsed_s": 1.0320016,
+          "label": "ap_connectable",
+          "ap": true,
+          "prefix": true,
+          "count": 0,
+          "advertising": true
+        },
+        {
+          "result": "pass",
+          "window": 0.1,
+          "elapsed_s": 1.035004,
+          "label": "ap_no_adv",
+          "ap": true,
+          "prefix": false,
+          "count": 29,
+          "advertising": false
+        },
+        {
+          "result": "pass",
+          "window": 0.1,
+          "elapsed_s": 1.038004,
+          "label": "ap_no_adv",
+          "ap": true,
+          "prefix": true,
+          "count": 0,
+          "advertising": false
+        },
+        {
+          "result": "pass",
+          "window": 0.05,
+          "elapsed_s": 1.0410044,
+          "label": "ap_no_adv",
+          "ap": true,
+          "prefix": false,
+          "count": 12,
+          "advertising": false
+        },
+        {
+          "result": "pass",
+          "window": 0.05,
+          "elapsed_s": 1.0349944,
+          "label": "ap_no_adv",
+          "ap": true,
+          "prefix": true,
+          "count": 0,
+          "advertising": false
+        },
+        {
+          "result": "pass",
+          "window": 0.1,
+          "elapsed_s": 1.0320016,
+          "label": "after_ap",
+          "ap": false,
+          "prefix": false,
+          "count": 31,
+          "advertising": false
+        },
+        {
+          "result": "pass",
+          "window": 0.1,
+          "elapsed_s": 1.0309964,
+          "label": "after_ap",
+          "ap": false,
+          "prefix": true,
+          "count": 0,
+          "advertising": false
+        },
+        {
+          "result": "pass",
+          "window": 0.05,
+          "elapsed_s": 1.031994,
+          "label": "after_ap",
+          "ap": false,
+          "prefix": false,
+          "count": 14,
+          "advertising": false
+        },
+        {
+          "result": "pass",
+          "window": 0.05,
+          "elapsed_s": 1.0320016,
+          "label": "after_ap",
+          "ap": false,
+          "prefix": true,
+          "count": 0,
+          "advertising": false
+        }
+      ],
+      "finished_utc": "2026-10-24T02:32:47.048202+00:00",
+      "imports_detached": true,
+      "original_port_state_restored": true,
+      "bridge_reset_observed": false,
+      "firmware_writes": false,
+      "filesystem_writes": false,
+      "radios_stopped": true
+    },
+    {
+      "job": "b662ba2f-dae0-4e96-92e9-c43d2a805d4c",
+      "revision": "5f73172d46",
+      "result": "pass",
+      "record_sha256": "c48bfef83e0007f068ab8519710529812c8234b9c6f8a203129aaced0783576f",
+      "cases": [
+        {
+          "result": "pass",
+          "window": 0.1,
+          "elapsed_s": 1.0360004,
+          "label": "no_adv",
+          "ap": false,
+          "prefix": false,
+          "count": 32,
+          "advertising": false
+        },
+        {
+          "result": "pass",
+          "window": 0.1,
+          "elapsed_s": 1.028,
+          "label": "no_adv",
+          "ap": false,
+          "prefix": true,
+          "count": 0,
+          "advertising": false
+        },
+        {
+          "result": "pass",
+          "window": 0.05,
+          "elapsed_s": 1.0310004,
+          "label": "no_adv",
+          "ap": false,
+          "prefix": false,
+          "count": 16,
+          "advertising": false
+        },
+        {
+          "result": "pass",
+          "window": 0.05,
+          "elapsed_s": 1.0360004,
+          "label": "no_adv",
+          "ap": false,
+          "prefix": true,
+          "count": 0,
+          "advertising": false
+        },
+        {
+          "result": "pass",
+          "window": 0.1,
+          "elapsed_s": 1.023001,
+          "label": "nonconnectable",
+          "ap": false,
+          "prefix": false,
+          "count": 32,
+          "advertising": true
+        },
+        {
+          "result": "pass",
+          "window": 0.1,
+          "elapsed_s": 1.0259964,
+          "label": "nonconnectable",
+          "ap": false,
+          "prefix": true,
+          "count": 0,
+          "advertising": true
+        },
+        {
+          "result": "pass",
+          "window": 0.05,
+          "elapsed_s": 1.022996,
+          "label": "nonconnectable",
+          "ap": false,
+          "prefix": false,
+          "count": 7,
+          "advertising": true
+        },
+        {
+          "result": "pass",
+          "window": 0.05,
+          "elapsed_s": 1.023001,
+          "label": "nonconnectable",
+          "ap": false,
+          "prefix": true,
+          "count": 0,
+          "advertising": true
+        },
+        {
+          "result": "pass",
+          "window": 0.1,
+          "elapsed_s": 1.023001,
+          "label": "connectable",
+          "ap": false,
+          "prefix": false,
+          "count": 34,
+          "advertising": true
+        },
+        {
+          "result": "pass",
+          "window": 0.1,
+          "elapsed_s": 1.024996,
+          "label": "connectable",
+          "ap": false,
+          "prefix": true,
+          "count": 0,
+          "advertising": true
+        },
+        {
+          "result": "pass",
+          "window": 0.05,
+          "elapsed_s": 1.0220016,
+          "label": "connectable",
+          "ap": false,
+          "prefix": false,
+          "count": 12,
+          "advertising": true
+        },
+        {
+          "result": "pass",
+          "window": 0.05,
+          "elapsed_s": 1.0279964,
+          "label": "connectable",
+          "ap": false,
+          "prefix": true,
+          "count": 0,
+          "advertising": true
+        },
+        {
+          "result": "pass",
+          "window": 0.1,
+          "elapsed_s": 1.0290016,
+          "label": "ap_connectable",
+          "ap": true,
+          "prefix": false,
+          "count": 28,
+          "advertising": true
+        },
+        {
+          "result": "pass",
+          "window": 0.1,
+          "elapsed_s": 1.0320016,
+          "label": "ap_connectable",
+          "ap": true,
+          "prefix": true,
+          "count": 0,
+          "advertising": true
+        },
+        {
+          "result": "pass",
+          "window": 0.05,
+          "elapsed_s": 1.0290016,
+          "label": "ap_connectable",
+          "ap": true,
+          "prefix": false,
+          "count": 19,
+          "advertising": true
+        },
+        {
+          "result": "pass",
+          "window": 0.05,
+          "elapsed_s": 1.0340064,
+          "label": "ap_connectable",
+          "ap": true,
+          "prefix": true,
+          "count": 0,
+          "advertising": true
+        },
+        {
+          "result": "pass",
+          "window": 0.1,
+          "elapsed_s": 1.0390016,
+          "label": "ap_no_adv",
+          "ap": true,
+          "prefix": false,
+          "count": 32,
+          "advertising": false
+        },
+        {
+          "result": "pass",
+          "window": 0.1,
+          "elapsed_s": 1.0410044,
+          "label": "ap_no_adv",
+          "ap": true,
+          "prefix": true,
+          "count": 0,
+          "advertising": false
+        },
+        {
+          "result": "pass",
+          "window": 0.05,
+          "elapsed_s": 1.0360016,
+          "label": "ap_no_adv",
+          "ap": true,
+          "prefix": false,
+          "count": 17,
+          "advertising": false
+        },
+        {
+          "result": "pass",
+          "window": 0.05,
+          "elapsed_s": 1.036999,
+          "label": "ap_no_adv",
+          "ap": true,
+          "prefix": true,
+          "count": 0,
+          "advertising": false
+        },
+        {
+          "result": "pass",
+          "window": 0.1,
+          "elapsed_s": 1.029999,
+          "label": "after_ap",
+          "ap": false,
+          "prefix": false,
+          "count": 33,
+          "advertising": false
+        },
+        {
+          "result": "pass",
+          "window": 0.1,
+          "elapsed_s": 1.033007,
+          "label": "after_ap",
+          "ap": false,
+          "prefix": true,
+          "count": 0,
+          "advertising": false
+        },
+        {
+          "result": "pass",
+          "window": 0.05,
+          "elapsed_s": 1.0339968,
+          "label": "after_ap",
+          "ap": false,
+          "prefix": false,
+          "count": 18,
+          "advertising": false
+        },
+        {
+          "result": "pass",
+          "window": 0.05,
+          "elapsed_s": 1.031006,
+          "label": "after_ap",
+          "ap": false,
+          "prefix": true,
+          "count": 0,
+          "advertising": false
+        }
+      ],
+      "finished_utc": "2026-10-24T02:37:54.448953+00:00",
+      "imports_detached": true,
+      "original_port_state_restored": true,
+      "bridge_reset_observed": false,
+      "restore": {
+        "status": "verified",
+        "before_sha256": "eb0f2a25436e0573db43bfbaabbd7d9ad61658cd15df82b3ef149dbb93e4717b",
+        "expected_sha256": "7518d00ea8245bd8eb153d57baa277ea7b6da7da670cdc0e8952632631d7f917",
+        "bytes": 4194304,
+        "whole_flash_verified": true
+      },
+      "runtime_restored": true
+    }
+  ],
+  "limits": [
+    "Full hub scan OSError22 remains unresolved",
+    "No HTTP requests attempted in these four app jobs",
+    "No filtered node packet was received in either raw matrix",
+    "No full app soak, latest browser assets or physical sensors qualified",
+    "Raw matrix uses simple advertisements, not the full UART service/application"
+  ]
+}

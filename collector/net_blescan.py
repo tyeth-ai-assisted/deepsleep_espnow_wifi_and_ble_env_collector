@@ -88,7 +88,7 @@ class AdvReceiver:
         deadline = now + self.scan_s + 0.5
         try:
             results = self.adapter.start_scan(
-                envadv.PREFIX, buffer_size=512, timeout=self.scan_s,
+                prefixes=envadv.PREFIX, buffer_size=512, timeout=self.scan_s,
                 interval=0.1, window=0.1, minimum_rssi=self.min_rssi,
                 active=False)
             for e in results:
