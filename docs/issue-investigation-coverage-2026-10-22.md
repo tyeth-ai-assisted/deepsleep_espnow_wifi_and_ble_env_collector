@@ -11,8 +11,15 @@ New [CP #43](https://github.com/tyeth/circuitpython/issues/43) records physicall
 reproduced silent rejection of a multi-sector MSC write starting at synthetic
 MBR LBA 0. Source ignores the block-device error. Partition-only recovery and
 exact full-disk verification pass. The first test and intermediate recovery
-wrapper failures remain failed; a corrected transaction passes. No firmware fix
-is claimed. This adds one issue to the prior six-new-issue tally (seven total).
+wrapper failures remain failed; a corrected application transaction passes.
+Firmware fix `5f73172d46` now propagates the rejection as SCSI CHECK CONDITION:
+the direct Pico W before/after comparison, valid partition write and three
+free-sector write/restore controls pass with complete disk verification.
+Original code/full expected flash and radio checks are restored. Native
+fault/bounds/cache checks pass 56/56 versus 34 failures on the preceding source;
+both Pico builds pass. Pico 2 physical MSC qualification and #42 remain open.
+[Exact reproduction, preserved guard failure and limits](zephyr-msc-errors-2026-10-24.md).
+This remains one issue in the seven-new-issue tally, not a new issue or closure.
 
 ## Pico 2 forced BLE retry — 24 October
 
