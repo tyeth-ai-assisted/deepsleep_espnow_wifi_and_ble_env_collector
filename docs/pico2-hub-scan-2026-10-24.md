@@ -244,7 +244,8 @@ the absence of scan tracing and forced-error hooks.
 | Pico W | 1,252,848 | `1a0a5bdbbfd69f5c6ef987d074e391e27eb1e03409b676e090319462e047c6be` |
 | Pico 2 W | 1,209,228 | `2c6bfb34138e7d9195f495d66fb35dd1ddaf8024e264ea8af165c2715b1cfd89` |
 
-These are build results, not additional physical passes. The physical hub run
-above used the separately pinned trace image. Both production Picos retain
+At this stage these were build results; the physical hub run above used the
+separately pinned trace image. The later [normal-image paired test](pico-paired-overair-2026-10-24.md)
+now verifies actual node reception, twelve HTTP checks and complete restoration. Both production Picos retain
 their restored `9e153` images while the independent USB reliability issues
 remain open. Machine-readable evidence includes ELF/map/config and log hashes.

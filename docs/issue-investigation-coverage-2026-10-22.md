@@ -40,8 +40,8 @@ restored byte-exact, original files/identity/radios pass, networking/imports/pow
 are restored and independent postflights pass. The earlier preflash timeout and
 minimal diagnostic missing its BEGIN marker remain failures. CP #32 now pins Zephyr5bf4230 at CP3254e272; both normal Pico builds pass
 with matching clean dependencies, normal BLE workflows and no diagnostic hooks.
-Those normal images have no additional physical qualification; production
-remains restored9e153. The diagnostic bounded pass is not a long-soak claim.
+The normal Pico 2 image now has actual-node reception evidence below;
+normal Pico W3254 remains build-only here. Production remains restored9e153. The diagnostic bounded pass is not a long-soak claim.
 See [hub scan evidence and controls](pico2-hub-scan-2026-10-24.md).
 
 
@@ -654,3 +654,32 @@ qualification; [the reset control](picow-console-storage-stall-2026-10-23.md#mcu
 
 The goal remains active. The final CP #15 comment has not been posted; it must
 carry the remaining limitations rather than claim every issue is resolved.
+
+## Normal Pico 2 hub receives actual Pico W node advertisements
+
+The normal CP3254/Zephyr5bf hub now passes actual node-to-hub BLE reception,
+decoding and HTTP API exposure. Three changing synthetic readings match node
+UART sequences36/37/38, with RSSI and receive counts4/5/6; twelve HTTP checks
+pass. All44hub/eightnode files match after deployment. Both complete original
+storage images restore exactly, original board/version/files verify, networking
+and imports are cleaned up, and independent postflight passes.
+
+Three failed predecessors remain failed, including a separately recovered node
+harness re-enumeration failure and two original-hub preflight timeouts. A
+no-sender control localizes the original9e timeout to import wifi after successful
+identity; no radio-root-cause claim follows. The successful candidate experiment
+uses exact original identity/full-flash guards; restoration certifies bytes and
+runtime identity/files, not original radio health. Normal Pico W3254 remains
+build-only here. No real sensor/display/SD, outage replay or long-soak claim.
+See [paired evidence and minimal timeout observation](pico-paired-overair-2026-10-24.md).
+
+The original numbered reports0–11 all have explicit dispositions in the table
+above. The historical request to file original reports1–4/#5 does not establish
+that separate upstream issues exist; unreproduced mechanisms are not newly
+filed or closed. JD79667 has a retained host-verified patch but no library PR.
+Application certificate-sync#25 protocol tests are distinct from CP warm-reset#25
+and from app#38's uncorrected non-atomic promotion. Large actual-drive relabel/
+interruption, concurrent HTTP/ESP-NOW, router-channel/autoconnect, physical battery
+events and calibration remain bounded verification gaps, not silently passed
+requirements. Future GitHub Pages/Adafruit IO and missing-rig assembly remain
+outside this targeted regression work.
