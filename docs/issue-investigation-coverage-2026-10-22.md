@@ -12,6 +12,11 @@ attempts preserve their failures and restore the exact original 4 MiB image.
 Separate raw scan matrices pass 24/24 on each of original9e153 and candidate5f731,
 including AP plus connectable advertising. All filtered counts are zero, so
 node delivery is not implied; full-app state/error origin needs diagnosis.
+A fifth instrumented boot identifies `start_scan` itself with the expected
+arguments. Twelve HTTP JSON checks pass and latest consistently reports the
+scan error. The job remains failed (also a network cleanup assertion); exact
+original flash/runtime/radios/port restoration pass, then a separate read-only
+postflight verifies disconnected Wi-Fi, removed test profile and baseline state.
 See [hub scan evidence and controls](pico2-hub-scan-2026-10-24.md).
 
 

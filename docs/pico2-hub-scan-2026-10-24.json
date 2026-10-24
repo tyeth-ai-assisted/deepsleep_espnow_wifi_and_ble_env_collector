@@ -646,9 +646,142 @@
   ],
   "limits": [
     "Full hub scan OSError22 remains unresolved",
-    "No HTTP requests attempted in these four app jobs",
+    "First four app jobs did not attempt HTTP; instrumented fifth passes12 HTTP checks but retains scanner failure",
     "No filtered node packet was received in either raw matrix",
     "No full app soak, latest browser assets or physical sensors qualified",
     "Raw matrix uses simple advertisements, not the full UART service/application"
-  ]
+  ],
+  "instrumented_hub": {
+    "job": "f39cb948-910a-4574-9262-e9a9fb4ffef8",
+    "result": "fail",
+    "record_sha256": "9e9d3419046428b4fc93e0baf20248b8b586a16cd21ef40023c5cbe04b31befc",
+    "finished_utc": "2026-10-24T02:45:53.459130+00:00",
+    "boot_bytes": 1621,
+    "boot_sha256": "19ec2680f9dd0f9a28b711042b269b32ea76433a4a94428bbdb31f6d47a40104",
+    "http_checks": [
+      {
+        "cycle": 0,
+        "route": "/api/config",
+        "bytes": 1724,
+        "sha256": "0e19f4f034f8f8726ae7d9c227621708c382930dd1db308c31043eb85e325e58"
+      },
+      {
+        "cycle": 0,
+        "route": "/api/latest",
+        "bytes": 327,
+        "sha256": "08eb7d96910c14904f0f8a2bb38ae660d5c639afcb8b0aad2ccd34fff10c4a80"
+      },
+      {
+        "cycle": 0,
+        "route": "/api/battery",
+        "bytes": 100,
+        "sha256": "8214c362016d6b3949be7f1b6665f1e9e55d480a5cb63e875b2bf0fbb85bdebe"
+      },
+      {
+        "cycle": 0,
+        "route": "/api/cert",
+        "bytes": 185,
+        "sha256": "9104756091eb623294deac6d8d62844f77341940bed796cab36d7ead1470d124"
+      },
+      {
+        "cycle": 1,
+        "route": "/api/config",
+        "bytes": 1724,
+        "sha256": "0e19f4f034f8f8726ae7d9c227621708c382930dd1db308c31043eb85e325e58"
+      },
+      {
+        "cycle": 1,
+        "route": "/api/latest",
+        "bytes": 327,
+        "sha256": "e999f09a165f025e58b823e43b15b8b0a4e5f4e09a693f6b9166328c24fdc77e"
+      },
+      {
+        "cycle": 1,
+        "route": "/api/battery",
+        "bytes": 100,
+        "sha256": "8214c362016d6b3949be7f1b6665f1e9e55d480a5cb63e875b2bf0fbb85bdebe"
+      },
+      {
+        "cycle": 1,
+        "route": "/api/cert",
+        "bytes": 185,
+        "sha256": "9104756091eb623294deac6d8d62844f77341940bed796cab36d7ead1470d124"
+      },
+      {
+        "cycle": 2,
+        "route": "/api/config",
+        "bytes": 1724,
+        "sha256": "0e19f4f034f8f8726ae7d9c227621708c382930dd1db308c31043eb85e325e58"
+      },
+      {
+        "cycle": 2,
+        "route": "/api/latest",
+        "bytes": 327,
+        "sha256": "8d49cd87402b3c7dfa1a9b418288b7db81aa1c163f064b27be890b409278d97a"
+      },
+      {
+        "cycle": 2,
+        "route": "/api/battery",
+        "bytes": 100,
+        "sha256": "8214c362016d6b3949be7f1b6665f1e9e55d480a5cb63e875b2bf0fbb85bdebe"
+      },
+      {
+        "cycle": 2,
+        "route": "/api/cert",
+        "bytes": 185,
+        "sha256": "9104756091eb623294deac6d8d62844f77341940bed796cab36d7ead1470d124"
+      }
+    ],
+    "scanner_api_states": [
+      {
+        "ble_rx": 0,
+        "ble_err": "OSError: [Errno 22] Invalid argument"
+      },
+      {
+        "ble_rx": 0,
+        "ble_err": "OSError: [Errno 22] Invalid argument"
+      },
+      {
+        "ble_rx": 0,
+        "ble_err": "OSError: [Errno 22] Invalid argument"
+      }
+    ],
+    "late_boot_failure": true,
+    "network_restore_error": "AssertionError()",
+    "restore": {
+      "status": "verified",
+      "before_sha256": "8a15a5a9746e30b82160bdbc30f0a5bf42f14ee061d795ead82a05e97af503b8",
+      "expected_sha256": "7518d00ea8245bd8eb153d57baa277ea7b6da7da670cdc0e8952632631d7f917",
+      "bytes": 4194304,
+      "whole_flash_verified": true
+    },
+    "production_restored": true,
+    "runtime_restored": true,
+    "imports_detached": true,
+    "original_port_state_restored": true,
+    "bridge_reset_observed": false,
+    "recovery_required": false,
+    "first_scan": {
+      "timeout_s": 1.0,
+      "every_s": 5.0,
+      "minimum_rssi": -100,
+      "prefix_hex": "04ffffffe7",
+      "adapter_enabled": true,
+      "advertising": true,
+      "connected": false
+    },
+    "failure_stage": "start_scan",
+    "exception": "OSError: [Errno 22] Invalid argument",
+    "postflight": {
+      "job": "78bdb0e2-836e-48c4-938b-3cf91e791e22",
+      "result": "pass",
+      "record_sha256": "771cbef1a3aecbad5fd4599dde05a21f2ed4edf365cc35db8560ff3f61a50313",
+      "read_only": true,
+      "wlan_disconnected": true,
+      "test_profile_absent": true,
+      "no_active_units": true,
+      "no_imports": true,
+      "original_port_state_verified": true
+    }
+  }
 }

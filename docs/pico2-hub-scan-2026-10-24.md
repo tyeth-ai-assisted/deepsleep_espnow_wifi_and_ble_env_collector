@@ -85,3 +85,37 @@ exception. Neither a firmware regression nor a controller limitation is proven.
 Further diagnosis must capture the full application's actual input and failing
 stage. The JSON companion retains every raw matrix case, job status, restore
 checks and hashes of the complete private records.
+
+## Instrumented full hub: exact scan call fails while APIs respond
+
+A fifth temporary application boot adds diagnostic output without a radio
+workaround. It records these exact first-scan values:
+
+```text
+BLE_SCAN_INPUT 1.0 5.0 -100 04ffffffe7 True True False
+BLE scan failed: OSError: [Errno 22] Invalid argument
+BLE_SCAN_FAILURE_STAGE start_scan
+```
+
+The traceback points to `start_scan`, before consuming its iterator. Values
+are scan seconds, scan period, RSSI floor, prefix bytes, adapter enabled,
+advertising, and connected. This narrows the failure to starting the scan with
+the expected inputs; it does not distinguish host validation, address setup,
+or a controller-command error. The 48 passing raw controls remain distinct.
+
+In this diagnostic the harness continues to test the HTTP APIs after recording
+the scan error. `/api/config`, `/api/latest`, `/api/battery`, and `/api/cert`
+each return HTTP 200 and valid JSON in three cycles (12 checks). Every latest
+response reports `ble_rx: 0` and `ble_err: OSError: [Errno 22] Invalid argument`.
+These are successful HTTP subchecks, **not** working BLE reception or an overall
+application pass. Browser assets and HTTPS client trust were not tested here.
+
+The main job remains failed. It records both the scan failure and a network
+cleanup assertion after deleting its temporary connection profile. Its original
+4 MiB flash is restored exactly, original files/version/identity are checked,
+Wi-Fi/BLE counts are 60/71, imports are detached, the Pico is off, and the bridge
+has not reset. A separate read-only postflight confirms Wi-Fi disconnected, the
+temporary profile absent, the management route unchanged, no active test units
+or imports, and the baseline device/port state. No recovery mutation is needed.
+The initial network assertion's observed state was not saved, so its cause is
+not established merely by the later clean result.
