@@ -44,6 +44,31 @@ content equality. Seven 64 KiB READ(10) commands complete in 116–120 ms; all
 comparison does not isolate the bridge or disprove the closed-console issue.
 [Direct-board timings and scope](pico2-msc-long-read-comparison-2026-10-23.md#direct-pico-w-timing-control).
 
+The temporary S31 per-segment diagnostic now localizes the Pico 2 W large-read
+pause to host-submit-call → client-completion-callback time: ten and fourteen
+segments each take approximately one second, while application queueing and
+reply delivery take milliseconds. Original bridge firmware was restored and
+whole expected flash verified. This is new localization, not a fix or host/device
+causal attribution. [Measurements and minimal instrumentation](pico2-s31-segment-timing-2026-10-24.md).
+
+## Certificate-sync coverage correction (24 October)
+
+The original application issue #25 (distinct from CircuitPython warm-reset #25)
+records the oversized BLE upload, receive-line discard and missing-dispatch
+failures. Chunked `cert begin` / `c` / `k` / `end` support and historical C6
+hardware verification are present. Current host checks now pass: 20 JavaScript
+test groups (`node webapp/tests/cert_sync.test.mjs`) and all parser/receiver checks
+(`python3 tools/test_cert_ble.py`), including bounded chunks, exact reassembly,
+missing handler, oversize-line recovery and disconnect cleanup. These do not
+constitute fresh 11.0.0-alpha.2 physical certificate installation.
+
+Targeted POSIX host failure injection now reproduces two separate application
+defects: a failed second rename leaves a new live chain paired with the old key;
+and a rejected `end` clears the receiver, so a subsequent abort leaves both
+`.new` files. Synthetic fixtures and mocked expiry isolate these paths; this is
+not physical filesystem or power-loss qualification. No cryptographic key/cert
+match validation is claimed by the protocol tests. [Reproduction and limits](cert-install-failure-paths-2026-10-24.md).
+
 ## Pico USB production rollout: console-close storage blocker
 
 The actual `6839890534` Pico W rollout fails its initial capacity read before
