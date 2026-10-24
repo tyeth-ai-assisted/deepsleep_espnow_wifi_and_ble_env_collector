@@ -2,11 +2,13 @@
 import importlib.util
 from pathlib import Path
 import tempfile
+import sys
 import time
 import unittest
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "collector"))
 spec = importlib.util.spec_from_file_location('certstore', ROOT/'collector/certstore.py')
 certstore = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(certstore)

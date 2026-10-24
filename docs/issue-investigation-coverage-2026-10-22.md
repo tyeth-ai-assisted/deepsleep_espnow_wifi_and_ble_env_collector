@@ -1,3 +1,19 @@
+## Pico application integration and silent MSC writes — 24 October
+
+PR #11 is integrated locally with the C5 I2C guard and full-chain certificate
+fix retained. The actual Pico W node entry point passes two MCU-reset boots,
+five simulated-sensor advertising cycles each, stable identity and exact full-disk
+restoration. Startup free heap is 77,616 bytes. Over-air receipt, Pico 2 hub boot,
+real sensors and latest-candidate application runtime remain unverified.
+[Report, transcript and scope](picow-node-application-2026-10-24.md).
+
+New [CP #43](https://github.com/tyeth/circuitpython/issues/43) records physically
+reproduced silent rejection of a multi-sector MSC write starting at synthetic
+MBR LBA 0. Source ignores the block-device error. Partition-only recovery and
+exact full-disk verification pass. The first test and intermediate recovery
+wrapper failures remain failed; a corrected transaction passes. No firmware fix
+is claimed. This adds one issue to the prior six-new-issue tally (seven total).
+
 ## Pico 2 forced BLE retry — 24 October
 
 The current HAL ready guard now passes the Pico 2 three-software-error/retry

@@ -3,7 +3,8 @@ import contextlib, importlib.util, io, json, sys, tempfile
 from pathlib import Path
 from unittest.mock import patch
 
-repo=Path(sys.argv[1])
+repo=Path(sys.argv[1]).resolve()
+sys.path.insert(0, str(repo / "collector"))
 spec=importlib.util.spec_from_file_location('certstore',repo/'collector/certstore.py')
 c=importlib.util.module_from_spec(spec);spec.loader.exec_module(c)
 result={'scope':'host filesystem failure injection; mocked certificate expiry; no hardware or real credentials'}
