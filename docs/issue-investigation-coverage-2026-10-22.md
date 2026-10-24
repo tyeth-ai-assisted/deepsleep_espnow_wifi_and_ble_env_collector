@@ -6,8 +6,8 @@ Actual hub boot now reaches AP, HTTP/HTTPS listeners, BLE UART advertising and
 the collector loop with 85,424 bytes free after scanner creation. It exposes a
 positional `_bleio.start_scan` API bug, fixed by `prefixes=`; three new host
 regressions pass versus two failures/one error before, and 50 protocol checks pass.
-The physical rerun removes that TypeError but reports scan OSError22: full hub
-qualification remains **failed**, with no API request made in that run. All four
+The initial physical rerun removes that TypeError but reports scan OSError22:
+that run remains **failed**, with no API request made. All four
 attempts preserve their failures and restore the exact original 4 MiB image.
 Separate raw scan matrices pass 24/24 on each of original9e153 and candidate5f731,
 including AP plus connectable advertising. All filtered counts are zero, so
@@ -25,10 +25,21 @@ without Wi-Fi/GATT imports fails when connectable advertising precedes the
 first scan (both .1/.05 windows), then passes after scanning once with
 advertising stopped. The earlier raw controls had already primed scanning.
 [Zephyr #12](https://github.com/tyeth/zephyr/issues/12) records this eighth new
-issue, likely implicit-identity/address-selection mismatch; no validated fix
-yet. Both later tests end with exact original flash/runtime/port restoration
+issue. At that stage the implicit-identity/address-selection mismatch was
+unpatched; the subsequent fix and passing comparison follow. Both later tests end with exact original flash/runtime/port restoration
 and independent postflights. Diagnostic completion is distinct from the two
 deliberately recorded scan failures.
+The identity fix is now in Zephyr PR #11 at `5bf4230`: track implicit
+connectable identity use and select the actual advertiser identity. A new
+nondefault-identity unit case fails baseline; five configurations yield
+19 pass/1 fail/35 skip before and 20 pass/0 fail/35 skip after. The revised
+diagnostic full-hub run passes 44-file readback, MCU boot, twelve public-address
+scan starts and twelve HTTP JSON checks. All scanner API samples have ble_rx=0
+and no ble_err: node delivery remains unverified. Full original flash is
+restored byte-exact, original files/identity/radios pass, networking/imports/power
+are restored and independent postflights pass. The earlier preflash timeout and
+minimal diagnostic missing its BEGIN marker remain failures. Normal integration
+builds are separate pending work; this bounded pass is not a long-soak claim.
 See [hub scan evidence and controls](pico2-hub-scan-2026-10-24.md).
 
 
@@ -36,8 +47,8 @@ PR #11 is integrated locally with the C5 I2C guard and full-chain certificate
 fix retained. The actual Pico W node entry point passes two MCU-reset boots,
 five simulated-sensor advertising cycles each, stable identity and exact full-disk
 restoration. Startup free heap is 77,616 bytes. Over-air receipt and real sensors remain unverified. Pico 2 hub startup and
-its scan failure now have separate evidence above; full application qualification
-remains incomplete.
+its corrected scan startup and bounded HTTP behavior now pass as described
+above; end-to-end node delivery and real peripheral qualification remain open.
 [Report, transcript and scope](picow-node-application-2026-10-24.md).
 
 New [CP #43](https://github.com/tyeth/circuitpython/issues/43) records physically

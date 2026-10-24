@@ -926,5 +926,226 @@
     },
     "issue": "https://github.com/tyeth/zephyr/issues/12",
     "scope": "Two initial scan failures and two subsequent scan successes; successful diagnostic completion is not a full-app pass"
+  },
+  "identity_fix": {
+    "commit": "5bf4230db7fe1e6b27bd866cf1691ff54ac5099d",
+    "pr": "https://github.com/tyeth/zephyr/pull/11",
+    "issue": "https://github.com/tyeth/zephyr/issues/12",
+    "diagnostic_build_pins": {
+      "circuitpython": "5f73172d46cd6c49f9b08570fe793bf1d12b7768",
+      "zephyr": "c6200e80ea6973b092da3c30c672901cc1951fc2",
+      "hal_infineon": "7f93dc60675126a63358ffa0780648d94fd2d634",
+      "hal_rpi_pico": "de12fc2a0f756d889cc13c129622ddb663025d29"
+    },
+    "diagnostic_artifacts": {
+      "bin": {
+        "bytes": 1209612,
+        "sha256": "b89064c3030f1f367a43f8d235af64a831a8d009c0bb826261f6ecd226dbc671"
+      },
+      "elf": {
+        "bytes": 24278192,
+        "sha256": "f62b8f11f1fff3db045fdd54cdbb5180fc596da09a607368b1dd90ae849ecb71"
+      },
+      "map": {
+        "bytes": 3109709,
+        "sha256": "193522e9263b7e5b2666df44291af45edfc04cbd531c48cd9c2d1a84e966f75e"
+      },
+      "config": {
+        "bytes": 88576,
+        "sha256": "00d9fa6b110f29e22ef59824cee0debc2821df86e65b3a489b129152077618b0"
+      }
+    },
+    "review_source_relation": "Identical C tokens; review changes only whitespace/comments from tested source",
+    "unit_regression": {
+      "baseline": {
+        "pass": 19,
+        "fail": 1,
+        "skip": 35
+      },
+      "candidate": {
+        "pass": 20,
+        "fail": 0,
+        "skip": 35
+      },
+      "configurations_executed": 5,
+      "build_only": 0,
+      "case": "test_scan_with_nondefault_advertising_identity",
+      "test_scope": "id.c unit test; actual adv.c exercised by physical default-public-identity comparison"
+    },
+    "integration_manifest_at_test": "c6200e80ea6973b092da3c30c672901cc1951fc2"
+  },
+  "fixed_hub_v8": {
+    "job": "3a6b833b-dda3-4836-89de-2e3628b4b34d",
+    "result": "pass",
+    "record_sha256": "718cdce6601de911490aea5a303ce107a7d5defe3acbbb38565aa83e9c5b6c4e",
+    "finished_utc": "2026-10-24T13:02:35.581599+00:00",
+    "candidate_revision": "5f73172d46cd6c49f9b08570fe793bf1d12b7768",
+    "candidate_sha256": "b89064c3030f1f367a43f8d235af64a831a8d009c0bb826261f6ecd226dbc671",
+    "candidate_bytes": 1209612,
+    "application_revision": "415710c80b3c02785b4a7860bab71d87a473897e",
+    "payload_verified": true,
+    "mcu_reset_observed": true,
+    "boot_markers_verified": true,
+    "http_checks": [
+      {
+        "cycle": 0,
+        "route": "/api/config",
+        "bytes": 1724,
+        "sha256": "0e19f4f034f8f8726ae7d9c227621708c382930dd1db308c31043eb85e325e58"
+      },
+      {
+        "cycle": 0,
+        "route": "/api/latest",
+        "bytes": 276,
+        "sha256": "6d16cc5c47b4297e8d3c81270aada31d0213d879cd1457b25bc70c5bbd3e13d5"
+      },
+      {
+        "cycle": 0,
+        "route": "/api/battery",
+        "bytes": 100,
+        "sha256": "8214c362016d6b3949be7f1b6665f1e9e55d480a5cb63e875b2bf0fbb85bdebe"
+      },
+      {
+        "cycle": 0,
+        "route": "/api/cert",
+        "bytes": 185,
+        "sha256": "9104756091eb623294deac6d8d62844f77341940bed796cab36d7ead1470d124"
+      },
+      {
+        "cycle": 1,
+        "route": "/api/config",
+        "bytes": 1724,
+        "sha256": "0e19f4f034f8f8726ae7d9c227621708c382930dd1db308c31043eb85e325e58"
+      },
+      {
+        "cycle": 1,
+        "route": "/api/latest",
+        "bytes": 276,
+        "sha256": "347de859694e590836bdd1158bafb954b4d0b176b7c669fc47af381ddf7e856e"
+      },
+      {
+        "cycle": 1,
+        "route": "/api/battery",
+        "bytes": 100,
+        "sha256": "8214c362016d6b3949be7f1b6665f1e9e55d480a5cb63e875b2bf0fbb85bdebe"
+      },
+      {
+        "cycle": 1,
+        "route": "/api/cert",
+        "bytes": 185,
+        "sha256": "9104756091eb623294deac6d8d62844f77341940bed796cab36d7ead1470d124"
+      },
+      {
+        "cycle": 2,
+        "route": "/api/config",
+        "bytes": 1724,
+        "sha256": "0e19f4f034f8f8726ae7d9c227621708c382930dd1db308c31043eb85e325e58"
+      },
+      {
+        "cycle": 2,
+        "route": "/api/latest",
+        "bytes": 276,
+        "sha256": "47085e44622852cab205cc78662deca75e37ab39343611370299fc4653a98ab7"
+      },
+      {
+        "cycle": 2,
+        "route": "/api/battery",
+        "bytes": 100,
+        "sha256": "8214c362016d6b3949be7f1b6665f1e9e55d480a5cb63e875b2bf0fbb85bdebe"
+      },
+      {
+        "cycle": 2,
+        "route": "/api/cert",
+        "bytes": 185,
+        "sha256": "9104756091eb623294deac6d8d62844f77341940bed796cab36d7ead1470d124"
+      }
+    ],
+    "scanner_api_states": [
+      {
+        "ble_rx": 0
+      },
+      {
+        "ble_rx": 0
+      },
+      {
+        "ble_rx": 0
+      }
+    ],
+    "validated_scan_starts": 12,
+    "boot_bytes": 2843,
+    "boot_sha256": "13ce506cd9e0180f066412f5d58ced7ad734b6cfdee0cfe8d00d12d78889d364",
+    "scan_diagnostic_lines": [
+      "ENVHUB_SCAN_REGISTER 0",
+      "ENVHUB_SCAN_DIAG rc=0 stage=5 backend=0 addr_type=0 opcode=200c status=0 type=0 interval=160 window=160 timeout=100",
+      "ENVHUB_SCAN_DIAG rc=0 stage=5 backend=0 addr_type=0 opcode=200c status=0 type=0 interval=160 window=160 timeout=100",
+      "ENVHUB_SCAN_DIAG rc=0 stage=5 backend=0 addr_type=0 opcode=200c status=0 type=0 interval=160 window=160 timeout=100",
+      "ENVHUB_SCAN_DIAG rc=0 stage=5 backend=0 addr_type=0 opcode=200c status=0 type=0 interval=160 window=160 timeout=100",
+      "ENVHUB_SCAN_DIAG rc=0 stage=5 backend=0 addr_type=0 opcode=200c status=0 type=0 interval=160 window=160 timeout=100",
+      "ENVHUB_SCAN_DIAG rc=0 stage=5 backend=0 addr_type=0 opcode=200c status=0 type=0 interval=160 window=160 timeout=100",
+      "ENVHUB_SCAN_DIAG rc=0 stage=5 backend=0 addr_type=0 opcode=200c status=0 type=0 interval=160 window=160 timeout=100",
+      "ENVHUB_SCAN_DIAG rc=0 stage=5 backend=0 addr_type=0 opcode=200c status=0 type=0 interval=160 window=160 timeout=100",
+      "ENVHUB_SCAN_DIAG rc=0 stage=5 backend=0 addr_type=0 opcode=200c status=0 type=0 interval=160 window=160 timeout=100",
+      "ENVHUB_SCAN_DIAG rc=0 stage=5 backend=0 addr_type=0 opcode=200c status=0 type=0 interval=160 window=160 timeout=100",
+      "ENVHUB_SCAN_DIAG rc=0 stage=5 backend=0 addr_type=0 opcode=200c status=0 type=0 interval=160 window=160 timeout=100",
+      "ENVHUB_SCAN_DIAG rc=0 stage=5 backend=0 addr_type=0 opcode=200c status=0 type=0 interval=160 window=160 timeout=100"
+    ],
+    "network_restored": true,
+    "production_restored": true,
+    "runtime_restored": true,
+    "imports_detached": true,
+    "original_port_state_restored": true,
+    "bridge_reset_observed": false,
+    "recovery_required": false,
+    "deployed_file_count": 44,
+    "original_full_flash_bytes": 4194304,
+    "original_full_flash_restored_exactly": true,
+    "restored_radio_counts": [
+      63,
+      85
+    ],
+    "postflights": [
+      {
+        "record_sha256": "f632c10556084177fbbd576a35bf585a00394c7d4ec8fa96935cb693921c1030",
+        "result": "pass",
+        "read_only": true
+      },
+      {
+        "record_sha256": "510cfb9dcc32c9650b0b3409c7c7250f30656bc350f87a1c53ca293042caad39",
+        "result": "pass",
+        "read_only": true
+      }
+    ],
+    "scope": "Bounded MCU-boot application, scan-start and HTTP qualification; no received node packets, real sensors or long soak"
+  },
+  "candidate_minimal_capture_failure": {
+    "job": "9a01684b-33d1-4cc6-b882-024f587fa9c0",
+    "result": "fail",
+    "record_sha256": "dd8a3ffbcd2202c9c3d7b2b6cb607a4d00985da08e9cd50baa12ab55c85ed512",
+    "reason": "Missing SCAN_ORDER_BEGIN marker despite ADDRESS_TYPE, four passing cases and DONE",
+    "observed_case_report_counts": [
+      18,
+      16,
+      22,
+      19
+    ],
+    "scanner_address_types": [
+      0,
+      0,
+      1,
+      0
+    ],
+    "original_full_flash_restored_exactly": true,
+    "restored_radio_counts": [
+      64,
+      82
+    ],
+    "independent_postflight": "pass"
+  },
+  "candidate_preflash_failure": {
+    "job": "40036111-37b7-406b-870a-e65b4430e08e",
+    "result": "fail",
+    "storage_mutated": false,
+    "reason": "Original-firmware combined preflight raw-REPL response timed out before backup/install",
+    "separate_startup_control": "06f6c6b5-479b-400d-9b57-2a23b4e241e3 passed six separate identity/Wi-Fi/BLE commands; does not establish timeout cause"
   }
 }

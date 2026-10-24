@@ -30,8 +30,9 @@ On Pico 2 W, a fresh boot with connectable advertising before the first
 scan can fail with EINVAL (controller LE Set Scan Enable status 0x12).
 Scanning once before advertising masks it; those controls are not proof
 of first-use coexistence. Tracked in tyeth/zephyr#12 and the 2026-10-24 hub
-scan report. poll() records the failure and retries; no priming workaround
-is applied here.
+scan report. Zephyr PR #11 commit 5bf4230 fixes identity selection and passes
+the bounded hub comparison. poll() records failures and retries; no priming
+workaround is applied here.
 """
 
 import time

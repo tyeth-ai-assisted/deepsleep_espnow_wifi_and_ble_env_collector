@@ -1,4 +1,4 @@
-# Pico 2 hub scan: argument fix and remaining full-application failure
+# Pico 2 hub scan: argument and identity fixes, bounded application pass
 
 The actual Pico 2 W hub boot exposed an application API-contract bug:
 `net_blescan.AdvReceiver.poll()` passed the advertisement prefix positionally,
@@ -15,8 +15,8 @@ python tools/test_envadv.py
 ```
 
 The physical rerun gets past the TypeError but exposes another failure:
-`BLE scan failed: OSError: [Errno 22] Invalid argument`. This is **not a passing
-hub qualification**. Its precise failing source stage and cause remain open.
+`BLE scan failed: OSError: [Errno 22] Invalid argument`. That earlier run remains **failed**. The later identity fix and bounded hub
+pass are documented below.
 
 ## Actual hub startup
 
@@ -164,11 +164,68 @@ they scanned before starting connectable advertising. The suspected source
 mismatch is in Zephyr's identity tracking: without privacy, connectable
 advertising implicitly uses the identity, while legacy scan address selection
 recognizes only the explicitly set identity flag. Existing unit tests cover
-public identity with the explicit flag, not this implicit case. The source
-explanation still needs a candidate fix and physical validation; scan priming
-has not been adopted as a production workaround.
+public identity with the explicit flag, not this implicit case. This was the working source hypothesis at that stage. The later candidate
+comparison below validates the fix; scan priming is not a production workaround.
 
 The first diagnostic build failed at link time because instrumentation was
 applied to a separate Zephyr clone. That failure is preserved. The successful
 build resolves the actual west checkout, verifies its original source bytes,
 exports exact artifact hashes and restores all temporary source edits.
+
+## Validated identity fix and bounded hub pass
+
+[Zephyr PR #11, commit 5bf4230](https://github.com/tyeth/zephyr/pull/11/commits/5bf4230db7fe1e6b27bd866cf1691ff54ac5099d)
+now tracks the identity actually used by connectable advertising when privacy is
+disabled. Legacy scanning reuses the active advertiser's identity, including a
+nondefault identity, instead of assuming identity zero. Explicit privacy and
+NRPA choices retain their existing paths. This fixes the observed first-use
+public-advertiser/random-scanner mismatch; no scan-priming workaround is added.
+
+The new nondefault-identity unit case fails against the original `id.c` and
+passes with the fix. Across five executed configurations, baseline is 19 pass,
+1 fail, 35 skip; candidate is 20 pass, 0 fail, 35 skip (none build-only).
+Run from the Zephyr checkout with its supported toolchain/environment:
+
+```sh
+west twister -T tests/bluetooth/host/id/bt_id_set_scan_own_addr -p unit_testing --inline-logs
+```
+
+These unit tests compile `id.c`, not the real advertising implementation.
+Physical default-public-identity tests below exercise the actual advertising
+path; nondefault identities and privacy modes have unit coverage, not equivalent
+physical qualification. The review commit differs from the tested source only
+in whitespace/comments; its C tokens are identical and checkpatch reports no
+errors or warnings.
+
+The first candidate attempt fails during original-firmware preflight before
+any backup, firmware install or filesystem write. A separate no-write startup
+control passes six identity/Wi-Fi/BLE commands; it does not establish the
+timeout's cause. The next minimal diagnostic records four successful scan
+cases (18, 16, 22, 19 reports; address types 0, 0, 1, 0; HCI status zero), but
+misses the initial `SCAN_ORDER_BEGIN` capture marker. That job remains **failed**,
+despite observing the address-selection correction. Its original full flash,
+files, identity and radios are restored, and independent postflight passes.
+
+The subsequent **full hub v8 job passes** on the revised diagnostic image
+`b89064c3030f1f367a43f8d235af64a831a8d009c0bb826261f6ecd226dbc671`
+(1,209,612 bytes). It uses CP `5f73172d46cd`, Zephyr base `c6200e80ea69` plus
+the identity fix and tracing, HAL Infineon `7f93dc606751`, HAL Pico
+`de12fc2a0f75`, and the same 44-file application payload. All files match after
+readback. A real MCU reset reaches AP, HTTP/HTTPS listeners, BLE UART and the
+collector loop. Twelve scan starts use public address type 0 with HCI status 0;
+twelve HTTP requests return valid JSON (config/latest/battery/cert, three rounds).
+All three captured scanner API states have `ble_rx: 0` and omit `ble_err`.
+
+The original 4,194,304-byte flash is restored byte-for-byte, followed by original
+files/version/identity and Wi-Fi/BLE counts 63/85. Temporary networking is
+removed, imports detached and original power state restored without a bridge
+reset. Two independent read-only postflights pass. Earlier failed jobs retain
+their statuses. The prepared v7 helper was never run.
+
+This establishes bounded hub startup, scan-start and HTTP behavior. It does
+not establish node-to-hub packet delivery, real sensors, display, SD storage,
+physical privacy/nondefault identities, TLS-client validation or a long soak.
+The boot capture notes absent I2C/SPI peripherals and ends with a lone partial
+`E` after its final complete scan line; no later output is inferred. At this
+test, CP's manifest still pins the old Zephyr base; integration and normal-image
+builds must be recorded separately from this diagnostic result.
