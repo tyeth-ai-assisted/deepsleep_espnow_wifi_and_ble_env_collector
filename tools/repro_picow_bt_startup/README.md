@@ -68,5 +68,7 @@ qualification stopped at original-firmware preflight without a firmware write.
 That was the initial result; the subsequent recorded qualification passes normal
 startup on Pico 2 and restores original code, verifies the full expected image,
 and passes radio and port/import-state checks. Earlier preflight failures remain
-unexplained. Pico 2 forced-error checks, natural faults and workflow client
+unexplained. Pico 2 forced-error checks now pass in [the current diagnostic](../../docs/pico2-bt-forced-retry-2026-10-24.md); natural faults and workflow client
 transfers remain open. No client framing fix is claimed.
+
+For current Pico 2 pins use `pico2-current-diagnostic.patch` and `probe_pico2_current.py` as described in that report. The production guard is already present; do not apply `ready_guard.py` again.

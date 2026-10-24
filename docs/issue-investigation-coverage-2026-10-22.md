@@ -1,3 +1,27 @@
+## Pico 2 forced BLE retry — 24 October
+
+The current HAL ready guard now passes the Pico 2 three-software-error/retry
+control: expected errno after each forced successful-operation return, usable
+Wi-Fi after each, one download across four attempts, stable BLE identity and
+three successful BLE scans. Original production code, full expected flash,
+three radio checks and port/import cleanup all pass. Natural electrical
+faults and workflow client transfers remain unqualified. This supersedes older
+Pico 2 forced-error-pending statements below. [Report and exact reproduction](pico2-bt-forced-retry-2026-10-24.md).
+
+## S31 HCD timing follow-up — 24 October
+
+Temporary instrumentation narrows the 64 KiB delay to channel activation →
+HCD retirement, with microsecond submission/callback overhead. Four complete
+network replies match all 64 UART segments. The original job **failed** on
+a separate final 4 KiB response with no captured payload; offline analysis
+retains that boundary. Original bridge app/full expected flash/API/topology
+restoration and a separate read-only postflight pass. No host-versus-device
+root cause or fix is claimed. [Evidence](pico2-s31-hcd-timing-2026-10-24.md).
+
+Certificate failure injection is now tracked by [application #38](https://github.com/tyeth/deepsleep_espnow_wifi_and_ble_env_collector/issues/38):
+mismatched live pair after second rename failure and abandoned `.new` files
+after rejected end/abort. These remain application defects, not CP defects.
+
 # Issue investigation coverage — updated 23 October 2026, 23:19 UTC
 
 ## Pico 2 long-read comparison: independent failure remains
