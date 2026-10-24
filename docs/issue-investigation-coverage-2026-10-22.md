@@ -17,7 +17,11 @@ the direct Pico W before/after comparison, valid partition write and three
 free-sector write/restore controls pass with complete disk verification.
 Original code/full expected flash and radio checks are restored. Native
 fault/bounds/cache checks pass 56/56 versus 34 failures on the preceding source;
-both Pico builds pass. Pico 2 physical MSC qualification and #42 remain open.
+both Pico builds pass. Pico 2 physical MSC subtests now pass too, including
+three free-sector spans and complete disk restoration. Its original job remains
+failed at a later ROM reattachment identity guard; separate recovery verifies
+original code/full expected flash, three radio cycles and baseline port state.
+The #42 stall and Pico 2 64 KiB read latency remain open.
 [Exact reproduction, preserved guard failure and limits](zephyr-msc-errors-2026-10-24.md).
 This remains one issue in the seven-new-issue tally, not a new issue or closure.
 

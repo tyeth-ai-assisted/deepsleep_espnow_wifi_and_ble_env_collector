@@ -65,7 +65,7 @@
         "diagnostic_hooks_present": false
       }
     },
-    "hardware_qualification": "Pico W MSC comparison passed; Pico 2 MSC candidate untested",
+    "hardware_qualification": "Pico W and Pico 2 MSC comparisons passed; Pico 2 original restoration failure followed by separately verified recovery",
     "production_devices": "retain 9e153ad624"
   },
   "native": {
@@ -1048,10 +1048,399 @@
     "raw_manifest_sha256": "f3a53f84ae4df9c247a1ed4666bd1cdee824a7b38ef9cf6b05d47f719b2168fe"
   },
   "limits": [
-    "Pico 2 build only for this MSC fix",
     "No physical injected read/absent-media failure",
     "Synthetic MBR multi-sector rejection policy unchanged",
     "CP42 and Pico2/S31 latency remain unresolved",
-    "Whole-flash restoration preserves runtime tail and is not bit-identical to pretest"
-  ]
+    "Whole-flash restoration preserves runtime tail and is not bit-identical to pretest",
+    "Pico 2 storage subtests passed; original job remains failed and separate firmware recovery passed"
+  ],
+  "physical_pico2": {
+    "board": "raspberrypi_rpi_pico2_w_zephyr",
+    "transport": "S31 USB/IP to Linux",
+    "comparison_job": "ed9ebdcc-0002-428d-a685-a75b04d5ddd9",
+    "comparison_job_result": "fail",
+    "comparison_finished_utc": "2026-10-24T01:57:32.122819+00:00",
+    "baseline_revision": "9e153ad624",
+    "candidate_revision": "5f73172d46cd6c49f9b08570fe793bf1d12b7768",
+    "candidate_checks_passed": true,
+    "scopes": {
+      "baseline": {
+        "status": "passed",
+        "disk_bytes": 2617856,
+        "backup_sha256": "8554756db54eb98a74be479d97aa3ae162e20475cb8927f23e4a781b36479535",
+        "final_disk_sha256": "8554756db54eb98a74be479d97aa3ae162e20475cb8927f23e4a781b36479535",
+        "disk_restored_verified": true,
+        "autoreload_restored": true,
+        "commands": [
+          {
+            "label": "synthetic_mbr_multi",
+            "scsi": {
+              "status": 0,
+              "masked_status": 0,
+              "msg_status": 0,
+              "sb_len_wr": 0,
+              "host_status": 0,
+              "driver_status": 0,
+              "resid": 0,
+              "duration": 12,
+              "info": 0,
+              "command": "2a000000000000000800",
+              "lba": 0,
+              "bytes": 4096,
+              "payload_sha256": "d6995cdde5696faf0286ffe6ca46afaad322c141a8c063fb1666579e2fcfd4a2",
+              "sense": ""
+            }
+          }
+        ],
+        "reads": [
+          {
+            "bytes": 2617856,
+            "sha256": "8554756db54eb98a74be479d97aa3ae162e20475cb8927f23e4a781b36479535"
+          },
+          {
+            "bytes": 2617856,
+            "sha256": "8554756db54eb98a74be479d97aa3ae162e20475cb8927f23e4a781b36479535",
+            "changed_sectors": []
+          },
+          {
+            "bytes": 2617856,
+            "sha256": "8554756db54eb98a74be479d97aa3ae162e20475cb8927f23e4a781b36479535",
+            "changed_sectors": []
+          },
+          {
+            "bytes": 2617856,
+            "sha256": "8554756db54eb98a74be479d97aa3ae162e20475cb8927f23e4a781b36479535",
+            "changed_sectors": []
+          }
+        ],
+        "temporary_busy_guard_samples": 4
+      },
+      "candidate": {
+        "status": "passed",
+        "disk_bytes": 2617856,
+        "backup_sha256": "7e0a850f00e5d513cb30359e29f041722d7bcd03d32c5f7c36bb61606089947f",
+        "final_disk_sha256": "7e0a850f00e5d513cb30359e29f041722d7bcd03d32c5f7c36bb61606089947f",
+        "disk_restored_verified": true,
+        "autoreload_restored": true,
+        "commands": [
+          {
+            "label": "synthetic_mbr_multi",
+            "scsi": {
+              "status": 2,
+              "masked_status": 1,
+              "msg_status": 0,
+              "sb_len_wr": 18,
+              "host_status": 0,
+              "driver_status": 8,
+              "resid": 4096,
+              "duration": 16,
+              "info": 1,
+              "command": "2a000000000000000800",
+              "lba": 0,
+              "bytes": 4096,
+              "payload_sha256": "d6995cdde5696faf0286ffe6ca46afaad322c141a8c063fb1666579e2fcfd4a2",
+              "sense": "700003000000000a000000000c0000000000"
+            }
+          },
+          {
+            "label": "real_partition_multi",
+            "scsi": {
+              "status": 0,
+              "masked_status": 0,
+              "msg_status": 0,
+              "sb_len_wr": 0,
+              "host_status": 0,
+              "driver_status": 0,
+              "resid": 0,
+              "duration": 8,
+              "info": 0,
+              "command": "2a000000000100000800",
+              "lba": 1,
+              "bytes": 4096,
+              "payload_sha256": "af01f39f88c51afe9c110fa0966fe293df6906a46e036280d56ed064719c7b0d",
+              "sense": ""
+            }
+          },
+          {
+            "label": "free_sector_pattern_or_restore",
+            "scsi": {
+              "status": 0,
+              "masked_status": 0,
+              "msg_status": 0,
+              "sb_len_wr": 0,
+              "host_status": 0,
+              "driver_status": 0,
+              "resid": 0,
+              "duration": 8,
+              "info": 0,
+              "command": "2a00000000ba00000200",
+              "lba": 186,
+              "bytes": 1024,
+              "payload_sha256": "905c1114e1b3c0f3f9fe59af1c53a76cfba246db4c6e1d064f70cf7656b5dc95",
+              "sense": ""
+            }
+          },
+          {
+            "label": "free_sector_pattern_or_restore",
+            "scsi": {
+              "status": 0,
+              "masked_status": 0,
+              "msg_status": 0,
+              "sb_len_wr": 0,
+              "host_status": 0,
+              "driver_status": 0,
+              "resid": 0,
+              "duration": 4,
+              "info": 0,
+              "command": "2a00000000ba00000200",
+              "lba": 186,
+              "bytes": 1024,
+              "payload_sha256": "bc4805ca1831a977357dc04040c9414e3f752bc3409554072b545f3926376e8a",
+              "sense": ""
+            }
+          },
+          {
+            "label": "free_sector_pattern_or_restore",
+            "scsi": {
+              "status": 0,
+              "masked_status": 0,
+              "msg_status": 0,
+              "sb_len_wr": 0,
+              "host_status": 0,
+              "driver_status": 0,
+              "resid": 0,
+              "duration": 8,
+              "info": 0,
+              "command": "2a00000000bf00000200",
+              "lba": 191,
+              "bytes": 1024,
+              "payload_sha256": "1edc35e168c3dcecbb3ff7737ff102ef3d53863f9550512fdd0523bab988901d",
+              "sense": ""
+            }
+          },
+          {
+            "label": "free_sector_pattern_or_restore",
+            "scsi": {
+              "status": 0,
+              "masked_status": 0,
+              "msg_status": 0,
+              "sb_len_wr": 0,
+              "host_status": 0,
+              "driver_status": 0,
+              "resid": 0,
+              "duration": 4,
+              "info": 0,
+              "command": "2a00000000bf00000200",
+              "lba": 191,
+              "bytes": 1024,
+              "payload_sha256": "5f4ecdb7b71c3e403983fe405cddcdc2f2576b655fdb3e80d94a6f7c32e58bc2",
+              "sense": ""
+            }
+          },
+          {
+            "label": "free_sector_pattern_or_restore",
+            "scsi": {
+              "status": 0,
+              "masked_status": 0,
+              "msg_status": 0,
+              "sb_len_wr": 0,
+              "host_status": 0,
+              "driver_status": 0,
+              "resid": 0,
+              "duration": 8,
+              "info": 0,
+              "command": "2a00000013ee00000200",
+              "lba": 5102,
+              "bytes": 1024,
+              "payload_sha256": "f119e1fd90d82a7bf22895d64bf7c307d68c9380a53087b67df0d0db3a8bcdf0",
+              "sense": ""
+            }
+          },
+          {
+            "label": "free_sector_pattern_or_restore",
+            "scsi": {
+              "status": 0,
+              "masked_status": 0,
+              "msg_status": 0,
+              "sb_len_wr": 0,
+              "host_status": 0,
+              "driver_status": 0,
+              "resid": 0,
+              "duration": 8,
+              "info": 0,
+              "command": "2a00000013ee00000200",
+              "lba": 5102,
+              "bytes": 1024,
+              "payload_sha256": "5f4ecdb7b71c3e403983fe405cddcdc2f2576b655fdb3e80d94a6f7c32e58bc2",
+              "sense": ""
+            }
+          }
+        ],
+        "reads": [
+          {
+            "bytes": 2617856,
+            "sha256": "7e0a850f00e5d513cb30359e29f041722d7bcd03d32c5f7c36bb61606089947f"
+          },
+          {
+            "bytes": 2617856,
+            "sha256": "7e0a850f00e5d513cb30359e29f041722d7bcd03d32c5f7c36bb61606089947f",
+            "changed_sectors": []
+          },
+          {
+            "bytes": 2617856,
+            "sha256": "7e0a850f00e5d513cb30359e29f041722d7bcd03d32c5f7c36bb61606089947f",
+            "changed_sectors": []
+          },
+          {
+            "bytes": 2617856,
+            "sha256": "7e0a850f00e5d513cb30359e29f041722d7bcd03d32c5f7c36bb61606089947f",
+            "changed_sectors": []
+          },
+          {
+            "bytes": 2617856,
+            "sha256": "7e0a850f00e5d513cb30359e29f041722d7bcd03d32c5f7c36bb61606089947f",
+            "changed_sectors": []
+          },
+          {
+            "bytes": 2617856,
+            "sha256": "28cec3de28250ff314ec4e6b5623d77bb7db8f15c65e88c1a049ea7e80fa1e94",
+            "changed_sectors": [
+              186,
+              187
+            ]
+          },
+          {
+            "bytes": 2617856,
+            "sha256": "7e0a850f00e5d513cb30359e29f041722d7bcd03d32c5f7c36bb61606089947f",
+            "changed_sectors": []
+          },
+          {
+            "bytes": 2617856,
+            "sha256": "19f1488c116ef8d178cda577882f7594b6f24b3b94ef774dafee124515e33bce",
+            "changed_sectors": [
+              191,
+              192
+            ]
+          },
+          {
+            "bytes": 2617856,
+            "sha256": "7e0a850f00e5d513cb30359e29f041722d7bcd03d32c5f7c36bb61606089947f",
+            "changed_sectors": []
+          },
+          {
+            "bytes": 2617856,
+            "sha256": "811680bf93f722da47b86863177bed938fec4df9d99a9b01e93fd3b7778a4939",
+            "changed_sectors": [
+              5102,
+              5103
+            ]
+          },
+          {
+            "bytes": 2617856,
+            "sha256": "7e0a850f00e5d513cb30359e29f041722d7bcd03d32c5f7c36bb61606089947f",
+            "changed_sectors": []
+          },
+          {
+            "bytes": 2617856,
+            "sha256": "7e0a850f00e5d513cb30359e29f041722d7bcd03d32c5f7c36bb61606089947f",
+            "changed_sectors": []
+          },
+          {
+            "bytes": 2617856,
+            "sha256": "7e0a850f00e5d513cb30359e29f041722d7bcd03d32c5f7c36bb61606089947f",
+            "changed_sectors": []
+          }
+        ],
+        "temporary_busy_guard_samples": 32,
+        "free_sector_transaction": {
+          "geometry": {
+            "fat_type": "FAT12",
+            "cluster_count": 2531,
+            "free_clusters": 2459,
+            "sectors_per_cluster": 2,
+            "filesystem_sectors": 5104,
+            "partition_sectors": 5112,
+            "data_start_lba": 42,
+            "spans": [
+              {
+                "lba": 186,
+                "sectors": 2
+              },
+              {
+                "lba": 191,
+                "sectors": 2
+              },
+              {
+                "lba": 5102,
+                "sectors": 2
+              }
+            ]
+          },
+          "checks": [
+            {
+              "lba": 186,
+              "bytes": 1024,
+              "pattern_exact": true
+            },
+            {
+              "lba": 191,
+              "bytes": 1024,
+              "pattern_exact": true
+            },
+            {
+              "lba": 5102,
+              "bytes": 1024,
+              "pattern_exact": true
+            }
+          ],
+          "restore_verified": true,
+          "disk_bytes": 2617856,
+          "before_sha256": "7e0a850f00e5d513cb30359e29f041722d7bcd03d32c5f7c36bb61606089947f",
+          "after_sha256": "7e0a850f00e5d513cb30359e29f041722d7bcd03d32c5f7c36bb61606089947f"
+        }
+      }
+    },
+    "install": {
+      "status": "verified",
+      "before_sha256": "7518d00ea8245bd8eb153d57baa277ea7b6da7da670cdc0e8952632631d7f917",
+      "expected_sha256": "3e47ae232e7c1e41bf4d3d129ccbde83f37899c4adc45e9af7b76802d44679ed",
+      "code_bytes": 1212416,
+      "whole_flash_verified": true
+    },
+    "original_backup_bytes": 4194304,
+    "original_backup_sha256": "7518d00ea8245bd8eb153d57baa277ea7b6da7da670cdc0e8952632631d7f917",
+    "restoration_failure": "Expected ROM identity assertion during reattachment, before restore directory/read/write; mismatched tuple was not captured.",
+    "recovery_job": "161b9b39-6be4-4589-959d-bccac0192801",
+    "recovery_job_result": "pass",
+    "recovery_finished_utc": "2026-10-24T02:01:42.160180+00:00",
+    "restore": {
+      "status": "verified",
+      "before_sha256": "eb0f2a25436e0573db43bfbaabbd7d9ad61658cd15df82b3ef149dbb93e4717b",
+      "expected_sha256": "3268e4530429f08d960ab57a5266b484f6eef680ea3618b921b70f9781755e11",
+      "code_bytes": 1212416,
+      "whole_flash_verified": true
+    },
+    "whole_flash_matches_pretest": false,
+    "restored_radio_counts": [
+      [
+        64,
+        76
+      ],
+      [
+        59,
+        71
+      ],
+      [
+        57,
+        76
+      ]
+    ],
+    "stable_ble_identity": true,
+    "imports_detached": true,
+    "original_port_state_restored": true,
+    "bridge_reset_observed": false,
+    "recovery_required": false,
+    "comparison_record_sha256": "c7c62178b236dc8d09d60103ebe1cb03569af00fd2b45163b1486cade095bc45",
+    "recovery_record_sha256": "c8c3c38c810c7f56fa2bfb822e772155ce3a656c8d5814df85fce405b3e180d9"
+  }
 }

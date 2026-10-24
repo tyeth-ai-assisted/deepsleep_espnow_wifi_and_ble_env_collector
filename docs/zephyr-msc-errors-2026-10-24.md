@@ -3,8 +3,10 @@
 CircuitPython [PR #32](https://github.com/tyeth/circuitpython/pull/32), commit
 `5f73172d46cd6c49f9b08570fe793bf1d12b7768`, fixes the silent block-write
 acknowledgement reported in [#43](https://github.com/tyeth/circuitpython/issues/43).
-The direct-connected Pico W passes a before/after SCSI comparison. Pico 2 W
-builds successfully but has not received this candidate in this test.
+Both the direct-connected Pico W and the Pico 2 W through S31 USB/IP pass
+the before/after SCSI comparison. The Pico 2 test job remains failed because
+its subsequent firmware restoration stopped at a USB identity guard; a
+separate recovery restored and verified the original firmware.
 
 ## Change
 
@@ -48,6 +50,41 @@ the restored image is **not** bit-identical to the pretest flash snapshot.
 Original firmware subsequently passed three Wi-Fi/BLE scans (76/78, 75/74,
 83/80), with unchanged BLE identity. Host bindings were restored and the
 bridge was not restarted. No recovery remains necessary.
+
+## Pico 2 W physical comparison and separate recovery
+
+On the same `5f73172d46` candidate, the Pico 2 W reproduces the baseline false
+GOOD and returns CHECK CONDITION / `03/0c/00` after the fix, with the exact
+same CDB and 4096-byte payload. The valid LBA 1 control succeeds. Its FAT12
+volume uses two sectors per cluster; the volume is 5104 sectors inside a
+5112-sector partition. Three two-sector tests at LBAs 186, 191 and 5102
+change only their expected sectors and restore exactly. Four baseline and
+13 candidate complete 2,617,856-byte reads use 4096-byte requests. The candidate
+disk restores to SHA-256
+`7e0a850f00e5d513cb30359e29f041722d7bcd03d32c5f7c36bb61606089947f`.
+The middle span crosses a cluster boundary, with both clusters verified free.
+
+The original job **failed after these checks**: while attaching the ROM
+bootloader for restoration, the host's USB attribute tuple failed the exact
+identity assertion. This was before any restore directory, read or write.
+The mismatched tuple was not recorded, so stale sysfs data is a possibility,
+not an established cause. Inspection found the expected ROM device, no active
+test services and no imports. The bridge had not restarted.
+
+A separate recovery waits for the expected tuple within a bounded interval
+and records observations. It restores the original code span, verifies the
+complete expected 4 MiB image, and boots `9e153ad624`. Three Wi-Fi/BLE cycles
+pass (64/76, 59/71, 57/76) with unchanged BLE identity. Imports are detached,
+the original port-off state is restored, and no recovery remains necessary.
+Runtime data is preserved: the complete restored image matches its expected
+hash `3268e4530429f08d960ab57a5266b484f6eef680ea3618b921b70f9781755e11`,
+but is not bit-identical to the pretest backup. The failed original job and
+successful recovery remain separate records in the evidence JSON.
+
+This qualifies the storage fix on both boards. It does **not** qualify the
+known slow 64 KiB USB/IP read workload, intermittent closed-console stall,
+or full Pico 2 hub application. Twelve host geometry controls cover the
+free-sector planner's one/two-sector clusters, shorter BPB volume and bounds.
 
 ## Native checks and builds
 
