@@ -11,20 +11,33 @@ qualification remains **failed**, with no API request made in that run. All four
 attempts preserve their failures and restore the exact original 4 MiB image.
 Separate raw scan matrices pass 24/24 on each of original9e153 and candidate5f731,
 including AP plus connectable advertising. All filtered counts are zero, so
-node delivery is not implied; full-app state/error origin needs diagnosis.
+node delivery is not implied. A later trace and minimal ordering reproduction narrow the error as described below.
 A fifth instrumented boot identifies `start_scan` itself with the expected
 arguments. Twelve HTTP JSON checks pass and latest consistently reports the
 scan error. The job remains failed (also a network cleanup assertion); exact
 original flash/runtime/radios/port restoration pass, then a separate read-only
 postflight verifies disconnected Wi-Fi, removed test profile and baseline state.
+
+The sixth run traces the error to controller LE Set Scan Enable status0x12;
+it separately fails AP association and needs separate successful full-image
+recovery after a USB descriptor-read error. A minimal MCU-boot reproduction
+without Wi-Fi/GATT imports fails when connectable advertising precedes the
+first scan (both .1/.05 windows), then passes after scanning once with
+advertising stopped. The earlier raw controls had already primed scanning.
+[Zephyr #12](https://github.com/tyeth/zephyr/issues/12) records this eighth new
+issue, likely implicit-identity/address-selection mismatch; no validated fix
+yet. Both later tests end with exact original flash/runtime/port restoration
+and independent postflights. Diagnostic completion is distinct from the two
+deliberately recorded scan failures.
 See [hub scan evidence and controls](pico2-hub-scan-2026-10-24.md).
 
 
 PR #11 is integrated locally with the C5 I2C guard and full-chain certificate
 fix retained. The actual Pico W node entry point passes two MCU-reset boots,
 five simulated-sensor advertising cycles each, stable identity and exact full-disk
-restoration. Startup free heap is 77,616 bytes. Over-air receipt, Pico 2 hub boot,
-real sensors and latest-candidate application runtime remain unverified.
+restoration. Startup free heap is 77,616 bytes. Over-air receipt and real sensors remain unverified. Pico 2 hub startup and
+its scan failure now have separate evidence above; full application qualification
+remains incomplete.
 [Report, transcript and scope](picow-node-application-2026-10-24.md).
 
 New [CP #43](https://github.com/tyeth/circuitpython/issues/43) records physically

@@ -26,11 +26,12 @@ reports keep arriving; on the unfixed firmware in a radio-silent room the
 iterator can still block between reports, which only #20 cures.
 TODO(fw-11): drop this note once the rebased firmware is the minimum.
 
-Untested on hardware: scanning while the hub is itself advertising the
-UART service. Zephyr's host allows the combination and most controllers
-do; if start_scan raises while advertising, poll() reports it once and
-keeps trying, and the failure signature to look for on the REPL is
-"BLE scan failed: ... EBUSY/-16" or "-EINVAL".
+On Pico 2 W, a fresh boot with connectable advertising before the first
+scan can fail with EINVAL (controller LE Set Scan Enable status 0x12).
+Scanning once before advertising masks it; those controls are not proof
+of first-use coexistence. Tracked in tyeth/zephyr#12 and the 2026-10-24 hub
+scan report. poll() records the failure and retries; no priming workaround
+is applied here.
 """
 
 import time

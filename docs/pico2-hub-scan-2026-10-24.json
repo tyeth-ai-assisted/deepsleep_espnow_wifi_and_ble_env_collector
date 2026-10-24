@@ -783,5 +783,148 @@
       "no_imports": true,
       "original_port_state_verified": true
     }
+  },
+  "firmware_traced_hub": {
+    "job": "601195e2-2735-4a23-b0a5-fa6a497a20d2",
+    "result": "fail",
+    "record_sha256": "95bdba8db0fc4ed621b51c9eb14a74f79c5e23e18f47819779ff73daf47271aa",
+    "finished_utc": "2026-10-24T03:03:23.820477+00:00",
+    "candidate_sha256": "329c20f6053e4201e05987e998c766bb4bbcbff79ed84f9aa7bae7db58e14cd7",
+    "candidate_bytes": 1209596,
+    "boot_bytes": 2478,
+    "boot_sha256": "30ecf822cdca7a8e18de8914fae30249aa4a9b0b3fcf5169ca5e4191cbea3872",
+    "scan_diagnostic_lines": [
+      "ENVHUB_SCAN_REGISTER 0",
+      "ENVHUB_SCAN_DIAG rc=-22 stage=5 backend=-22 addr_type=1 opcode=200c status=18 type=0 interval=160 window=160 timeout=100",
+      "ENVHUB_SCAN_DIAG rc=-22 stage=5 backend=-22 addr_type=1 opcode=200c status=18 type=0 interval=160 window=160 timeout=100",
+      "ENVHUB_SCAN_DIAG rc=-22 stage=5 backend=-22 addr_type=1 opcode=200c status=18 type=0 interval=160 window=160 timeout=100",
+      "ENVHUB_SCAN_DIAG rc=-22 stage=5 backend=-22 addr_type=1 opcode=200c status=18 type=0 interval=160 window=160 timeout=100",
+      "ENVHUB_SCAN_DIAG rc=-22 stage=5 backend=-22 addr_type=1 opcode=200c status=18 type=0 interval=160 window=160 timeout=100",
+      "ENVHUB_SCAN_DIAG rc=-22 stage=5 backend=-22 addr_type=1 opcode=200c status=18 type=0 interval=160 window=160 timeout=100",
+      "ENVHUB_SCAN_DIAG rc=-22 stage=5 backend=-22 addr_type=1 opcode=200c status=18 type=0 interval=160 window=160 timeout=100",
+      "ENVHUB_SCAN_DIAG rc=-22 stage=5 backend=-22 addr_type=1 opcode=200c status=18 type=0 interval=160 window=160 timeout=100"
+    ],
+    "restore_error": "OSError(19, 'No such device')",
+    "network_restored": true,
+    "production_restored": false,
+    "recovery_required": true,
+    "http_checks_attempted": false,
+    "network_failure": "NetworkManager key-mgmt property missing",
+    "separate_recovery": {
+      "job": "c9242134-6d29-49dd-973f-4e0605387929",
+      "result": "pass",
+      "record_sha256": "b628a6f5d849c44c8d5d7540490e8f86c52b5b37269a93dc48b9a3d6edcf13df",
+      "finished_utc": "2026-10-24T03:07:55.574522+00:00",
+      "restore": {
+        "status": "verified",
+        "before_sha256": "3fa4b4f1e2f583d86ff1d93d0b6cbac5e23573ff245caf5052b27b25d7e6f0f1",
+        "expected_sha256": "7518d00ea8245bd8eb153d57baa277ea7b6da7da670cdc0e8952632631d7f917",
+        "bytes": 4194304,
+        "whole_flash_verified": true
+      },
+      "whole_flash_matches_pretest": true,
+      "runtime_verified": true,
+      "imports_detached": true,
+      "original_port_state_restored": true,
+      "bridge_reset_observed": false,
+      "recovery_required": false,
+      "radio_counts": [
+        [
+          62,
+          74
+        ],
+        [
+          59,
+          80
+        ],
+        [
+          66,
+          81
+        ]
+      ],
+      "postflight": {
+        "job": "df79e9af-d9ff-4e52-a9b6-730f3bbf822b",
+        "read_only": true,
+        "result": "pass",
+        "record_sha256": "d0bac132aa370eba3af852e2b9f28812a16ddb51c953c2ba23444e6a275c79a4"
+      }
+    }
+  },
+  "scan_order_reproduction": {
+    "job": "83887e61-3b67-4713-8563-4f72a83b562d",
+    "result": "completed_and_restored",
+    "record_sha256": "09cb201bdbd10156bcf9ab94050cdfd85b1d21e693e1c67ad95c88bbc1e8c077",
+    "finished_utc": "2026-10-24T03:15:12.649213+00:00",
+    "candidate_sha256": "329c20f6053e4201e05987e998c766bb4bbcbff79ed84f9aa7bae7db58e14cd7",
+    "candidate_bytes": 1209596,
+    "cases": [
+      {
+        "window": 0.1,
+        "result": "error",
+        "label": "connectable_first",
+        "error": "OSError: [Errno 22] Invalid argument",
+        "elapsed_s": 0.01700068,
+        "advertising": true
+      },
+      {
+        "window": 0.05,
+        "result": "error",
+        "label": "connectable_first_half_window",
+        "error": "OSError: [Errno 22] Invalid argument",
+        "elapsed_s": 0.01700068,
+        "advertising": true
+      },
+      {
+        "window": 0.1,
+        "label": "no_advertising_prime",
+        "result": "pass",
+        "elapsed_s": 1.0289996,
+        "count": 22,
+        "advertising": false
+      },
+      {
+        "window": 0.1,
+        "label": "connectable_after_prime",
+        "result": "pass",
+        "elapsed_s": 1.022001,
+        "count": 18,
+        "advertising": true
+      }
+    ],
+    "boot_bytes": 1320,
+    "boot_sha256": "83b97f5a70ab54bde1ed4519661d720910c67a6c19f084525200a42071f24f20",
+    "scan_diagnostic_lines": [
+      "ENVHUB_SCAN_REGISTER 0",
+      "ENVHUB_SCAN_DIAG rc=-22 stage=5 backend=-22 addr_type=1 opcode=200c status=18 type=0 interval=160 window=160 timeout=100",
+      "ENVHUB_SCAN_DIAG rc=-22 stage=5 backend=-22 addr_type=1 opcode=200c status=18 type=0 interval=160 window=80 timeout=100",
+      "ENVHUB_SCAN_DIAG rc=0 stage=5 backend=0 addr_type=1 opcode=200c status=0 type=0 interval=160 window=160 timeout=100",
+      "ENVHUB_SCAN_DIAG rc=0 stage=5 backend=0 addr_type=1 opcode=200c status=0 type=0 interval=160 window=160 timeout=100"
+    ],
+    "restore_rom_via_existing_console": true,
+    "restore": {
+      "status": "verified",
+      "before_sha256": "33ca4a70a5052f7001c784451c644bf93e6a85831c4e52eff465699cc266fedc",
+      "expected_sha256": "7518d00ea8245bd8eb153d57baa277ea7b6da7da670cdc0e8952632631d7f917",
+      "bytes": 4194304,
+      "whole_flash_verified": true
+    },
+    "runtime_restored": true,
+    "imports_detached": true,
+    "original_port_state_restored": true,
+    "bridge_reset_observed": false,
+    "recovery_required": false,
+    "identity_address_type": 0,
+    "radio_counts": [
+      65,
+      73
+    ],
+    "postflight": {
+      "job": "016a9bd0-c1f6-450c-8b48-5e69a030fc79",
+      "read_only": true,
+      "result": "pass",
+      "record_sha256": "bbe5187d9f975e74dee8357a936c4cd09d3d69cab94e997e6f6db51bd30136e8"
+    },
+    "issue": "https://github.com/tyeth/zephyr/issues/12",
+    "scope": "Two initial scan failures and two subsequent scan successes; successful diagnostic completion is not a full-app pass"
   }
 }

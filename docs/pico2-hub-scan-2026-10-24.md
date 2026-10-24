@@ -119,3 +119,56 @@ temporary profile absent, the management route unchanged, no active test units
 or imports, and the baseline device/port state. No recovery mutation is needed.
 The initial network assertion's observed state was not saved, so its cause is
 not established merely by the later clean result.
+
+## Controller trace and reduced ordering reproduction
+
+[Zephyr #12](https://github.com/tyeth/zephyr/issues/12) now tracks the distinct
+scan-start failure. A temporary trace-only image built from the same pinned
+sources shows callback registration, host validation, address selection and
+LE Set Scan Parameters complete, then **LE Set Scan Enable (0x200c)** returns
+controller status **0x12** (`BT_HCI_ERR_INVALID_PARAM`). Zephyr maps it to errno22.
+The full hub records eight identical failures. This sixth hub job also fails
+to join its AP (NetworkManager reports missing key-management configuration),
+so it performs no HTTP requests. Do not reuse the fifth run's twelve HTTP passes
+as sixth-run results.
+
+The sixth run loses USB while reading runtime descriptors during the transition
+to ROM, before writing the original image. It remains a failed job. Separate
+recovery restores the complete original 4 MiB byte-for-byte, verifies original
+files/version/identity and three Wi-Fi/BLE pairs (62/74, 59/80, 66/81), detaches
+imports and powers the Pico off without resetting the bridge. A separate
+read-only postflight verifies the network and baseline inventory.
+
+A smaller three-file reproduction removes the hub, Wi-Fi imports and GATT
+libraries. After MCU reset with `CIRCUITPY_BLE_WORKFLOW=false`, it observes a
+public identity (`address.type == 0`) and runs:
+
+| Sequence | Result | Reports | Time |
+|---|---|---:|---:|
+| Connectable advertisement before first scan; 0.1 s window | errno22 | — | 0.017 s |
+| Same advertisement; 0.05 s window | errno22 | — | 0.017 s |
+| Stop advertising, then scan | pass | 22 | 1.029 s |
+| Restart same advertisement, then scan | pass | 18 | 1.022 s |
+
+All four calls use a 0.1 s interval, passive scanning and a one-second timeout.
+The trace selects scanner address type 1 (random) for all four. The first two
+receive HCI status0x12; the last two receive status0. The exact tested
+[code.py reproduction](../tools/reproduce_zephyr_scan_order.py) includes console
+capture markers. The diagnostic completes and restores the original full flash
+exactly, followed by original files/version/identity, Wi-Fi/BLE65/73, off/detach
+and another independent baseline postflight. A completed diagnostic does not
+turn its first two observed scan failures into passes.
+
+This explains why the earlier 48-case controls did not cover the failure:
+they scanned before starting connectable advertising. The suspected source
+mismatch is in Zephyr's identity tracking: without privacy, connectable
+advertising implicitly uses the identity, while legacy scan address selection
+recognizes only the explicitly set identity flag. Existing unit tests cover
+public identity with the explicit flag, not this implicit case. The source
+explanation still needs a candidate fix and physical validation; scan priming
+has not been adopted as a production workaround.
+
+The first diagnostic build failed at link time because instrumentation was
+applied to a separate Zephyr clone. That failure is preserved. The successful
+build resolves the actual west checkout, verifies its original source bytes,
+exports exact artifact hashes and restores all temporary source edits.
