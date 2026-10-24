@@ -1147,5 +1147,76 @@
     "storage_mutated": false,
     "reason": "Original-firmware combined preflight raw-REPL response timed out before backup/install",
     "separate_startup_control": "06f6c6b5-479b-400d-9b57-2a23b4e241e3 passed six separate identity/Wi-Fi/BLE commands; does not establish timeout cause"
+  },
+  "normal_integration_builds": {
+    "pins": {
+      "circuitpython": "3254e272628ea1c08977cd753dda8762e8951ac2",
+      "zephyr": "5bf4230db7fe1e6b27bd866cf1691ff54ac5099d",
+      "hal_infineon": "7f93dc60675126a63358ffa0780648d94fd2d634",
+      "hal_rpi_pico": "de12fc2a0f756d889cc13c129622ddb663025d29"
+    },
+    "images": {
+      "picow": {
+        "board": "raspberrypi_rpi_pico_w_zephyr",
+        "returncode": 0,
+        "artifacts": {
+          "bin": {
+            "bytes": 1252848,
+            "sha256": "1a0a5bdbbfd69f5c6ef987d074e391e27eb1e03409b676e090319462e047c6be"
+          },
+          "elf": {
+            "bytes": 23549980,
+            "sha256": "c6bbf7fa5af1eebc052a8886a28b42928bbb11f862e23b8e8ca183fa44847796"
+          },
+          "map": {
+            "bytes": 3169761,
+            "sha256": "7707941f0217dddc6aed7bf6e3531e6af4fea1dc93bf821b6844396142bf1454"
+          },
+          "config": {
+            "bytes": 86189,
+            "sha256": "1aee70b5999ab53726678a6f5f3d175acc10ecaf653d741fad9abefe180b2d6d"
+          }
+        },
+        "normal_workflow_symbols": [
+          "supervisor_start_bluetooth",
+          "supervisor_start_bluetooth_file_transfer",
+          "supervisor_start_bluetooth_serial"
+        ],
+        "diagnostic_hooks_present": false,
+        "build_log_sha256": "7dcd1130dd7bd7f9dd529375ca71a87b630eaae6c6e4e3831dde058eb01719bc"
+      },
+      "pico2": {
+        "board": "raspberrypi_rpi_pico2_w_zephyr",
+        "returncode": 0,
+        "artifacts": {
+          "bin": {
+            "bytes": 1209228,
+            "sha256": "2c6bfb34138e7d9195f495d66fb35dd1ddaf8024e264ea8af165c2715b1cfd89"
+          },
+          "elf": {
+            "bytes": 24274604,
+            "sha256": "640abbab219d66d2fc901dc261e023f7d6999b2114b87ecb9c32bd2898c4d040"
+          },
+          "map": {
+            "bytes": 3109267,
+            "sha256": "1ea086b5c22a11d27fbaebd37b5d3929dacc274125e8d302a21e0812f1d4142e"
+          },
+          "config": {
+            "bytes": 88576,
+            "sha256": "00d9fa6b110f29e22ef59824cee0debc2821df86e65b3a489b129152077618b0"
+          }
+        },
+        "normal_workflow_symbols": [
+          "supervisor_start_bluetooth",
+          "supervisor_start_bluetooth_file_transfer",
+          "supervisor_start_bluetooth_serial"
+        ],
+        "diagnostic_hooks_present": false,
+        "build_log_sha256": "ba64aa665f5027006baeb033df92f6dc403b1e0d02845225c55b35a09fe45464"
+      }
+    },
+    "hardware_qualification": "not run for these normal images; diagnostic physical results separate",
+    "production_devices": "original 9e153 retained",
+    "sources_unchanged": true
   }
 }

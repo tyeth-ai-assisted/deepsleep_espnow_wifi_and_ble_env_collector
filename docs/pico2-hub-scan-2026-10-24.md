@@ -229,3 +229,22 @@ The boot capture notes absent I2C/SPI peripherals and ends with a lone partial
 `E` after its final complete scan line; no later output is inferred. At this
 test, CP's manifest still pins the old Zephyr base; integration and normal-image
 builds must be recorded separately from this diagnostic result.
+
+## Normal integration builds
+
+CircuitPython [PR #32](https://github.com/tyeth/circuitpython/pull/32) at
+`3254e272628ea1c08977cd753dda8762e8951ac2` now pins the reviewed Zephyr
+`5bf4230db7fe1e6b27bd866cf1691ff54ac5099d`. Both normal builds pass with the
+actual clean dependency checkouts verified before and after. ELF inspection
+confirms the automatic BLE startup/file-transfer/serial workflow symbols and
+the absence of scan tracing and forced-error hooks.
+
+| Normal image | Bytes | SHA-256 |
+|---|---:|---|
+| Pico W | 1,252,848 | `1a0a5bdbbfd69f5c6ef987d074e391e27eb1e03409b676e090319462e047c6be` |
+| Pico 2 W | 1,209,228 | `2c6bfb34138e7d9195f495d66fb35dd1ddaf8024e264ea8af165c2715b1cfd89` |
+
+These are build results, not additional physical passes. The physical hub run
+above used the separately pinned trace image. Both production Picos retain
+their restored `9e153` images while the independent USB reliability issues
+remain open. Machine-readable evidence includes ELF/map/config and log hashes.

@@ -38,8 +38,10 @@ scan starts and twelve HTTP JSON checks. All scanner API samples have ble_rx=0
 and no ble_err: node delivery remains unverified. Full original flash is
 restored byte-exact, original files/identity/radios pass, networking/imports/power
 are restored and independent postflights pass. The earlier preflash timeout and
-minimal diagnostic missing its BEGIN marker remain failures. Normal integration
-builds are separate pending work; this bounded pass is not a long-soak claim.
+minimal diagnostic missing its BEGIN marker remain failures. CP #32 now pins Zephyr5bf4230 at CP3254e272; both normal Pico builds pass
+with matching clean dependencies, normal BLE workflows and no diagnostic hooks.
+Those normal images have no additional physical qualification; production
+remains restored9e153. The diagnostic bounded pass is not a long-soak claim.
 See [hub scan evidence and controls](pico2-hub-scan-2026-10-24.md).
 
 
